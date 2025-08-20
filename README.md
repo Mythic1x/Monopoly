@@ -1,1 +1,8 @@
 # Monopoly
+
+monopoly
+
+# Running
+
+1. start the python server with `python server.py`
+1. ensure you're in the inner monopoly directory, then run `npm start`
