@@ -5,6 +5,7 @@ from player import Player
 type spacetype_t = int
 
 ST_PROPERTY: spacetype_t = 0
+ST_UTILITY: spacetype_t = 11
 ST_COMMUNITY_CHEST: spacetype_t = 1
 ST_CHANCE: spacetype_t = 2
 ST_JAIL: spacetype_t = 3

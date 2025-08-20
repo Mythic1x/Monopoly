@@ -1,27 +1,189 @@
+Mediterranean Avenue {
+    type = PROPERTY;
+    cost = 60;
+    color = brown;
+}
+
+Baltic Avenue {
+    type = PROPERTY;
+    cost = 60;
+    color = brown;
+}
+
+Oriental Avenue {
+    type = PROPERTY;
+    cost = 100;
+    color = lightblue;
+}
+Vermont Avenue {
+    type = PROPERTY;
+    cost = 100;
+    color = lightblue;
+}
+Connecticut Avenue {
+    type = PROPERTY;
+    cost = 120;
+    color = lightblue;
+}
+
+St. Charles Place {
+    type = PROPERTY;
+    cost = 140;
+    color = pink;
+}
+States Avenue {
+    type = PROPERTY;
+    cost = 140;
+    color = pink;
+}
+Virginia Avenue {
+    type = PROPERTY;
+    cost = 160;
+    color = pink;
+}
+
+St. James Place {
+    type = PROPERTY;
+    cost = 180;
+    color = orange;
+}
+Tennessee Avenue {
+    type = PROPERTY;
+    cost = 180;
+    color = orange;
+}
+New York Avenue {
+    type = PROPERTY;
+    cost = 200;
+    color = orange;
+}
+
+Kentucky Avenue {
+    type = PROPERTY;
+    cost = 220;
+    color = red;
+}
+Indiana Avenue {
+    type = PROPERTY;
+    cost = 220;
+    color = red;
+}
+Illinois Avenue {
+    type = PROPERTY;
+    cost = 240;
+    color = red;
+}
+
+Atlantic Avenue {
+    type = PROPERTY;
+    cost = 260;
+    color = yellow;
+}
+Ventor Avenue {
+    type = PROPERTY;
+    cost = 260;
+    color = yellow;
+}
+Marvin Gardens {
+    type = PROPERTY;
+    cost = 280;
+    color = yellow;
+}
+
+Pacific Avenue {
+    type = PROPERTY;
+    cost = 300;
+    color = green;
+}
+North Carolina Avenue {
+    type = PROPERTY;
+    cost = 300;
+    color = green;
+}
+Pennsylvania Avenue {
+    type = PROPERTY;
+    cost = 320;
+    color = green;
+}
+
+Park Place {
+    type = PROPERTY;
+    cost = 350;
+    color = blue;
+}
 Boardwalk {
     type = PROPERTY;
-    cost = 450;
-};
+    cost = 400;
+    color = blue;
+}
 
-Passing GO {
-    type = GO;
+Electric Company {
+    type = UTILITY;
+    cost = 150;
+}
+Water Company {
+    type = UTILITY;
+    cost = 150;
+}
+
+
+Pennsylvania Avenue {
+    type = RAILROAD;
+    cost = 200;
+}
+Reading Railroad {
+    type = RAILROAD;
+    cost = 200;
+}
+B And O Railroad {
+    type = RAILROAD;
+    cost = 200;
+}
+Short Line {
+    type = RAILROAD;
+    cost = 200;
+}
+
+Income Tax {
+    type = INCOME_TAX;
     cost = -200;
-};
+}
+
+Luxury Tax {
+    type = LUXURY_TAX
+    cost = -100;
+}
+
+Jail {
+    type = JAIL;
+    cost = 0;
+}
+
+Go To Jail {
+    type = GOTO_JAIL;
+    cost = 0;
+}
+
+Community Chest {
+    cost = 0;
+    type = COMMUNITY_CHEST;
+}
 
 Chance {
     type = CHANCE;
     cost = 0;
 }
 
-EndOfLeft {
-    type = PROPERTY;
+Free Parking {
+    type = FREE_PARKING;
     cost = 0;
 }
 
-EndOfTop {
-    type = PROPERTY;
-    cost = 0;
-}
+Passing GO {
+    type = GO;
+    cost = -200;
+};
+
 
 start = Passing GO -> Chance -> Boardwalk;
 
