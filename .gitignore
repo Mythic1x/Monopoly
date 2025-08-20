@@ -90,3 +90,6 @@ client/.vite/
 
 # Electron-Forge
 client/out/
+
+#pycache
+__pycache__

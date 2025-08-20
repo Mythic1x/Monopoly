@@ -1,0 +1,32 @@
+Boardwalk {
+    type = PROPERTY;
+    cost = 450;
+};
+
+Passing GO {
+    type = GO;
+    cost = -200;
+};
+
+Chance {
+    type = CHANCE;
+    cost = 0;
+}
+
+EndOfLeft {
+    type = PROPERTY;
+    cost = 0;
+}
+
+EndOfTop {
+    type = PROPERTY;
+    cost = 0;
+}
+
+start = Passing GO -> Chance -> Boardwalk;
+
+left = Chance -> EndOfLeft;
+
+right = Chance -> Chance;
+
+top = Chance -> EndOfTop
