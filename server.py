@@ -12,22 +12,30 @@ class Game:
     board: Board
     players: list[Player]
     curTurn: int
+    dSides: int
+    playerTurn: int
 
-    def __init__(self, boardFile: str):
+    def __init__(self, boardFile: str, dSides: int = 6):
         self.board = Board(buildFromFile(boardFile))
         self.players = []
         self.curTurn = 0
+        self.dSides = dSides
+        self.playerTurn = 1
 
     def playerJoin(self, player: Player):
         self.players.append(player)
         self.board.addPlayer(player)
 
-    def nextTurn(self):
-        roll = random.randint(1, 12)
+    def nextTurn(self) -> int:
+        roll = random.randint(1, self.dSides)
         self.board.move(self.players[self.curTurn], roll)
         self.curTurn += 1
         if self.curTurn >= len(self.players):
             self.curTurn = 0
+        return self.playerTurn
+
+    def advanceTurn(self):
+        self.playerTurn = (self.playerTurn % len(self.players)) + 1
 
 async def echo(websocket):
     async for message in websocket:

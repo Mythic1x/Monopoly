@@ -108,14 +108,10 @@ class Board:
     startSpace: Space
     playerSpaces: dict[str, Space]
 
-    def __init__(self, startSpace: Space, playerCount: int):
+    def __init__(self, startSpace: Space):
         self.startSpace = startSpace
 
         self.playerSpaces = {}
-        
-        self.playerCount = playerCount
-        
-        self.playerTurn = 1
 
     def addPlayer(self, player: Player):
         self.startSpace.put(player)
@@ -125,7 +121,6 @@ class Board:
         self.playerSpaces[player.id].onleave(player)
         space.onland(player)
         self.playerSpaces[player.id] = space
-        self.advanceTurn()
 
     def move(self, player: Player, amount: int):
         curSpace = self.playerSpaces[player.id]
@@ -137,7 +132,4 @@ class Board:
         curSpace.onland(player)
 
         self.playerSpaces[player.id] = curSpace
-        self.advanceTurn()
     
-    def advanceTurn(self):
-        self.playerTurn = (self.playerTurn % self.playerCount) + 1
