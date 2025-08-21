@@ -24,6 +24,7 @@ class Space:
     players: list[str]
     cost: int
     name: str
+    owner: Player
     attrs: dict[str, Any]
 
     def __init__(self, spaceType: spacetype_t, cost: int, name: str, **kwargs):
@@ -34,6 +35,7 @@ class Space:
         self.next = None
         self.prev = None
         self.attrs = kwargs
+        self.owner = None
 
     def __next__(self):
         if self.next == None:
@@ -47,7 +49,7 @@ class Space:
         print(self)
         if self.next is stopat or not self.next:
             return
-        self.next.print(self)
+        self.next.print(self) 
 
     def getLast(self):
         if self.next is None:
@@ -62,7 +64,10 @@ class Space:
                 return True
             if cur is None:
                 return False
-
+    def isUnowned(self):
+        if self.owner is None:
+            return True
+        return False
 
     def copy(self):
         return Space(self.spaceType, cost=self.cost, name=self.name)
@@ -88,7 +93,14 @@ class Space:
 
 
 def onland_railroad(rr: Space, player: Player):
-    pass
+    if rr.isUnowned(): 
+        #prompt player
+        pass
+    elif rr.owner is not player:
+        rr.owner.getOwnedRailroads()
+        #take money
+        pass
+        
 
 class Board:
     #the board keeps track of only the starting space
@@ -96,10 +108,14 @@ class Board:
     startSpace: Space
     playerSpaces: dict[str, Space]
 
-    def __init__(self, startSpace: Space):
+    def __init__(self, startSpace: Space, playerCount: int):
         self.startSpace = startSpace
 
         self.playerSpaces = {}
+        
+        self.playerCount = playerCount
+        
+        self.playerTurn = 1
 
     def addPlayer(self, player: Player):
         self.startSpace.put(player)
@@ -109,6 +125,7 @@ class Board:
         self.playerSpaces[player.id].onleave(player)
         space.onland(player)
         self.playerSpaces[player.id] = space
+        self.advanceTurn()
 
     def move(self, player: Player, amount: int):
         curSpace = self.playerSpaces[player.id]
@@ -120,5 +137,7 @@ class Board:
         curSpace.onland(player)
 
         self.playerSpaces[player.id] = curSpace
-
-        player.go()
+        self.advanceTurn()
+    
+    def advanceTurn(self):
+        self.playerTurn = (self.playerTurn % self.playerCount) + 1
