@@ -1,4 +1,5 @@
 from typing import Any, Self
+import collections
 import random
 
 class Player:
@@ -14,16 +15,23 @@ class Player:
         self.ownedSpaces = []
 
     def owns(self, space: "Space"):
-        return space.owner.id == self.id
+        return False if not space.owner else space.owner.id == self.id
 
     def pay(self, amount: int, other: Self):
         self.money -= amount
         other.money += amount
+    def buy(self, space: "Space"):
+        if space.cost > self.money:
+            return False
+        self.money -= space.cost
+        space.owner = self
+        self.ownedSpaces.append(space)
+        
         
     def getOwnedRailroads(self):
         number = 0
         for space in self.ownedSpaces:
-            if space.spaceType is ST_RAILROAD:
+            if space.spaceType == ST_RAILROAD:
                 number += 1
         return number
 
@@ -50,6 +58,7 @@ class Space:
     cost: int
     name: str
     owner: Player
+    setAmount: int
     attrs: dict[str, Any]
 
     def __init__(self, spaceType: spacetype_t, cost: int, name: str, **kwargs):
@@ -68,7 +77,7 @@ class Space:
         return self.next
 
     def __repr__(self):
-        return f"({self.name}${self.cost} + {self.attrs})"
+        return f"(${self.cost} {self.name} + {self.attrs})"
 
     def print(self, stopat=None):
         print(self)
@@ -105,17 +114,20 @@ class Space:
             self.players.append(player.id)
 
     def onland(self, player: Player):
+        print("you landed on " + self.name)
         self.players.append(player.id)
-
+        if self.isUnowned() and self.spaceType == ST_PROPERTY:
+            return "PROMPT_TO_BUY", self
         if not player.owns(self):
             rent = self.attrs.get("rent")
             if not rent:
-                return
+                return "NONE",
             rent = str(rent)
             if rent.isnumeric():
                 player.pay(int(rent), self.owner)
             elif (fn := getattr(self, rent)) and callable(fn):
                 fn(player)
+        return "NONE",
 
 
     def onrent_railroad(self, player: Player):
@@ -136,13 +148,12 @@ class Space:
         pass
 
 
-def onland_railroad(rr: Space, player: Player):
+def onland_railroad(self, rr: Space, player: Player):
     if rr.isUnowned(): 
         #prompt player
         pass
     elif rr.owner is not player:
-        rr.owner.getOwnedRailroads()
-        #take money
+        self.onrent_railroad(self, player)
         pass
         
 
@@ -173,7 +184,8 @@ class Board:
         for i in range(amount):
             curSpace = curSpace.next
             curSpace.onpass(player)
-        curSpace.onland(player)
+        status = curSpace.onland(player)
 
         self.playerSpaces[player.id] = curSpace
+        return status
     

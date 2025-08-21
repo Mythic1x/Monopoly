@@ -2,10 +2,11 @@ from abc import ABC
 import asyncio
 import random
 from typing import Self
-from websockets.asyncio.server import serve
+
 
 from boardbuilder import buildFromFile
-from board import Board, Player
+from board import Board, Player, Space
+from statushandler import StatusHandler
 
 class Game:
     board: Board
@@ -25,17 +26,29 @@ class Game:
         self.players.append(player)
         self.board.addPlayer(player)
 
-    def nextTurn(self) -> int:
+    def startTurn(self) -> int:
+        #START STATUS
         roll = random.randint(1, self.dSides)
-        self.board.move(self.players[self.curTurn], roll)
+        status = self.board.move(self.players[self.curTurn], roll)
+        return status
+    def endTurn(self):
         self.curTurn += 1
         if self.curTurn >= len(self.players):
             self.curTurn = 0
-        return self.playerTurn
+        self.advanceTurn()
 
     def advanceTurn(self):
         self.playerTurn = (self.playerTurn % len(self.players)) + 1
-
+    def run(self):
+        while True:
+            print(f"Player {self.playerTurn} go")
+            input()
+            status, *data = self.startTurn()
+            self.handleStatus(status, data)
+            pass
+    def handleStatus(status: str, data: list, player):
+        getattr(StatusHandler, status)(player, *data)
+        pass
 async def echo(websocket):
     async for message in websocket:
         await websocket.send(message)
@@ -44,4 +57,12 @@ async def main():
     async with serve(echo, "0.0.0.0", 8765) as server:
         await server.serve_forever()
 
-asyncio.run(main())
+#asyncio.run(main())
+player = Player("1", 1, 1500)
+game = Game("./boards/main.board")
+game.playerJoin(player)
+game.playerJoin(player)
+game.run()
+
+
+
