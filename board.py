@@ -81,9 +81,28 @@ class Space:
 
     def onland(self, player: Player):
         self.players.append(player.id)
-        {
-            ST_RAILROAD: onland_railroad,
-        }[self.spaceType](self, player)
+
+        if not player.owns(self):
+            rent = self.attrs.get("rent")
+            if not rent:
+                return
+            rent = str(rent)
+            if rent.isnumeric():
+                player.pay(int(rent), self.owner)
+            elif (fn := getattr(self, rent)) and callable(fn):
+                fn(player)
+
+
+    def onrent_railroad(self, player: Player):
+        owed = {
+                0: 0,
+                1: 25,
+                2: 50,
+                3: 100,
+                4: 100
+        }[self.owner.getOwnedRailroads()]
+        if owed:
+            player.pay(owed, self.owner)
 
     def onleave(self, player: Player):
         self.players.remove(player.id)

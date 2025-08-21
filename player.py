@@ -1,3 +1,4 @@
+from typing import Self
 from board import Board, Space, ST_RAILROAD
 import random
 class Player:
@@ -11,6 +12,13 @@ class Player:
         self.id = id
         self.playerNumber = playerNumber
         self.ownedSpaces = []
+
+    def owns(self, space: Space):
+        return space.owner.id == self.id
+
+    def pay(self, amount: int, other: Self):
+        self.money -= amount
+        other.money += amount
         
     def getOwnedRailroads(self):
         number = 0
