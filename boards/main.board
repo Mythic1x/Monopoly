@@ -2,146 +2,239 @@ Mediterranean Avenue {
     type = PROPERTY;
     cost = 60;
     color = brown;
-}
 
+    rent = 2;
+    house1 = 10;
+    hotel = 250;
+}
 Baltic Avenue {
     type = PROPERTY;
     cost = 60;
     color = brown;
+
+    rent = 4;
+    house1 = 20;
+    hotel = 450;
 }
 
 Oriental Avenue {
     type = PROPERTY;
     cost = 100;
     color = lightblue;
+
+    rent = 6;
+    house1 = 30;
+    hotel = 550;
 }
 Vermont Avenue {
     type = PROPERTY;
     cost = 100;
     color = lightblue;
+
+    rent = 6;
+    house1 = 30;
+    hotel = 550;
 }
 Connecticut Avenue {
     type = PROPERTY;
     cost = 120;
     color = lightblue;
+
+    rent = 8;
+    house1 = 40;
+    hotel = 600;
 }
 
 St. Charles Place {
     type = PROPERTY;
     cost = 140;
     color = pink;
+
+    rent = 10;
+    house1 = 50;
+    hotel = 750;
 }
 States Avenue {
     type = PROPERTY;
     cost = 140;
     color = pink;
+
+    rent = 10;
+    house1 = 50;
+    hotel = 750;
 }
 Virginia Avenue {
     type = PROPERTY;
     cost = 160;
     color = pink;
+
+    rent = 12;
+    house1 = 60;
+    hotel = 900;
 }
 
 St. James Place {
     type = PROPERTY;
     cost = 180;
     color = orange;
+
+    rent = 14;
+    house1 = 70;
+    hotel = 950;
 }
 Tennessee Avenue {
     type = PROPERTY;
     cost = 180;
     color = orange;
+
+    rent = 14;
+    house1 = 70;
+    hotel = 950;
 }
 New York Avenue {
     type = PROPERTY;
     cost = 200;
     color = orange;
+
+    rent = 16;
+    house1 = 80;
+    hotel = 1000;
 }
 
 Kentucky Avenue {
     type = PROPERTY;
     cost = 220;
     color = red;
+
+    rent = 18;
+    house1 = 90;
+    hotel = 1050;
 }
 Indiana Avenue {
     type = PROPERTY;
     cost = 220;
     color = red;
+
+    rent = 18;
+    house1 = 90;
+    hotel = 1050;
 }
 Illinois Avenue {
     type = PROPERTY;
     cost = 240;
     color = red;
+
+    rent = 20;
+    house1 = 100;
+    hotel = 1100;
 }
 
 Atlantic Avenue {
     type = PROPERTY;
     cost = 260;
     color = yellow;
+
+    rent = 22;
+    house1 = 110;
+    hotel = 1150;
 }
 Ventor Avenue {
     type = PROPERTY;
     cost = 260;
     color = yellow;
+
+    rent = 22;
+    house1 = 110;
+    hotel = 1150;
 }
 Marvin Gardens {
     type = PROPERTY;
     cost = 280;
     color = yellow;
+
+    rent = 24;
+    house1 = 120;
+    hotel = 1200;
 }
 
 Pacific Avenue {
     type = PROPERTY;
     cost = 300;
     color = green;
+
+    rent = 26;
+    house1 = 130;
+    hotel = 1275;
 }
 North Carolina Avenue {
     type = PROPERTY;
     cost = 300;
     color = green;
+
+    rent = 26;
+    house1 = 130;
+    hotel = 1275;
 }
 Pennsylvania Avenue {
     type = PROPERTY;
     cost = 320;
     color = green;
+
+    rent = 28;
+    house1 = 150;
+    hotel = 1400;
 }
 
 Park Place {
     type = PROPERTY;
     cost = 350;
     color = blue;
+
+    rent = 35;
+    house1 = 175;
+    hotel = 1500;
 }
 Boardwalk {
     type = PROPERTY;
     cost = 400;
     color = blue;
+
+    rent = 50;
+    house1 = 200;
+    hotel = 2000;
 }
 
 Electric Company {
     type = UTILITY;
     cost = 150;
+    rent = onrent_utility;
 }
 Water Company {
     type = UTILITY;
     cost = 150;
+    rent = onrent_utility;
 }
 
 
 Pennsylvania Avenue {
     type = RAILROAD;
     cost = 200;
+    rent = onrent_railroad;
 }
 Reading Railroad {
     type = RAILROAD;
     cost = 200;
+    rent = onrent_railroad;
 }
 B And O Railroad {
     type = RAILROAD;
     cost = 200;
+    rent = onrent_railroad;
 }
 Short Line {
     type = RAILROAD;
     cost = 200;
+    rent = onrent_railroad;
 }
 
 Income Tax {
