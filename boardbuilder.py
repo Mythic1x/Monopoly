@@ -62,7 +62,7 @@ class SpacesLexer:
 
     def buildWord(self, start: str):
         w = start
-        while self.next() and self.text[self.i].lower() in "abcdefghijklmnopqrstuvwxyz ":
+        while self.next() and self.text[self.i].lower() in "abcdefghijklmnopqrstuvwxyz&_. ":
             w += self.text[self.i]
         self.back()
         return w

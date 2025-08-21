@@ -5,8 +5,7 @@ from typing import Self
 from websockets.asyncio.server import serve
 
 from boardbuilder import buildFromFile
-from player import Player
-from board import Board
+from board import Board, Player
 
 class Game:
     board: Board

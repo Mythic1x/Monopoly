@@ -226,7 +226,7 @@ Reading Railroad {
     cost = 200;
     rent = onrent_railroad;
 }
-B And O Railroad {
+B&O Railroad {
     type = RAILROAD;
     cost = 200;
     rent = onrent_railroad;
@@ -243,7 +243,7 @@ Income Tax {
 }
 
 Luxury Tax {
-    type = LUXURY_TAX
+    type = LUXURY_TAX;
     cost = -100;
 }
 
@@ -280,8 +280,8 @@ Passing GO {
 
 start = Passing GO -> Chance -> Boardwalk;
 
-left = Chance -> EndOfLeft;
+left = Chance -> Chance;
 
 right = Chance -> Chance;
 
-top = Chance -> EndOfTop
+top = Chance -> Chance;
