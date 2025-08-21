@@ -1,7 +1,7 @@
 from abc import ABC
 import asyncio
 import random
-from typing import Self
+from typing import Any, Self
 
 
 from boardbuilder import buildFromFile
@@ -26,7 +26,7 @@ class Game:
         self.players.append(player)
         self.board.addPlayer(player)
 
-    def startTurn(self) -> int:
+    def startTurn(self):
         #START STATUS
         roll = random.randint(1, self.dSides)
         status = self.board.move(self.players[self.curTurn], roll)
@@ -41,12 +41,13 @@ class Game:
         self.playerTurn = (self.playerTurn % len(self.players)) + 1
     def run(self):
         while True:
+            curPlayer = self.players[self.curTurn]
             print(f"Player {self.playerTurn} go")
             input()
             status, *data = self.startTurn()
-            self.handleStatus(status, data)
+            self.handleStatus(status, data, curPlayer)
             pass
-    def handleStatus(status: str, data: list, player):
+    def handleStatus(self, status: str, data: list[Any], player: Player):
         getattr(StatusHandler, status)(player, *data)
         pass
 async def echo(websocket):
