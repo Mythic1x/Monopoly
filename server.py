@@ -63,6 +63,7 @@ async def terminalGame():
 async def gameServer(ws):
     c = WSClient(ws)
     g = Game("./boards/main.board")
+    await ws.send(json.dumps({"hi": "hi"}))
     async for message in c:
         await handleAction(c, g, message)
 
@@ -70,4 +71,4 @@ async def main():
     async with serve(gameServer, "0.0.0.0", 8765) as server:
         await server.serve_forever()
 
-asyncio.run(terminalGame())
+asyncio.run(main())

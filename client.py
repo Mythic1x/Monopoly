@@ -2,7 +2,8 @@ import abc
 from typing import Any, override
 
 from board import Player, Space
-
+from dataclasses import dataclass
+    
 class Client(abc.ABC):
     @abc.abstractmethod
     async def read(self, prompt: str) -> str: ...
@@ -12,12 +13,18 @@ class Client(abc.ABC):
 
     @abc.abstractmethod
     async def __anext__(self) -> dict[str, Any]: ...
+    
+    
 
     async def handleStatus(self, player: Player, status: str, data: list[Any]):
-        await getattr(self, status)(player, *data)
+        status = await getattr(self, status)(player, *data)
+        return status
 
     async def PROMPT_TO_BUY(self, player: Player, space: Space):
-        await self.write(f"would you like to buy: {space.name}")
+        status = await self.read(f"would you like to buy: {space.name}")
+        if status == "yes":
+            player.buy(space)
+            await self.write(f"You bought {space.name}")
 
     async def NONE(self, *data):
         pass
