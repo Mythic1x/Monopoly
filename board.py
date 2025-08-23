@@ -192,10 +192,9 @@ class Board:
 
         self.playerSpaces[player.id] = curSpace
         return status
+
     def toJson(self):
         dict = {}
         for key in self.__dict__:
             if not callable(self.__dict__[key]) and not key.startswith("_"):
                 dict[key] = self.__dict__[key]  
-        json.dumps(dict)
-    
