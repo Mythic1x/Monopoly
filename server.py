@@ -7,7 +7,7 @@ from websockets.asyncio.server import serve
 
 from boardbuilder import buildFromFile
 from board import Board, Player, Space
-from client import Client, WSClient, TermClient, action_t
+from client import Client, WSClient, TermClient
 
 class Game:
     board: Board
@@ -70,4 +70,4 @@ async def main():
     async with serve(gameServer, "0.0.0.0", 8765) as server:
         await server.serve_forever()
 
-asyncio.run(main())
+asyncio.run(terminalGame())
