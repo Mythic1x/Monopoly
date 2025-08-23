@@ -1,4 +1,5 @@
 import abc
+import json
 from typing import Any, override
 
 from board import Player, Space
@@ -9,7 +10,7 @@ class Client(abc.ABC):
     async def read(self, prompt: str) -> str: ...
 
     @abc.abstractmethod
-    async def write(self, data: str): ...
+    async def write(self, data: dict): ...
 
     @abc.abstractmethod
     async def __anext__(self) -> dict[str, Any]: ...
@@ -41,8 +42,8 @@ class WSClient(Client):
         return await self.ws.recv()
 
     @override
-    async def write(self, data: str):
-        await self.ws.send(data)
+    async def write(self, data: dict):
+        await self.ws.send(json.dumps(data))
 
     @override
     async def __anext__(self) -> dict[str, Any]:
@@ -54,7 +55,7 @@ class TermClient(Client):
         return input(prompt)
 
     @override
-    async def write(self, data: str):
+    async def write(self, data: dict):
         print(data)
 
     @override

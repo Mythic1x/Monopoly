@@ -1,6 +1,9 @@
+import json
 from typing import Any, Self
 import collections
 import random
+
+        
 
 class Player:
     money: int
@@ -160,6 +163,7 @@ def onland_railroad(self, rr: Space, player: Player):
 class Board:
     #the board keeps track of only the starting space
     #because the space will point to the next space and so on
+    
     startSpace: Space
     playerSpaces: dict[str, Space]
 
@@ -188,4 +192,10 @@ class Board:
 
         self.playerSpaces[player.id] = curSpace
         return status
+    def toJson(self):
+        dict = {}
+        for key in self.__dict__:
+            if not callable(self.__dict__[key]) and not key.startswith("_"):
+                dict[key] = self.__dict__[key]  
+        json.dumps(dict)
     

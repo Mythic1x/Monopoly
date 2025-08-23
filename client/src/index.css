@@ -5,3 +5,10 @@ body {
   max-width: 38rem;
   padding: 2rem;
 }
+
+.board-container {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}

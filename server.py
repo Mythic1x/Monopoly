@@ -51,6 +51,8 @@ async def handleAction(client: Client, game: Game, action: dict[str, Any]):
             await client.handleStatus(game.curPlayer, status, data)
         case "end-turn":
             game.endTurn()
+        case "connect":
+            await client.write({"response": "board", "value": game.board.toJson()})
 
 async def terminalGame():
     c = TermClient()
