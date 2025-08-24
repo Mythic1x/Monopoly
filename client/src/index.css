@@ -26,13 +26,27 @@ body {
         height: 30%;
         background-color: attr(data-color type(<color>));
     }
+
     .space {
         position: relative;
-        display: flex;
-        flex-direction: column;
+
+        display: block;
+
         aspect-ratio: 1;
         width: 100px;
+
         border: 1px solid black;
+        text-align: center;
+    }
+
+    .cost::after {
         display: block;
+    }        
+    .cost:not([data-cost="0"])::after {
+        content: "$"attr(data-cost);
+    }
+
+    .cost[data-earn="true"]::after {
+        content: "You earn $" attr(data-cost);
     }
 }

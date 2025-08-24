@@ -9,7 +9,7 @@ function Space({ space }: { space: Space }) {
     return <>
         <div className="space" data-color={space.attrs.color}>
             <span className="name">{space.name}</span>
-            <span className="cost">{space.cost}</span>
+            <span className="cost" data-cost={Math.abs(space.cost)} data-earn={space.cost < 0 ? "true" : "false"}></span>
         </div>
     </>
 }
