@@ -42,12 +42,13 @@ class WSClient(Client):
         return await self.ws.recv()
 
     @override
-    async def write(self, data: dict):
+    async def write(self, data: dict[Any, Any]):
         await self.ws.send(json.dumps(data))
         
     @override
     async def __anext__(self) -> dict[str, Any]:
-        return await self.ws.recv()
+        recv = await self.ws.recv()
+        return json.loads(recv)
 
 class TermClient(Client):
     @override
