@@ -66,6 +66,7 @@ function App() {
         }
         <button className="end-turn" disabled={goingPlayer?.id !== playerId} onClick={() => {
             sendJsonMessage({ "action": "end-turn" })
+            setRolled(false)
         }}>End Turn</button>
     </>
 }
