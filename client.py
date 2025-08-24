@@ -20,10 +20,7 @@ class Client(abc.ABC):
         return status
 
     async def PROMPT_TO_BUY(self, player: Player, space: Space):
-        res = await self.read(f"Would you like to buy: {space.name} (y/n)")
-        if res == "yes":
-            res, *data = player.buy(space)
-            return self.handleStatus(res, player, data)
+        await self.write({"response": "notification", "value": f"{space.name} is available for purchase for the price of ${space.cost}"})
 
     async def MONEY_LOST(self, player: Player, amount: int):
         await self.write({"response": "notification", "value": f"You lost {amount}"})
