@@ -213,10 +213,17 @@ class Space:
 
     def onland(self, player: Player):
         print("you landed on " + self.name)
+
         self.players.append(player)
         player.space = self
-        if self.isUnowned() and self.spaceType == ST_PROPERTY:
+
+        if self.cost < 0:
+            player.money -= abs(self.cost)
+            return "MONEY_LOST", abs(self.cost)
+
+        if self.isUnowned() and self.purchaseable:
             return "PROMPT_TO_BUY", self
+
         if not player.owns(self):
             rent = self.attrs.get("rent")
             if not rent:
@@ -248,7 +255,9 @@ class Space:
         self.players.remove(player)
 
     def onpass(self, player: Player):
-        pass
+        if self.spaceType == ST_GO:
+            player.money += abs(self.cost)
+
     def iterSpaces(self):
         #if we start on self, the last item in the list will be self,
         #which is the opposite of what we want

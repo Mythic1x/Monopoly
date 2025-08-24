@@ -68,7 +68,8 @@ class Game:
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
                 await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
             case "roll":
-                status = self.board.rollPlayer(player, self.dSides)
+                status, *data = self.board.rollPlayer(player, self.dSides)
+                await client.handleStatus(player, status, data)
                 await client.write({"response": "current-space", "value": player.space.toJson()})
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
             case "set-name":

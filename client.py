@@ -25,7 +25,10 @@ class Client(abc.ABC):
         status = await self.read(f"would you like to buy: {space.name}")
         if status == "yes":
             player.buy(space)
-            await self.write(f"You bought {space.name}")
+            await self.write({"response": "notification", "value": f"You bought {space.name}"})
+
+    async def MONEY_LOST(self, player: Player, amount: int):
+        await self.write({"response": "notification", "value": f"You lost {amount}"})
 
     async def NONE(self, *data):
         pass
@@ -39,7 +42,8 @@ class WSClient(Client):
 
     @override
     async def read(self, prompt: str) -> str:
-        return json.loads(await self.ws.recv())
+        await self.ws.send(json.dumps({"response": "prompt", "value": prompt}))
+        return await self.ws.recv()
 
     @override
     async def write(self, data: dict):

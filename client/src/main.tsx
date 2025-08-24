@@ -11,7 +11,7 @@ function App() {
     const [playerId, setPlayerId] = useState<string | null>(null)
     const [currentSpace, setCurrentSpace] = useState<Space | null>(null)
     const [goingPlayer, setGoingPlayer] = useState<Player | null>(null)
-    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket("ws://localhost:8765", {
+    const { sendJsonMessage, lastJsonMessage, readyState, sendMessage } = useWebSocket("ws://localhost:8765", {
         share: true
     })
 
@@ -45,6 +45,10 @@ function App() {
                 alert(`${player} achieved the set for ${color}`)
             case "notification":
                 alert(message.value)
+                break
+            case "prompt":
+                alert(message.value)
+                sendMessage("yes")
                 break
         }
     }, [lastJsonMessage])
