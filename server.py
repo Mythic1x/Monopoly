@@ -9,7 +9,7 @@ from websockets.legacy.server import WebSocketServerProtocol
 
 
 from boardbuilder import buildFromFile
-from board import Board, Player, Space
+from board import S_BUY_NEW_SET, S_BUY_SUCCESS, S_BUY_FAIL, Board, Player, Space
 from client import Client, WSClient, TermClient
 ipConnections: dict[Any, Player] = {}
 
@@ -68,7 +68,7 @@ class Game:
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
                 await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
             case "roll":
-                self.board.move(player, random.randint(1,self.dSides))
+                status = self.board.rollPlayer(player, self.dSides)
                 await client.write({"response": "current-space", "value": player.space.toJson()})
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
             case "set-name":
@@ -78,10 +78,13 @@ class Game:
             case "buy":
                 property = self.board.spaces[action["property"]]
                 result = player.buy(property)
-                if result:
-                    notification = f"You successfully bought{property.name}"
-                else:
+                if result == S_BUY_SUCCESS:
+                    notification = f"You successfully bought {property.name}"
+                elif result == S_BUY_FAIL:
                     notification = "You failed"
+                elif result == S_BUY_NEW_SET:
+                    notification = f"You successfully bought {property.name} for a complete set!"
+                    await client.write({"response": "new-set", "value": f"{property.color};{player.id}"})
                 await client.write({"response": "notification", "value": notification })
                 
 

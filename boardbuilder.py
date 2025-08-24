@@ -121,6 +121,7 @@ class BoardBuilder:
 
     def spaceDefinition(self, name: str):
         attrs: dict[str, Any] = {}
+
         curAttr = ""
         curValue = None
         while self.next() and self.curTok.ty != T_RC:
@@ -156,7 +157,7 @@ class BoardBuilder:
                 case "RAILROAD":
                     ty = board.ST_RAILROAD
 
-        self.spaces[name] = board.Space(ty, name=name, **attrs)
+        self.spaces[name] = board.Space(ty, purchaseable="not_purchaseable" not in attrs, name=name, **attrs)
 
 
     def spaceOrderDefinition(self, name: str):

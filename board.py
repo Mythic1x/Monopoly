@@ -1,18 +1,23 @@
 import json
-from typing import Any, Self
+from typing import Any, Callable, Self
 import collections
 import random
 
-        
+S_BUY_FAIL = 0
+S_BUY_SUCCESS = 1
+S_BUY_NEW_SET = 2
 
 class Player:
     money: int
     id: str
     playerNumber: int
     ownedSpaces: list["Space"]
+    #a list of sets by color
+    sets: list[str]
     name: str
     space: "Space"
     piece: str
+    lastRoll: int
 
     def __init__(self, id: str, playerNumber: int, client, money: int = 100):
         self.money = money
@@ -22,6 +27,8 @@ class Player:
         self.name = "Timmy 3 (You were the third Timmy!)"
         self.piece = "PIECE"
         self.client = client
+        self.sets = []
+        self.lastRoll = 0
 
     def owns(self, space: "Space"):
         return False if not space.owner else space.owner.id == self.id
@@ -29,15 +36,40 @@ class Player:
     def pay(self, amount: int, other: Self):
         self.money -= amount
         other.money += amount
+
+    def payRent(self, other: Self, space: "Space"):
+        amount = space.calculatePropertyRent(self.hasSet(space.color, space.set_size))
+        self.pay(amount, other)
+
+    def getUtilities(self):
+        return [space for space in self.ownedSpaces if space.spaceType == ST_UTILITY]
+
+    def hasSet(self, color: str, necessaryForSet: int):
+        if color in self.sets:
+            return True
+
+        count = 0
+        for space in self.ownedSpaces:
+            if space.color == color:
+                count += 1
+                if count == necessaryForSet:
+                    return True
+        return False
+
     def buy(self, space: "Space"):
-        if space.cost > self.money:
-            return False
+        if space.cost > self.money or not space.purchaseable:
+            return S_BUY_FAIL
+
         self.money -= space.cost
         space.owner = self
         self.ownedSpaces.append(space)
-        return True
-        
-        
+
+        if space.color not in self.sets and space.set_size and self.hasSet(space.color, space.set_size):
+            self.sets.append(space.color)
+            return S_BUY_NEW_SET
+
+        return S_BUY_SUCCESS
+
     def getOwnedRailroads(self):
         number = 0
         for space in self.ownedSpaces:
@@ -51,7 +83,8 @@ class Player:
             "id": self.id,
             "playerNumber": self.playerNumber,
             "piece": self.piece,
-            "space": self.space.id
+            "space": self.space.id,
+            "sets": self.sets
         }
 
 type spacetype_t = int
@@ -69,6 +102,21 @@ ST_INCOME_TAX: spacetype_t = 8
 ST_RAILROAD: spacetype_t = 9
 ST_VOID: spacetype_t = 10
 
+class SpaceAttr:
+    name: str
+    default_factory: Callable[[], Any]
+    def __init__(self, default_factory: Callable[[], Any]):
+        self.default_factory = default_factory
+
+    def __set_name__(self, owner, name: str):
+        self.name = name
+
+    def __get__(self, obj: "Space", objtype=None):
+        if self.name in obj.attrs:
+            return obj.attrs[self.name]
+        else:
+            return self.default_factory()
+
 class Space:
     spaceType: spacetype_t
     next: "Space"
@@ -81,7 +129,15 @@ class Space:
     attrs: dict[str, Any]
     id: int
 
-    def __init__(self, spaceType: spacetype_t, cost: int, name: str, **kwargs):
+    purchaseable: bool
+
+    houses: int
+    hotel: bool
+
+    color = SpaceAttr(str)
+    set_size = SpaceAttr(int)
+
+    def __init__(self, spaceType: spacetype_t, cost: int, name: str, purchaseable: bool, **kwargs):
         self.spaceType = spaceType
         self.players = []
         self.cost = cost
@@ -92,6 +148,11 @@ class Space:
         self.owner = None
         self.id = random.randint(1,10000)
 
+        self.purchaseable = purchaseable
+
+        self.houses = 0
+        self.hotel = False
+
     def __next__(self):
         if self.next == None:
             raise StopIteration
@@ -99,6 +160,19 @@ class Space:
 
     def __repr__(self):
         return f"(${self.cost} {self.name} + {self.attrs})"
+
+    def calculatePropertyRent(self, set: bool):
+        if self.spaceType != ST_PROPERTY:
+            return 0
+        if not self.hotel:
+            match self.houses:
+                case 0:
+                    if set:
+                        return self.attrs["rent"] *2
+                    return self.attrs["rent"]
+                case n:
+                    return self.attrs[f"house{n}"]
+        return self.attrs["hotel"]
 
     def print(self, stopat=None):
         print(self)
@@ -125,7 +199,7 @@ class Space:
         return False
 
     def copy(self):
-        space = Space(self.spaceType, cost=self.cost, name=self.name, **self.attrs)
+        space = Space(self.spaceType, cost=self.cost, name=self.name, purchaseable=self.purchaseable, **self.attrs)
         space.id = self.id
         return space
 
@@ -149,11 +223,13 @@ class Space:
                 return "NONE",
             rent = str(rent)
             if rent.isnumeric():
-                player.pay(int(rent), self.owner)
+                player.payRent(self.owner, self)
             elif (fn := getattr(self, rent)) and callable(fn):
                 fn(player)
         return "NONE",
 
+    def onrent_utility(self, player: Player):
+        return len(player.getUtilities()) * player.lastRoll
 
     def onrent_railroad(self, player: Player):
         if self.owner is None :
@@ -229,6 +305,13 @@ class Board:
         space.onland(player)
         self.playerSpaces[player.id] = space
 
+    #rolls the dice for a player
+    def rollPlayer(self, player: Player, dSides: int):
+        amount = random.randint(1, dSides)
+        player.lastRoll = amount
+        return self.move(player, amount)
+
+    #moves the player DOES NOT ROLL DICE
     def move(self, player: Player, amount: int):
         curSpace = self.playerSpaces[player.id]
 

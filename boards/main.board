@@ -267,11 +267,13 @@ Short Line {
 Income Tax {
     type = INCOME_TAX;
     cost = -200;
+    not_purchaseable = true;
 }
 
 Luxury Tax {
     type = LUXURY_TAX;
     cost = -100;
+    not_purchaseable = true;
 }
 
 Jail {
@@ -282,26 +284,32 @@ Jail {
 Go To Jail {
     type = GOTO_JAIL;
     cost = 0;
+    not_purchaseable = true;
 }
 
 Community Chest {
     cost = 0;
     type = COMMUNITY_CHEST;
+    not_purchaseable = true;
 }
 
 Chance {
     type = CHANCE;
     cost = 0;
+
+    not_purchaseable = true;
 }
 
 Free Parking {
     type = FREE_PARKING;
     cost = 0;
+    not_purchaseable = true;
 }
 
 Passing GO {
     type = GO;
     cost = -200;
+    not_purchaseable = true;
 };
 
 
