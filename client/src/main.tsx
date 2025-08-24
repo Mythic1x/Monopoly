@@ -47,14 +47,14 @@ function App() {
                 alert(message.value)
                 break
             case "prompt": {
+                //SHOULD SEND BACK RAW STRING (no json)
                 let options = message.value.match(/\([^)]+\)$/)
-                console.log(options)
                 if(options) {
                     let optionsList = options[0].split("/")
                     alert(`${message.value.replace(options, "")} ${optionsList.join("\n")}`)
                     //prompt with options
                 } else {
-                    //regular prompt
+                    //regular text input prompt
                     alert(message.value)
                 }
                 break
