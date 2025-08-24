@@ -63,7 +63,7 @@ class Game:
         self.curTurn = self.playerTurn - 1
 
     async def handleAction(self, action: dict[str, Any], player: Player):
-        client = player.client
+        client: Client = player.client
         match action["action"]:
             case "start-turn":
                 status, *data = self.startTurn()
@@ -72,6 +72,8 @@ class Game:
             case "end-turn":
                 self.endTurn()
                 await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
+            case "send-player-info":
+                await client.write({"response": "player-info", "value": player.toJson()})
 
             case "connect":
                 await client.write({"response": "assignment", "value": player.id})
@@ -84,8 +86,10 @@ class Game:
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
                 await client.handleStatus(status, player, data)
 
-            case "set-name":
-                player.name = action["name"]
+            case "set-details":
+                details = action["details"]
+                player.name = details["name"]
+                player.piece = details["piece"]
 
             case "request-space":
                 await client.write({"response": "current-space", "value": player.space.toJson()})
@@ -93,7 +97,7 @@ class Game:
             case "buy":
                 property = self.board.spaces[action["property"]]
                 result, *data = player.buy(property)
-                await client.handleStatus(result, player, data)
+                await self.broadcastStatus(status, player, data)
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
 
     async def run(self, player: Player):
@@ -103,6 +107,9 @@ class Game:
     async def broadcast(self, message: dict):
         for client in self.clients:
             await client.write(message)
+    async def broadcastStatus(self, player: Player, data: list[Any]):
+        for client in self.clients:
+            await client.handleStatus(self, player, data)
 
     async def sendToClient(client: Client, message: dict):
         client.write(message)

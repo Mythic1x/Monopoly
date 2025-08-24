@@ -1,10 +1,14 @@
-type ServerResponse =
-  | { response: "board"; value: Board }
-  | { response: "assignment"; value: string }
-  | { response: "next-turn"; value: Player }
-  | { response: "roll"; value: Board }
-  | {response: "current-space"; value: Space}
-  | {response: "notification"; value: string}
+type _responses = {
+    "board": Board,
+    "assignment": string,
+    "next-turn": Player,
+    "roll": Board,
+    "current-space": Space,
+    "notification": string
+    "new-set": any
+    "player-info": Player
+}
+type ServerResponse = {response: infer A extends keyof _responses, value: _responses[A]}
 
 export interface Board {
     space: Space
@@ -32,5 +36,6 @@ export interface Player {
     ownedSpaces: Space[];
     piece: string
     space: Space
+    name: string
 }
 

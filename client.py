@@ -23,16 +23,16 @@ class Client(abc.ABC):
         await self.write({"response": "notification", "value": f"{space.name} is available for purchase for the price of ${space.cost}"})
 
     async def MONEY_LOST(self, player: Player, amount: int):
-        await self.write({"response": "notification", "value": f"You lost {amount}"})
+        await self.write({"response": "notification", "value": f"{player.name} lost {amount}"})
 
     async def BUY_SUCCESS(self, player: Player, space: Space):
-        await self.write({"response": "notification", "value": f"You successfully bought {space.name}"})
+        await self.write({"response": "notification", "value": f"{player.name} successfully bought {space.name}"})
 
     async def BUY_FAIL(self, player: Player, space: Space):
-        await self.write({"response": "notification", "value": f"You failed"})
+        await self.write({"response": "notification", "value": f"{player.name} failed"})
 
     async def BUY_NEW_SET(self, player: Player, space: Space):
-        await self.write({"response": "notification", "value": f"You successfully bought {space.name} for a complete {space.color} set"})
+        await self.write({"response": "notification", "value": f"{player.name} successfully bought {space.name} for a complete {space.color} set"})
 
     async def NONE(self, *data):
         pass
