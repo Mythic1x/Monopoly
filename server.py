@@ -32,7 +32,7 @@ class Game:
     @property
     def curPlayer(self) -> Player:
         values = list(self.players.values())
-        return values[self.playerTurn - 1]
+        return values[self.curTurn]
 
     def playerJoin(self, player: Player):
         self.players[player.id] = player

@@ -5,12 +5,13 @@ import GameBoard from './components/board';
 
 
 function App() {
+    const [rolled, setRolled] = useState<boolean>(false)
     const [board, setBoard] = useState<Board | null>(null)
     const [loading, setLoading] = useState(true)
     const [playerId, setPlayerId] = useState<string | null>(null)
     const [currentSpace, setCurrentSpace] = useState<Space | null>(null)
     const [goingPlayer, setGoingPlayer] = useState<Player | null>(null)
-    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket("ws://73.223.148.172:8765", {
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket("ws://localhost:8765", {
         share: true
     })
 
@@ -54,14 +55,18 @@ function App() {
     return <>
         <div className="board-container">
             <GameBoard board={board}></GameBoard>
-            <button className="roll" disabled={goingPlayer?.id !== playerId} onClick={() => {
+            <button className="roll" disabled={goingPlayer?.id !== playerId || rolled} onClick={() => {
                 sendJsonMessage({ "action": "roll" })
+                setRolled(true)
             }}>Roll</button>
         </div>
-        {(goingPlayer?.id === playerId) && <button className="buy" disabled={!!currentSpace?.owner} onClick={() => {
-            sendJsonMessage({ "action": "buy",  "property": currentSpace.id } )
+        {(goingPlayer?.id === playerId) && <button className="buy" disabled={!!currentSpace?.owner || rolled} onClick={() => {
+            sendJsonMessage({ "action": "buy", "property": currentSpace.id })
         }}>Buy Property</button>
         }
+        <button className="end-turn" disabled={goingPlayer?.id !== playerId} onClick={() => {
+            sendJsonMessage({ "action": "end-turn" })
+        }}>End Turn</button>
     </>
 }
 
