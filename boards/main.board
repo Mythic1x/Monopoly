@@ -305,10 +305,10 @@ Passing GO {
 };
 
 
-start = Passing GO -> Mediterranean Avenue -> Community Chest -> Baltic Avenue -> Income Tax -> Reading Railroad -> Oriental Avenue -> Chance -> Vermont Avenue -> Connecticut Avenue -> Jail;
+start = Passing GO -> Mediterranean Avenue -> Community Chest -> Baltic Avenue -> Income Tax -> Reading Railroad -> Oriental Avenue -> Chance -> Vermont Avenue -> Connecticut Avenue;
 
-left = Jail -> St. Charles Place -> Electric Company -> States Avenue -> Virginia Avenue -> Pennsylvania Avenue (RAILROAD) -> St. James Place -> Community Chest -> Tennessee Avenue -> New York Avenue -> Free Parking;
+left = Jail -> St. Charles Place -> Electric Company -> States Avenue -> Virginia Avenue -> Pennsylvania Avenue -> St. James Place -> Community Chest -> Tennessee Avenue -> New York Avenue -> Free Parking;
 
-top = Free Parking -> Kentucky Avenue -> Chance -> Indiana Avenue -> Illinois Avenue -> B&O Railroad -> Atlantic Avenue -> Ventor Avenue -> Water Company -> Marvin Gardens -> Go To Jail;
+top = Kentucky Avenue -> Chance -> Indiana Avenue -> Illinois Avenue -> B&O Railroad -> Atlantic Avenue -> Ventor Avenue -> Water Company -> Marvin Gardens -> Go To Jail;
 
-right = Go To Jail -> Pacific Avenue -> North Carolina Avenue -> Community Chest -> Pennsylvania Avenue (PROPERTY) -> Short Line -> Chance -> Park Place -> Luxury Tax -> Boardwalk -> Passing GO;
+right = Pacific Avenue -> North Carolina Avenue -> Community Chest -> Pennsylvania Avenue  -> Short Line -> Chance -> Park Place -> Luxury Tax -> Boardwalk -> Passing GO;
