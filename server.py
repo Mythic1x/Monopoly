@@ -41,6 +41,14 @@ class Game:
         await player.client.write({"response": "assignment", "value": player.id})
         await self.broadcast({"response": "board", "value": self.board.toJson()})
 
+    def disconnectClient(self, client: Client):
+        self.clients.remove(client)
+
+    async def rejoin(self, player: Player):
+        self.clients.append(player.client)
+        await player.client.write({"response": "assignment", "value": player.id})
+        await self.broadcast({"response": "board", "value": self.board.toJson()})
+
     def startTurn(self):
         #START STATUS
         roll = random.randint(2, self.dSides * 2)
@@ -104,10 +112,11 @@ game = Game("./boards/main.board")
 async def gameServer(ws: ServerConnection):
     c = WSClient(ws)
 
-    if ws.remote_address in ipConnections:
-        print(ipConnections[ws.remote_address[0]])
+    if ws.remote_address[0] in ipConnections:
         player = ipConnections[ws.remote_address[0]]
+        game.disconnectClient(player.client)
         player.client = c
+        await game.rejoin(player)
     else:
         player = Player(str(ws.id), len(game.clients), c)
         ipConnections[ws.remote_address[0]] = player
