@@ -4,7 +4,7 @@ type ServerResponse =
 export interface Board {
     space: Space
     playerSpaces: Record<string, Space>
-    spaces: space[]
+    spaces: Space[]
 }
 
 export interface Space {
