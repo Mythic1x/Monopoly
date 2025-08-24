@@ -14,13 +14,14 @@ class Player:
     space: "Space"
     piece: str
 
-    def __init__(self, id: str, playerNumber: int, money: int = 100):
+    def __init__(self, id: str, playerNumber: int, client, money: int = 100):
         self.money = money
         self.id = id
         self.playerNumber = playerNumber
         self.ownedSpaces = []
         self.name = "Timmy 3 (You were the third Timmy!)"
         self.piece = "PIECE"
+        self.client = client
 
     def owns(self, space: "Space"):
         return False if not space.owner else space.owner.id == self.id
@@ -43,6 +44,7 @@ class Player:
             if space.spaceType == ST_RAILROAD:
                 number += 1
         return number
+
     def toJson(self):
         return {
             "money": self.money,
