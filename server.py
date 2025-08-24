@@ -5,12 +5,14 @@ import sys
 
 from typing import Any, Self
 from websockets.asyncio.server import serve
+from websockets.legacy.server import WebSocketServerProtocol
 
 
 from boardbuilder import buildFromFile
 from board import Board, Player, Space
 from client import Client, WSClient, TermClient
-clients = {}
+ipConnections: dict[Any, Player] = {}
+
 class Game:
     board: Board
     players: dict[str, Player]
@@ -90,11 +92,15 @@ class Game:
             
 game = Game("./boards/main.board")
 
-async def gameServer(ws: Any):
+async def gameServer(ws: WebSocketServerProtocol):
     c = WSClient(ws)
-    player = Player(str(random.randint(1,10000)), len(game.clients))
-    game.playerJoin(player)
     game.clients.append(c)
+    
+    if ws.remote_address in ipConnections:
+        player = ipConnections[ws.remote_address]
+    else:
+        player = Player(str(ws.id), len(game.clients))
+        game.playerJoin(player)
     await game.run(c, player)
 
 async def main():
