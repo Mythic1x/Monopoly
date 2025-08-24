@@ -15,12 +15,38 @@ body {
 .board {
     aspect-ratio: 1;
     display: grid;
-    grid-template-areas: "left right top bottom";
+    grid-template-columns: repeat(11, 1fr);
+    grid-template-rows: repeat(11, 1fr);
+
+    .space::before {
+        content: "";
+        z-index: -1;
+        display: block;
+        width: 100%;
+        height: 30%;
+        background-color: attr(data-color type(<color>));
+    }
 
     .space {
-        aspect-ratio: 1;
-        width: 300px;
-        border: 1px solid black;
+        position: relative;
+
         display: block;
+
+        aspect-ratio: 1;
+        width: 100px;
+
+        border: 1px solid black;
+        text-align: center;
+    }
+
+    .cost::after {
+        display: block;
+    }        
+    .cost:not([data-cost="0"])::after {
+        content: "$"attr(data-cost);
+    }
+
+    .cost[data-earn="true"]::after {
+        content: "You earn $" attr(data-cost);
     }
 }
