@@ -3,9 +3,12 @@ from typing import Any, Callable, Self
 import collections
 import random
 
-S_BUY_FAIL = 0
-S_BUY_SUCCESS = 1
-S_BUY_NEW_SET = 2
+S_BUY_FAIL = "BUY_FAIL"
+S_BUY_SUCCESS = "BUY_SUCCESS"
+S_BUY_NEW_SET = "BUY_NEW_SET"
+S_PROMPT_TO_BUY = "PROMPT_TO_BUY"
+S_MONEY_LOST = "MONEY_LOST"
+S_NONE = "NONE"
 
 class Player:
     money: int
@@ -58,7 +61,7 @@ class Player:
 
     def buy(self, space: "Space"):
         if space.cost > self.money or not space.purchaseable:
-            return S_BUY_FAIL
+            return S_BUY_FAIL, space
 
         self.money -= space.cost
         space.owner = self
@@ -66,9 +69,9 @@ class Player:
 
         if space.color not in self.sets and space.set_size and self.hasSet(space.color, space.set_size):
             self.sets.append(space.color)
-            return S_BUY_NEW_SET
+            return S_BUY_NEW_SET, space
 
-        return S_BUY_SUCCESS
+        return S_BUY_SUCCESS, space
 
     def getOwnedRailroads(self):
         number = 0
@@ -219,10 +222,10 @@ class Space:
 
         if self.cost < 0:
             player.money -= abs(self.cost)
-            return "MONEY_LOST", abs(self.cost)
+            return S_MONEY_LOST, abs(self.cost)
 
         if self.isUnowned() and self.purchaseable:
-            return "PROMPT_TO_BUY", self
+            return S_PROMPT_TO_BUY, self
 
         if not player.owns(self):
             rent = self.attrs.get("rent")
@@ -233,7 +236,7 @@ class Space:
                 player.payRent(self.owner, self)
             elif (fn := getattr(self, rent)) and callable(fn):
                 fn(player)
-        return "NONE",
+        return S_NONE,
 
     def onrent_utility(self, player: Player):
         return len(player.getUtilities()) * player.lastRoll

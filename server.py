@@ -59,35 +59,34 @@ class Game:
         match action["action"]:
             case "start-turn":
                 status, *data = self.startTurn()
-                await client.handleStatus(self.curPlayer, status, data)
+                await client.handleStatus(status, self.curPlayer, data)
+
             case "end-turn":
                 self.endTurn()
                 await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
+
             case "connect":
                 await client.write({"response": "assignment", "value": player.id})
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
                 await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
+
             case "roll":
                 status, *data = self.board.rollPlayer(player, self.dSides)
-                await client.handleStatus(player, status, data)
                 await client.write({"response": "current-space", "value": player.space.toJson()})
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
+                await client.handleStatus(status, player, data)
+
             case "set-name":
                 player.name = action["name"]
+
             case "request-space":
                 await client.write({"response": "current-space", "value": player.space.toJson()})
+
             case "buy":
                 property = self.board.spaces[action["property"]]
-                result = player.buy(property)
-                if result == S_BUY_SUCCESS:
-                    notification = f"You successfully bought {property.name}"
-                elif result == S_BUY_FAIL:
-                    notification = "You failed"
-                else:
-                    notification = f"You successfully bought {property.name} for a complete set!"
-                    await self.broadcast({"response": "new-set", "value": f"{property.color};{player.name}"})
-                await client.write({"response": "notification", "value": notification })
-                
+                result, *data = player.buy(property)
+                await client.handleStatus(result, player, data)
+                await self.broadcast({"response": "board", "value": self.board.toJson()})
 
     async def run(self, player: Player):
         async for message in player.client:
@@ -96,6 +95,7 @@ class Game:
     async def broadcast(self, message: dict):
         for client in self.clients:
             await client.write(message)
+
     async def sendToClient(client: Client, message: dict):
         client.write(message)
             
@@ -105,9 +105,12 @@ async def gameServer(ws: ServerConnection):
     c = WSClient(ws)
 
     if ws.remote_address in ipConnections:
-        player = ipConnections[ws.remote_address]
+        print(ipConnections[ws.remote_address[0]])
+        player = ipConnections[ws.remote_address[0]]
+        player.client = c
     else:
         player = Player(str(ws.id), len(game.clients), c)
+        ipConnections[ws.remote_address[0]] = player
         await game.join(player)
     await game.run(player)
 

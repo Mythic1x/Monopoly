@@ -14,21 +14,28 @@ class Client(abc.ABC):
 
     @abc.abstractmethod
     async def __anext__(self) -> dict[str, Any]: ...
-    
-    
 
-    async def handleStatus(self, player: Player, status: str, data: list[Any]):
+    async def handleStatus(self, status: str, player: Player, data: list[Any]):
         status = await getattr(self, status)(player, *data)
         return status
 
     async def PROMPT_TO_BUY(self, player: Player, space: Space):
-        status = await self.read(f"would you like to buy: {space.name}")
-        if status == "yes":
-            player.buy(space)
-            await self.write({"response": "notification", "value": f"You bought {space.name}"})
+        res = await self.read(f"Would you like to buy: {space.name} (y/n)")
+        if res == "yes":
+            res, *data = player.buy(space)
+            return self.handleStatus(res, player, data)
 
     async def MONEY_LOST(self, player: Player, amount: int):
         await self.write({"response": "notification", "value": f"You lost {amount}"})
+
+    async def BUY_SUCCESS(self, player: Player, space: Space):
+        await self.write({"response": "notification", "value": f"You successfully bought {space.name}"})
+
+    async def BUY_FAIL(self, player: Player, space: Space):
+        await self.write({"response": "notification", "value": f"You failed"})
+
+    async def BUY_NEW_SET(self, player: Player, space: Space):
+        await self.write({"response": "notification", "value": f"You successfully bought {space.name} for a complete {space.color} set"})
 
     async def NONE(self, *data):
         pass

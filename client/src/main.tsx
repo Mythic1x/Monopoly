@@ -46,12 +46,19 @@ function App() {
             case "notification":
                 alert(message.value)
                 break
-            case "prompt":
-                alert(message.value)
-                sendMessage("yes")
-                //This should display a yes/no window for the user to pick
-                //it then sends either "yes" or "no" to the server as seen above
+            case "prompt": {
+                let options = message.value.match(/\([^)]+\)$/)
+                console.log(options)
+                if(options) {
+                    let optionsList = options[0].split("/")
+                    alert(`${message.value.replace(options, "")} ${optionsList.join("\n")}`)
+                    //prompt with options
+                } else {
+                    //regular prompt
+                    alert(message.value)
+                }
                 break
+            }
         }
     }, [lastJsonMessage])
 
@@ -62,12 +69,6 @@ function App() {
     }
 
     return <>
-        <!--THERE IS NO BUY BUTTON BECUASE it should be handled in prompt-->
-        <!--THERE IS NO BUY BUTTON BECUASE it should be handled in prompt-->
-        <!--THERE IS NO BUY BUTTON BECUASE it should be handled in prompt-->
-        <!--THERE IS NO BUY BUTTON BECUASE it should be handled in prompt-->
-        <!--THERE IS NO BUY BUTTON BECUASE it should be handled in prompt-->
-        <!--THERE IS NO BUY BUTTON BECUASE it should be handled in prompt-->
         <div className="board-container">
             <GameBoard board={board}></GameBoard>
             <button className="roll" disabled={goingPlayer?.id !== playerId || rolled} onClick={() => {
