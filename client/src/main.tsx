@@ -40,6 +40,9 @@ function App() {
             case 'next-turn':
                 setGoingPlayer(message.value)
                 break
+            case 'new-set':
+                const [color, player] = message.value.split(";")
+                alert(`${player} achieved the set for ${color}`)
             case "notification":
                 alert(message.value)
                 break

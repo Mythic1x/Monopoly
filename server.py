@@ -82,9 +82,9 @@ class Game:
                     notification = f"You successfully bought {property.name}"
                 elif result == S_BUY_FAIL:
                     notification = "You failed"
-                elif result == S_BUY_NEW_SET:
+                else:
                     notification = f"You successfully bought {property.name} for a complete set!"
-                    await client.write({"response": "new-set", "value": f"{property.color};{player.id}"})
+                    await self.broadcast({"response": "new-set", "value": f"{property.color};{player.name}"})
                 await client.write({"response": "notification", "value": notification })
                 
 
