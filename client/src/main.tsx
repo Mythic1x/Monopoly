@@ -60,7 +60,7 @@ function App() {
                 setRolled(true)
             }}>Roll</button>
         </div>
-        {(goingPlayer?.id === playerId) && <button className="buy" disabled={!!currentSpace?.owner || rolled} onClick={() => {
+        {(goingPlayer?.id === playerId) && <button className="buy" disabled={!!currentSpace?.owner} onClick={() => {
             sendJsonMessage({ "action": "buy", "property": currentSpace.id })
         }}>Buy Property</button>
         }
