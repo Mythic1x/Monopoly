@@ -63,7 +63,6 @@ class Game:
         async for message in self.client:
             await self.handleAction(self.client, message)
 
-
 async def gameServer(ws):
     c = WSClient(ws)
     g = Game(c, "./boards/main.board")
