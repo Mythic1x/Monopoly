@@ -15,12 +15,16 @@ body {
 .board {
     aspect-ratio: 1;
     display: grid;
-    grid-template-areas: "left right top bottom";
+    grid-template-columns: repeat(11, 1fr);
+    grid-template-rows: repeat(11, 1fr);
 
     .space {
+        display: flex;
+        flex-direction: column;
         aspect-ratio: 1;
-        width: 300px;
+        width: 100px;
         border: 1px solid black;
         display: block;
+
     }
 }
