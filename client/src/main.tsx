@@ -49,6 +49,8 @@ function App() {
             case "prompt":
                 alert(message.value)
                 sendMessage("yes")
+                //This should display a yes/no window for the user to pick
+                //it then sends either "yes" or "no" to the server as seen above
                 break
         }
     }, [lastJsonMessage])
@@ -60,6 +62,12 @@ function App() {
     }
 
     return <>
+        <!--THERE IS NO BUY BUTTON BECUASE it should be handled in prompt-->
+        <!--THERE IS NO BUY BUTTON BECUASE it should be handled in prompt-->
+        <!--THERE IS NO BUY BUTTON BECUASE it should be handled in prompt-->
+        <!--THERE IS NO BUY BUTTON BECUASE it should be handled in prompt-->
+        <!--THERE IS NO BUY BUTTON BECUASE it should be handled in prompt-->
+        <!--THERE IS NO BUY BUTTON BECUASE it should be handled in prompt-->
         <div className="board-container">
             <GameBoard board={board}></GameBoard>
             <button className="roll" disabled={goingPlayer?.id !== playerId || rolled} onClick={() => {
@@ -67,10 +75,6 @@ function App() {
                 setRolled(true)
             }}>Roll</button>
         </div>
-        {(goingPlayer?.id === playerId) && <button className="buy" disabled={!!currentSpace?.owner} onClick={() => {
-            sendJsonMessage({ "action": "buy", "property": currentSpace.id })
-        }}>Buy Property</button>
-        }
         <button className="end-turn" disabled={goingPlayer?.id !== playerId} onClick={() => {
             sendJsonMessage({ "action": "end-turn" })
             setRolled(false)
