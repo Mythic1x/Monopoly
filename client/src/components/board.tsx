@@ -4,13 +4,13 @@ interface Props {
     board: Board
 }
 
-function Space({ space, piece }: { space: Space, piece: string }) {
-    console.log(space.attrs)
+function Space({ space, pieces }: { space: Space, pieces: string[] }) {
     return <>
         <div className="space" data-color={space.attrs.color}>
             <span className="name">{space.name}</span>
-            <span className="cost">{space.cost}</span>
-            <span className="piece">{piece}</span>
+            <span className="pieces">{pieces.map(piece => (
+                <span className="piece">{piece}</span>
+            ))}</span>
             <span className="cost" data-cost={Math.abs(space.cost)} data-earn={space.cost < 0 ? "true" : "false"}></span>
         </div>
     </>
@@ -31,19 +31,27 @@ function GameBoard({ board }: Props) {
         }
         if (row === 0) {
             const space = board.spaces[spaceNo]
-            spaces.push(<Space space={space} piece={space.owner?.piece} />)
+            spaces.push(<Space space={space} pieces={space.players.map((player) => (
+                player.piece
+            ))} />)
             spaceNo++
         } else if (row === rowCount - 1) {
             const space: Space = board.spaces[spaceNo - col * 2 + 1]
-            spaces.push(<Space space={space} piece={space.owner?.piece }  />)
+            spaces.push(<Space space={space} pieces={space.players.map((player) => (
+                player.piece
+            ))} />)
             spaceNo++
         } else if (col === colCount - 1) {
             const space = board.spaces[spaceNo - row]
-            spaces.push(<Space space={space} piece={space.owner?.piece} />)
+            spaces.push(<Space space={space} pieces={space.players.map((player) => (
+                player.piece
+            ))} />)
             spaceNo++
         } else if (col === 0) {
             const space = board.spaces[spaceNo - row * 3 + ((colCount - 1) * 3 + 1)]
-            spaces.push(<Space space={space} piece={space.owner?.piece} />)
+            spaces.push(<Space space={space} pieces={space.players.map((player) => (
+                player.piece
+            ))} />)
             spaceNo++
         } else {
             spaces.push(<div></div>)

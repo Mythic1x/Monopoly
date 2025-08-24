@@ -10,14 +10,17 @@ class Player:
     id: str
     playerNumber: int
     ownedSpaces: list["Space"]
+    name: str
+    space: "Space"
     piece: str
 
-    def __init__(self, id: str, playerNumber: int, piece: str, money: int = 100):
+    def __init__(self, id: str, playerNumber: int, money: int = 100):
         self.money = money
         self.id = id
         self.playerNumber = playerNumber
         self.ownedSpaces = []
-        self.piece = piece
+        self.name = "Timmy 3 (You were the third Timmy!)"
+        self.piece = "PIECE"
 
     def owns(self, space: "Space"):
         return False if not space.owner else space.owner.id == self.id
@@ -31,6 +34,7 @@ class Player:
         self.money -= space.cost
         space.owner = self
         self.ownedSpaces.append(space)
+        return True
         
         
     def getOwnedRailroads(self):
@@ -44,7 +48,8 @@ class Player:
             "money": self.money,
             "id": self.id,
             "playerNumber": self.playerNumber,
-            "ownedSpaces": [space.toJson() for space in self.ownedSpaces]
+            "piece": self.piece,
+            "space": self.space.id
         }
 
 type spacetype_t = int
@@ -66,12 +71,13 @@ class Space:
     spaceType: spacetype_t
     next: "Space"
     prev: "Space"
-    players: list[str]
+    players: list[Player]
     cost: int
     name: str
     owner: Player
     setAmount: int
     attrs: dict[str, Any]
+    id: int
 
     def __init__(self, spaceType: spacetype_t, cost: int, name: str, **kwargs):
         self.spaceType = spaceType
@@ -82,6 +88,7 @@ class Space:
         self.prev = None
         self.attrs = kwargs
         self.owner = None
+        self.id = random.randint(1,10000)
 
     def __next__(self):
         if self.next == None:
@@ -116,18 +123,22 @@ class Space:
         return False
 
     def copy(self):
-        return Space(self.spaceType, cost=self.cost, name=self.name, **self.attrs)
+        space = Space(self.spaceType, cost=self.cost, name=self.name, **self.attrs)
+        space.id = self.id
+        return space
 
     def setNext(self, space: Self):
         self.next = space
         space.prev = self
 
     def put(self, player: Player):
-            self.players.append(player.id)
+            self.players.append(player)
+            player.space = self
 
     def onland(self, player: Player):
         print("you landed on " + self.name)
-        self.players.append(player.id)
+        self.players.append(player)
+        player.space = self
         if self.isUnowned() and self.spaceType == ST_PROPERTY:
             return "PROMPT_TO_BUY", self
         if not player.owns(self):
@@ -143,6 +154,8 @@ class Space:
 
 
     def onrent_railroad(self, player: Player):
+        if self.owner is None :
+            return
         owed = {
                 0: 0,
                 1: 25,
@@ -154,7 +167,7 @@ class Space:
             player.pay(owed, self.owner)
 
     def onleave(self, player: Player):
-        self.players.remove(player.id)
+        self.players.remove(player)
 
     def onpass(self, player: Player):
         pass
@@ -167,14 +180,15 @@ class Space:
 
     def toJson(self):
         dict = {}
-        print(self.attrs)
         dict["attrs"] = self.attrs
         for key in self.__dict__:
             if not callable(self.__dict__[key]) and not key.startswith("_"):
                 if type(self.__dict__[key]) is Player:
-                    dict[key] = {"id": self.__dict__[key].id}
                     continue
                 if type(self.__dict__[key]) is Space:
+                    continue
+                if key == "players":
+                    dict[key] = [player.toJson() for player in self.__dict__[key]]
                     continue
                 dict[key] = self.__dict__[key] 
         return dict 
@@ -195,11 +209,14 @@ class Board:
     
     startSpace: Space
     playerSpaces: dict[str, Space]
+    spaces: dict[str, Space]
 
     def __init__(self, startSpace: Space):
         self.startSpace = startSpace
 
         self.playerSpaces = {}
+        
+        self.spaces = {space.id: space for space in startSpace.iterSpaces()}
 
     def addPlayer(self, player: Player):
         self.startSpace.put(player)

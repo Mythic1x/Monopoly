@@ -3,9 +3,13 @@ import { ServerResponse, Space, Board, Player } from '../index'
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import GameBoard from './components/board';
 
+
 function App() {
     const [board, setBoard] = useState<Board | null>(null)
     const [loading, setLoading] = useState(true)
+    const [playerId, setPlayerId] = useState<string | null>(null)
+    const [currentSpace, setCurrentSpace] = useState<Space | null>(null)
+    const [goingPlayer, setGoingPlayer] = useState<Player | null>(null)
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket("ws://localhost:8765", {
         share: true
     })
@@ -13,22 +17,34 @@ function App() {
     useEffect(() => {
         if (readyState === ReadyState.OPEN) {
             sendJsonMessage({ 'action': "connect" })
+            sendJsonMessage({ 'action': "current-space" })
             console.log("connected to socket")
         }
-        console.log("not ready")
     }, [readyState])
 
     useEffect(() => {
         const message = lastJsonMessage as ServerResponse
-        console.log(message)
-        if(!message) return
+        if (!message) return
         switch (message.response) {
             case "board":
-                console.log()
                 setBoard(message.value)
                 setLoading(false)
+                break
+            case 'assignment':
+                setPlayerId(message.value)
+                break
+            case 'current-space':
+                setCurrentSpace(message.value)
+                break
+            case 'next-turn':
+                setGoingPlayer(message.value)
+                break
+            case "notification":
+                alert(message.value)
+                break
         }
     }, [lastJsonMessage])
+
 
     if (loading) {
         return <>
@@ -38,7 +54,14 @@ function App() {
     return <>
         <div className="board-container">
             <GameBoard board={board}></GameBoard>
+            <button className="roll" onClick={() => {
+                sendJsonMessage({ "action": "roll" })
+            }}>Roll</button>
         </div>
+        {(goingPlayer?.id === playerId) && <button className="buy" disabled={!!currentSpace?.owner} onClick={() => {
+            sendJsonMessage({ "action": "buy",  "property": currentSpace.id } )
+        }}>Buy Property</button>
+        }
     </>
 }
 
