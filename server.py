@@ -58,15 +58,15 @@ class Game:
                 await client.handleStatus(self.curPlayer, status, data)
             case "end-turn":
                 self.endTurn()
-                await client.write({"response": "next-turn", "value": self.curPlayer.toJson()})
+                await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
             case "connect":
                 await client.write({"response": "assignment", "value": player.id})
-                await client.write({"response": "board", "value": self.board.toJson()})
-                await client.write({"response": "next-turn", "value": self.curPlayer.toJson()})
+                await self.broadcast({"response": "board", "value": self.board.toJson()})
+                await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
             case "roll":
                 self.board.move(player, random.randint(1,self.dSides))
                 await client.write({"response": "current-space", "value": player.space.toJson()})
-                await client.write({"response": "board", "value": self.board.toJson()})
+                await self.broadcast({"response": "board", "value": self.board.toJson()})
             case "set-name":
                 player.name = action["name"]
             case "request-space":

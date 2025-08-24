@@ -10,7 +10,7 @@ function App() {
     const [playerId, setPlayerId] = useState<string | null>(null)
     const [currentSpace, setCurrentSpace] = useState<Space | null>(null)
     const [goingPlayer, setGoingPlayer] = useState<Player | null>(null)
-    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket("ws://localhost:8765", {
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket("ws://73.223.148.172:8765", {
         share: true
     })
 
@@ -54,7 +54,7 @@ function App() {
     return <>
         <div className="board-container">
             <GameBoard board={board}></GameBoard>
-            <button className="roll" onClick={() => {
+            <button className="roll" disabled={goingPlayer?.id !== playerId} onClick={() => {
                 sendJsonMessage({ "action": "roll" })
             }}>Roll</button>
         </div>
