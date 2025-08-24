@@ -24,4 +24,5 @@ export interface Player {
     id: string;
     playerNumber: number;
     ownedSpaces: Space[];
+    piece: string
 }

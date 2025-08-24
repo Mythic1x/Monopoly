@@ -10,12 +10,14 @@ class Player:
     id: str
     playerNumber: int
     ownedSpaces: list["Space"]
+    piece: str
 
-    def __init__(self, id: str, playerNumber: int, money: int = 100):
+    def __init__(self, id: str, playerNumber: int, piece: str, money: int = 100):
         self.money = money
         self.id = id
         self.playerNumber = playerNumber
         self.ownedSpaces = []
+        self.piece = piece
 
     def owns(self, space: "Space"):
         return False if not space.owner else space.owner.id == self.id

@@ -4,23 +4,28 @@ interface Props {
     board: Board
 }
 
-function Space({ space }: { space: Space }) {
+function Space({ space, piece }: { space: Space, piece: string }) {
     return <>
         <div className="space">
             <span className="name">{space.name}</span>
             <span className="cost">{space.cost}</span>
+            <span className="piece">{piece}</span>
         </div>
     </>
 }
 
 function GameBoard({ board }: Props) {
-    console.log(board)
+    const spaces = board.spaces.map((space: Space, index) => {
+        return <Space space={space}
+            piece={space.owner ? space.owner.piece : null} key={index}
+        ></Space>
+    })
     return <>
         <div className="board">
-            <div className="bottom">{board.spaces.slice(0, 10).map(space => <Space space={space} />)}</div>
-            <div className="left">{board.spaces.slice(10, 20).map(space => <Space space={space} />)}</div>
-            <div className="top">{board.spaces.slice(20, 30).map(space => <Space space={space} />)}</div>
-            <div className="right">{board.spaces.slice(30).map(space => <Space space={space} />)}</div>
+            <div className="bottom">{spaces.slice(0, 10)}</div>
+            <div className="left">{spaces.slice(10, 20)}</div>
+            <div className="top">{spaces.slice(20, 30)}</div>
+            <div className="right">{spaces.slice(30)}</div>
         </div>
     </>
 }
