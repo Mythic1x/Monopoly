@@ -5,8 +5,9 @@ interface Props {
 }
 
 function Space({ space }: { space: Space }) {
+    console.log(space.attrs)
     return <>
-        <div className="space">
+        <div className="space" data-color={space.attrs.color}>
             <span className="name">{space.name}</span>
             <span className="cost">{space.cost}</span>
         </div>

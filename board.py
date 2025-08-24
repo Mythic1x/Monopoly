@@ -114,7 +114,7 @@ class Space:
         return False
 
     def copy(self):
-        return Space(self.spaceType, cost=self.cost, name=self.name)
+        return Space(self.spaceType, cost=self.cost, name=self.name, **self.attrs)
 
     def setNext(self, space: Self):
         self.next = space
@@ -165,6 +165,8 @@ class Space:
 
     def toJson(self):
         dict = {}
+        print(self.attrs)
+        dict["attrs"] = self.attrs
         for key in self.__dict__:
             if not callable(self.__dict__[key]) and not key.startswith("_"):
                 if type(self.__dict__[key]) is Player:
