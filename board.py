@@ -37,6 +37,13 @@ class Player:
             if space.spaceType == ST_RAILROAD:
                 number += 1
         return number
+    def toJson(self):
+        return {
+            "money": self.money,
+            "id": self.id,
+            "playerNumber": self.playerNumber,
+            "ownedSpaces": [space.toJson() for space in self.ownedSpaces]
+        }
 
 type spacetype_t = int
 
@@ -149,6 +156,21 @@ class Space:
 
     def onpass(self, player: Player):
         pass
+    def iterSpaces(self):
+        cur = self
+        while (cur := next(cur)) is not self:
+            yield cur
+    def toJson(self):
+        dict = {}
+        for key in self.__dict__:
+            if not callable(self.__dict__[key]) and not key.startswith("_"):
+                if type(self.__dict__[key]) is Player:
+                    dict[key] = {"id": self.__dict__[key].id}
+                    continue
+                if type(self.__dict__[key]) is Space:
+                    continue
+                dict[key] = self.__dict__[key] 
+        return dict 
 
 
 def onland_railroad(self, rr: Space, player: Player):
@@ -193,9 +215,8 @@ class Board:
         self.playerSpaces[player.id] = curSpace
         return status
     def toJson(self):
-        dict = {}
-        for key in self.__dict__:
-            if not callable(self.__dict__[key]) and not key.startswith("_"):
-                dict[key] = self.__dict__[key]  
-        json.dumps(dict)
-    
+        dict =  {
+        "spaces": [ space.toJson() for space in self.startSpace.iterSpaces()],
+        "playerSpaces": {k: v.toJson() for k, v in self.playerSpaces.items()}
+        }    
+        return dict

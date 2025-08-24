@@ -44,7 +44,7 @@ class WSClient(Client):
     @override
     async def write(self, data: dict):
         await self.ws.send(json.dumps(data))
-
+        
     @override
     async def __anext__(self) -> dict[str, Any]:
         return await self.ws.recv()

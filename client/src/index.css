@@ -12,3 +12,7 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+.board {
+  aspect-ratio: 1;
+}

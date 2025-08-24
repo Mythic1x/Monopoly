@@ -45,6 +45,7 @@ class Game:
         self.curTurn = self.playerTurn - 1
 
 async def handleAction(client: Client, game: Game, action: dict[str, Any]):
+    action = json.loads(action)
     match action["action"]:
         case "start-turn":
             status, *data = game.startTurn()
