@@ -60,24 +60,29 @@ function Monopoly({ playerDetails }: any) {
     }
 
     return <>
-        <div className="board-container">
-            <GameBoard board={board}></GameBoard>
-            <button className="roll" disabled={goingPlayer?.id !== player.id || rolled} onClick={() => {
-                sendJsonMessage({ "action": "roll" })
-                setRolled(true)
-            }}>Roll</button>
+        <div id="game">
+            <div className="board-container">
+                <GameBoard board={board}></GameBoard>
+                <button className="roll" disabled={goingPlayer?.id !== player.id || rolled} onClick={() => {
+                    sendJsonMessage({ "action": "roll" })
+                    setRolled(true)
+                }}>Roll</button>
+                {(goingPlayer?.id === player.id) && <button className="buy" disabled={!!currentSpace?.owner} onClick={() => {
+                    sendJsonMessage({ "action": "buy", "property": currentSpace.id })
+                }}>Buy Property</button>
+                }
+                <button className="end-turn" disabled={goingPlayer?.id !== player.id} onClick={() => {
+                    sendJsonMessage({ "action": "end-turn" })
+                    setRolled(false)
+                }}>End Turn</button>
+            </div>
+            <div className="player-list">
+                <h3>Players</h3>
+                {players?.map((player) => (
+                    <PlayerCard player={player}></PlayerCard>
+                ))}
+            </div>
         </div>
-        {(goingPlayer?.id === player.id) && <button className="buy" disabled={!!currentSpace?.owner} onClick={() => {
-            sendJsonMessage({ "action": "buy", "property": currentSpace.id })
-        }}>Buy Property</button>
-        }
-        <button className="end-turn" disabled={goingPlayer?.id !== player.id} onClick={() => {
-            sendJsonMessage({ "action": "end-turn" })
-            setRolled(false)
-        }}>End Turn</button>
-        <div className="player-list">{players?.map((player) => (
-            <PlayerCard player={player}></PlayerCard>
-        ))}</div>
     </>
 }
 
