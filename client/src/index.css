@@ -40,6 +40,15 @@ body {
 
         border: 1px solid black;
         text-align: center;
+
+        .pieces {
+            bottom: 0;
+            left: 0;
+            position: absolute;
+
+            font-weight: bold;
+            display: flex;
+        }
     }
 
     .cost::after {
