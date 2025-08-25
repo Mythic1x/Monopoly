@@ -291,6 +291,8 @@ Community Chest {
     cost = 0;
     type = COMMUNITY_CHEST;
     not_purchaseable = true;
+
+    logo = CHEST;
 }
 
 Chance {
@@ -298,6 +300,8 @@ Chance {
     cost = 0;
 
     not_purchaseable = true;
+
+    logo = QUESTION_MARK;
 }
 
 Free Parking {

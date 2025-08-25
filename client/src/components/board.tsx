@@ -4,10 +4,37 @@ interface Props {
     board: Board
 }
 
+type Logo = "QUESTION_MARK" | "CHEST"
+
+function logo2img(logo: Logo) {
+    switch (logo) {
+        case "QUESTION_MARK":
+            return "https://static.seceurity.place/assets/monopoly/chance.png"
+        case "CHEST":
+            return "https://static.seceurity.place/assets/monopoly/community_chest.webp"
+    }
+}
+
+function getLogoSize(logo: Logo) {
+    switch (logo) {
+        case "QUESTION_MARK":
+            return 50
+        case "CHEST":
+            return 100
+    }
+}
+
+function renderSpaceNameFromSpace(space: Space) {
+    if (space.attrs.logo) {
+        return <img src={logo2img(space.attrs.logo)} width={getLogoSize(space.attrs.logo)} />
+    }
+    return <span className="name">{space.name}</span>
+}
+
 function Space({ space, pieces }: { space: Space, pieces: string[] }) {
     return <>
         <div className="space" data-color={space.attrs.color}>
-            <span className="name">{space.name}</span>
+            {renderSpaceNameFromSpace(space)}
             <span className="pieces">{pieces.map(piece => (
                 <span className="piece">{piece}</span>
             ))}</span>
