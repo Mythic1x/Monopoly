@@ -9,6 +9,7 @@ import { socketAddr } from '../socket'
 
 
 function App() {
+
     const [playerDetails, setPlayerDetails] = useState(null)
     const { lastJsonMessage, readyState, } = useWebSocket(socketAddr, {
         share: true
