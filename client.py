@@ -58,6 +58,12 @@ class WSClient(Client):
         return json.loads(await self.ws.recv())
 
 class TermClient(Client):
+
+    @override
+    async def handleStatus(self, status: str, player: Player, data: list[Any]):
+        val = await super().handleStatus(status, player, data)
+        return val
+
     @override
     async def read(self, prompt: str) -> str:
         return input(prompt)
@@ -68,4 +74,7 @@ class TermClient(Client):
 
     @override
     async def __anext__(self) -> dict[str, Any]:
+        res = input("> ")
+        if res == "end-turn":
+            return {"action": "end-turn"}
         return {"action": "start-turn"}

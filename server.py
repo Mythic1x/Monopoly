@@ -13,6 +13,25 @@ from board import S_BUY_NEW_SET, S_BUY_SUCCESS, S_BUY_FAIL, Board, Player, Space
 from client import Client, WSClient, TermClient
 ipConnections: dict[Any, Player] = {}
 
+class Lobby:
+    players: list[Player]
+    def __init__(self):
+        self.players = []
+
+    def join(self, p: Player):
+        self.players.append(p)
+
+    async def moveToGame(self, player: Player, game: "Game"):
+        if player not in self.players:
+            return
+        self.players.remove(player)
+        response = json.loads(await player.client.read('waiting for details'))
+        details = response['details']
+        player.name = details['name']
+        player.piece = details['piece']
+        await player.client.write({"response": "join-game", "value": "join"})
+        await game.join(player)
+
 class Game:
     board: Board
     players: dict[str, Player]
@@ -40,6 +59,7 @@ class Game:
         self.clients.append(player.client)
         await player.client.write({"response": "assignment", "value": player.id})
         await self.broadcast({"response": "board", "value": self.board.toJson()})
+        await self.run(player)
 
     def disconnectClient(self, client: Client):
         self.clients.remove(client)
@@ -51,6 +71,7 @@ class Game:
         await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
         await player.client.write({"response": "current-space", "value": player.space.toJson()})
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
+        await self.run(player)
 
     def startTurn(self):
         #START STATUS
@@ -106,6 +127,7 @@ class Game:
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
 
     async def run(self, player: Player):
+        print(player.name)
         async for message in player.client:
             await self.handleAction(message, player)
 
@@ -120,6 +142,7 @@ class Game:
         client.write(message)
             
 game = Game("./boards/main.board")
+lobby = Lobby()
 
 async def gameServer(ws: ServerConnection):
     c = WSClient(ws)
@@ -132,21 +155,15 @@ async def gameServer(ws: ServerConnection):
         await game.rejoin(player)
     else:
         player = Player(str(ws.id), len(game.clients), c)
-        ipConnections[ws.remote_address[0]] = player
-        response = json.loads(await c.read('waiting for details'))
-        details = response['details']
-        player.name = details['name']
-        player.piece = details['piece']
-        await c.write({"response": "join-game", "value": "join"})
-        await game.join(player)
-    await game.run(player)
+        lobby.join(player)
+        await lobby.moveToGame(player, game)
 
 async def main():
     if len(sys.argv) > 1 and sys.argv[1] == "t":
         c = TermClient()
-        player = Player("1", 1, c)
-        await game.join(player)
-        await game.run(player)
+        player = Player("1", len(game.clients), c)
+        lobby.join(player)
+        await lobby.moveToGame(player, game)
     else:
         async with serve(gameServer, "0.0.0.0", 8765) as server:
             await server.serve_forever()
