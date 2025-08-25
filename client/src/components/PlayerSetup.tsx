@@ -10,7 +10,10 @@ function PlayerSetup({ onSetupComplete }: any) {
         onSetupComplete({ name, piece });
     };
 
-    return (
+    return (<>
+        <center><h1>Fucking Login screen</h1><p>
+            Not fucking ai generated, get out with your ai generated login screens.
+        </p></center>
         <form onSubmit={handleSubmit} className="selection-box">
             <input
                 type="text"
@@ -28,6 +31,7 @@ function PlayerSetup({ onSetupComplete }: any) {
             />
             <button type="submit">Join Game</button>
         </form>
+        </>
     );
 }
 
