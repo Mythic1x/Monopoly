@@ -120,11 +120,16 @@ class Game:
             case "request-space":
                 await client.write({"response": "current-space", "value": player.space.toJson()})
 
+            case "set-money":
+                player.money = int(action["money"])
+
             case "buy":
                 property = self.board.spaces[action["property"]]
                 result, *data = player.buy(property)
                 await self.broadcastStatus(result, player, data)
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
+        await client.write({"response": "player-info", "value": player.toJson()})
+        await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 
     async def run(self, player: Player):
         print(player.name)

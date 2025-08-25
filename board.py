@@ -22,7 +22,7 @@ class Player:
     piece: str
     lastRoll: int
 
-    def __init__(self, id: str, playerNumber: int, client, money: int = 100):
+    def __init__(self, id: str, playerNumber: int, client, money: int = 1500):
         self.money = money
         self.id = id
         self.playerNumber = playerNumber
