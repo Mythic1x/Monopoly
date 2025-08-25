@@ -1,9 +1,11 @@
 import asyncio
 from collections.abc import Generator
+import importlib.util
 import random
 import json
 import sys
 
+from types import ModuleType
 from typing import Any, Callable, Self
 from websockets.asyncio.server import ServerConnection, serve
 from websockets.legacy.server import WebSocketServerProtocol
@@ -13,6 +15,16 @@ from boardbuilder import buildFromFile
 from board import Board, Player, Space, status_t, statusreturn_t
 from client import Client, WSClient, TermClient
 ipConnections: dict[Any, Player] = {}
+
+
+def import_from_path(module_name, file_path):
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    if not spec:
+        raise ImportError()
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
 
 class Lobby:
     players: list[Player]
@@ -41,8 +53,16 @@ class Game:
     playerTurn: int
     clients: list[Client]
 
-    def __init__(self, boardFile: str, dSides: int = 6):
-        self.board = Board(buildFromFile(boardFile))
+    def __init__(self, boardname: str, dSides: int = 6):
+        boardFile = f"./boards/{boardname}.json"
+        handlers: dict[str, ModuleType] = {}
+        generic_handlers = import_from_path("generic", "./boards/generic.py")
+        try:
+            handlers[boardname] = import_from_path(boardname, f"./boards/{boardname}.py")
+        except Exception as e:
+            print(e)
+        handlers["generic"] = generic_handlers
+        self.board = Board(boardname, handlers, buildFromFile(boardFile))
         self.players = {}
         self.curTurn = 0
         self.dSides = dSides
@@ -160,7 +180,7 @@ class Game:
     async def sendToClient(client: Client, message: dict):
         client.write(message)
             
-game = Game("./boards/main.json")
+game = Game("main")
 lobby = Lobby()
 
 async def gameServer(ws: ServerConnection):

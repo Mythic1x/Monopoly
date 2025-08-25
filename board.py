@@ -1,5 +1,6 @@
 from collections.abc import Generator
 from dataclasses import dataclass
+from types import ModuleType
 from typing import Any, Callable, Self
 import random
 
@@ -294,82 +295,17 @@ class Space:
             self.players.append(player)
             player.space = self
 
-    def onland_goto_jail(self, board: "Board", player: Player):
-        jail = board.findJail()
-        if jail:
-            player.gotoJail(jail)
-            yield from board.moveTo(player, jail)
-
-    def onland(self, board: "Board", player: Player) -> Generator[statusreturn_t]:
-        print("you landed on " + self.name)
-
+    def onland(self, player: Player) -> Generator[statusreturn_t]:
         self.players.append(player)
         player.space = self
-
-        if (onland := self.attrs.get("onland")) and callable(onland := getattr(self, onland)):
-            print(self.attrs)
-            yield from onland(board, player)
-            return
-
-        if self.cost < 0:
-            player.money += abs(self.cost)
-            yield MONEY_GIVEN(abs(self.cost))
-            return
-
-        if self.isUnowned() and self.purchaseable:
-            yield PROMPT_TO_BUY(self)
-
-        if not player.owns(self) and self.owner:
-            rent = self.attrs.get("rent")
-            if not rent:
-                yield NONE()
-                return
-            rent = str(rent)
-            if rent.isnumeric():
-                yield player.payRent(self.owner, self)
-                return
-            elif (fn := getattr(self, rent)) and callable(fn):
-                yield fn(player)
-                return
         yield NONE()
-
-    def onrent_utility(self, player: Player):
-        if self.owner is None or self.owner.id == player.id:
-            return NONE()
-        amount = len(player.getUtilities()) * player.lastRoll
-        player.pay(amount, self.owner)
-        return PAY_OTHER(amount, self.owner)
-
-    def onrent_railroad(self, player: Player):
-        if self.owner is None :
-            return NONE()
-        owed = {
-                0: 0,
-                1: 25,
-                2: 50,
-                3: 100,
-                4: 100
-        }[self.owner.getOwnedRailroads()]
-        if owed:
-            player.pay(owed, self.owner)
-            return PAY_OTHER(owed, self.owner)
-
-    def onland_incometax(self, board: "Board", player: Player):
-        player.money -= round(player.money * 0.10)
-        yield PAY_TAX(round(player.money * 0.10), "income")
-
-    def onland_luxurytax(self, board: "Board", player: Player):
-        player.money -= 75
-        yield PAY_TAX(75, "luxury")
 
     def onleave(self, player: Player):
         self.players.remove(player)
+        yield NONE()
 
-    def onpass(self, player: Player) -> statusreturn_t:
-        if self.spaceType == ST_GO:
-            player.money += abs(self.cost)
-            return PASS_GO(abs(self.cost))
-        return NONE()
+    def onpass(self, player: Player) -> Generator[statusreturn_t]:
+        yield NONE()
 
     def iterSpaces(self):
         #if we start on self, the last item in the list will be self,
@@ -401,14 +337,20 @@ class Board:
     
     startSpace: Space
     playerSpaces: dict[str, Space]
-    spaces: dict[str, Space]
+    spaces: dict[int, Space]
 
-    def __init__(self, startSpace: Space):
+    eventHandlers: dict[str, ModuleType]
+    boardName: str
+
+    def __init__(self, name: str, eventHandlers: dict[str, ModuleType], startSpace: Space):
         self.startSpace = startSpace
 
         self.playerSpaces = {}
         
         self.spaces = {space.id: space for space in startSpace.iterSpaces()}
+
+        self.eventHandlers = eventHandlers
+        self.boardName = name
 
     def addPlayer(self, player: Player):
         self.startSpace.put(player)
@@ -427,9 +369,9 @@ class Board:
         return None
 
     def moveTo(self, player: Player, space: Space):
-        self.playerSpaces[player.id].onleave(player)
+        yield from self.runevent("onleave", self.playerSpaces[player.id], player)
         self.playerSpaces[player.id] = space
-        yield from space.onland(self, player)
+        yield from self.runevent("onland", space, player)
 
     #rolls the dice for a player
     def rollPlayer(self, player: Player, dSides: int) -> Generator[statusreturn_t]:
@@ -454,15 +396,29 @@ class Board:
 
         yield from self.move(player, amount)
 
+    def runevent(self, name: str, space: Space, player: Player):
+        if hasattr(space, name):
+            yield from getattr(space, name)(player)
+
+        for fn in (f"{name}_{space.name.replace(" ", "_").lower()}", name):
+            if hasattr(self.eventHandlers.get(self.boardName), fn):
+                yield from getattr(self.eventHandlers[self.boardName], fn)(self, space, player)
+                return
+            elif hasattr(self.eventHandlers["generic"], fn):
+                yield from getattr(self.eventHandlers["generic"], fn)(self, space, player)
+                return
+
+
     #moves the player DOES NOT ROLL DICE
     def move(self, player: Player, amount: int) -> Generator[statusreturn_t]:
         curSpace = self.playerSpaces[player.id]
 
-        curSpace.onleave(player)
+        yield from self.runevent("onleave", curSpace, player)
         for i in range(amount):
             curSpace = curSpace.next
-            yield curSpace.onpass(player)
-        yield from curSpace.onland(self, player)
+            yield from self.runevent("onpass", curSpace, player)
+
+        yield from self.runevent("onland", curSpace, player)
 
         self.playerSpaces[player.id] = curSpace
 

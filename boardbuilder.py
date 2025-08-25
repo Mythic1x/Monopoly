@@ -11,7 +11,7 @@ def buildFromFile(path: str) -> board.Space:
         for space in spacesData:
             s = spacesData[space]
             attrs = {k: v for k, v in s.items() if k not in ("cost", "not_purchaseable", "type")}
-            spaces[space] = board.Space(getattr(board, f"ST_{s["type"]}"), s.get("cost", 0), space, s.get("not_purchaseable", True), **attrs)
+            spaces[space] = board.Space(getattr(board, f"ST_{s["type"]}"), s.get("cost", 0), space, False if s.get("not_purchaseable") else True, **attrs)
 
         sideNames = ("start", "left", "top", "right")
         firstSpace = None
