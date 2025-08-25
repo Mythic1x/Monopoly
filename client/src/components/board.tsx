@@ -34,7 +34,7 @@ function renderSpaceNameFromSpace(space: Space) {
 
 function Space({ space, pieces }: { space: Space, pieces: string[] }) {
     return <>
-        <div className="space" data-color={space.attrs.color}>
+        <div className="space" data-color={space.attrs.color} onClick={() => console.log(space.id)}>
             {renderSpaceNameFromSpace(space)}
             <span className="pieces">{pieces.map(piece => (
                 <span className="piece">{piece}</span>

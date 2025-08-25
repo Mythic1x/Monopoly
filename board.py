@@ -1,18 +1,22 @@
+from collections.abc import Generator
 import json
 from typing import Any, Callable, Self
 import collections
 import random
 
-S_BUY_FAIL = "BUY_FAIL"
-S_BUY_SUCCESS = "BUY_SUCCESS"
-S_BUY_NEW_SET = "BUY_NEW_SET"
-S_PROMPT_TO_BUY = "PROMPT_TO_BUY"
-S_MONEY_LOST = "MONEY_LOST"
-S_MONEY_GIVEN = "MONEY_GIVEN"
-S_NONE = "NONE"
-S_PAY_OTHER = "PAY_OTHER"
-S_PAY_TAX = "PAY_TAX"
-S_PASS_GO = "PASS_GO"
+type status_t = str
+S_BUY_FAIL: status_t = "BUY_FAIL"
+S_BUY_SUCCESS: status_t = "BUY_SUCCESS"
+S_BUY_NEW_SET: status_t = "BUY_NEW_SET"
+S_PROMPT_TO_BUY: status_t = "PROMPT_TO_BUY"
+S_MONEY_LOST: status_t = "MONEY_LOST"
+S_MONEY_GIVEN: status_t = "MONEY_GIVEN"
+S_NONE: status_t = "NONE"
+S_PAY_OTHER: status_t = "PAY_OTHER"
+S_PAY_TAX: status_t = "PAY_TAX"
+S_PASS_GO: status_t = "PASS_GO"
+
+type statusreturn_t = tuple[status_t, Any]
 
 class Player:
     money: int
@@ -221,7 +225,7 @@ class Space:
             self.players.append(player)
             player.space = self
 
-    def onland(self, player: Player):
+    def onland(self, player: Player) -> statusreturn_t:
         print("you landed on " + self.name)
 
         self.players.append(player)
@@ -234,16 +238,18 @@ class Space:
         if self.isUnowned() and self.purchaseable:
             return S_PROMPT_TO_BUY, self
 
-        if not player.owns(self) and self.owner:
+        #we can't check if self.owner here because some spaces
+        #such as luxury tax rely on this running to run the onrent_luxurytax function
+        if not player.owns(self):
             rent = self.attrs.get("rent")
             if not rent:
-                return S_NONE,
+                return S_NONE, None
             rent = str(rent)
-            if rent.isnumeric():
+            if rent.isnumeric() and self.owner:
                 return player.payRent(self.owner, self)
             elif (fn := getattr(self, rent)) and callable(fn):
                 return fn(player)
-        return S_NONE,
+        return S_NONE, None
 
     def onrent_utility(self, player: Player):
         if self.owner is None or self.owner.id == player.id:
@@ -277,11 +283,11 @@ class Space:
     def onleave(self, player: Player):
         self.players.remove(player)
 
-    def onpass(self, player: Player):
+    def onpass(self, player: Player) -> statusreturn_t:
         if self.spaceType == ST_GO:
             player.money += abs(self.cost)
             return S_PASS_GO, abs(self.cost)
-        return S_NONE,
+        return S_NONE, None
 
     def iterSpaces(self):
         #if we start on self, the last item in the list will be self,
@@ -335,19 +341,25 @@ class Board:
         self.startSpace.put(player)
         self.playerSpaces[player.id] = self.startSpace
 
+    def getSpaceById(self, id: int):
+        for space in self.startSpace.iterSpaces():
+            if space.id == id:
+                return space
+        return None
+
     def moveTo(self, player: Player, space: Space):
         self.playerSpaces[player.id].onleave(player)
-        space.onland(player)
         self.playerSpaces[player.id] = space
+        yield space.onland(player)
 
     #rolls the dice for a player
-    def rollPlayer(self, player: Player, dSides: int):
+    def rollPlayer(self, player: Player, dSides: int) -> Generator[statusreturn_t]:
         amount = random.randint(2, dSides * 2)
         player.lastRoll = amount
         yield from self.move(player, amount)
 
     #moves the player DOES NOT ROLL DICE
-    def move(self, player: Player, amount: int):
+    def move(self, player: Player, amount: int) -> Generator[statusreturn_t]:
         curSpace = self.playerSpaces[player.id]
 
         curSpace.onleave(player)

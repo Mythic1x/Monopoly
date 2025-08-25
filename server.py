@@ -1,15 +1,16 @@
 import asyncio
+from collections.abc import Generator
 import random
 import json
 import sys
 
-from typing import Any, Self
+from typing import Any, Callable, Self
 from websockets.asyncio.server import ServerConnection, serve
 from websockets.legacy.server import WebSocketServerProtocol
 
 
 from boardbuilder import buildFromFile
-from board import S_BUY_NEW_SET, S_BUY_SUCCESS, S_BUY_FAIL, Board, Player, Space
+from board import S_BUY_NEW_SET, S_BUY_SUCCESS, S_BUY_FAIL, Board, Player, Space, statusreturn_t
 from client import Client, WSClient, TermClient
 ipConnections: dict[Any, Player] = {}
 
@@ -92,6 +93,7 @@ class Game:
             case "end-turn":
                 self.endTurn()
                 await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
+
             case "send-player-info":
                 await client.write({"response": "player-info", "value": player.toJson()})
 
@@ -102,10 +104,22 @@ class Game:
                 await client.write({"response": "current-space", "value": player.space.toJson()})
                 await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 
+            case "teleport":
+                spaceId = action["spaceid"]
+                playerId = action["playerid"]
+
+                space = self.board.getSpaceById(spaceId)
+                if not space:
+                    await client.write(client.mknotif(f"invalid space id: {spaceId}"))
+                else:
+                    for status, *data in self.board.moveTo(self.players[playerId], space):
+                        await client.handleStatus(status, player, data)
+                    await self.broadcast({"response": "board", "value": self.board.toJson()})
+
             case "roll":
                 for status, *data in self.board.rollPlayer(player, self.dSides):
-                    await client.write({"response": "current-space", "value": player.space.toJson()})
                     await client.handleStatus(status, player, data)
+                await client.write({"response": "current-space", "value": player.space.toJson()})
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
 
             case "set-details":
