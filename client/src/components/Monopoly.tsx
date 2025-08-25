@@ -78,7 +78,7 @@ function Monopoly({ playerDetails }: any) {
                             setRolled(true)
                         }}>Roll</button>
                         {(goingPlayer?.id === player.id) && <button className="buy" disabled={!!currentSpace?.owner} onClick={() => {
-                            sendJsonMessage({ "action": "buy", "property": currentSpace.id })
+                            sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })
                         }}>Buy Property</button>
                         }
                         <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled} onClick={() => {

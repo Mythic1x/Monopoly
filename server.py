@@ -134,7 +134,7 @@ class Game:
                 player.money = int(action["money"])
 
             case "buy":
-                property = self.board.spaces[action["property"]]
+                property = self.board.spaces[action["spaceid"]]
                 result, *data = player.buy(property)
                 await self.broadcastStatus(result, player, data)
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
