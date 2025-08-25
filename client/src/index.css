@@ -19,6 +19,8 @@ body {
     grid-template-rows: repeat(11, 1fr);
     background-color: #c9e3cd;
 
+    width: fit-content;
+
     .space::before {
         content: "";
         z-index: -1;
