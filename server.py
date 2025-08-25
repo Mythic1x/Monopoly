@@ -22,7 +22,7 @@ class Lobby:
     def join(self, p: Player):
         self.players.append(p)
 
-    async def moveToGame(self, player: Player, game: "Game"):
+    async def moveToGame(self, player: Player, game: "Game", onjoin: Callable[[], Any] | None = None):
         if player not in self.players:
             return
         self.players.remove(player)
@@ -31,7 +31,7 @@ class Lobby:
         player.name = details['name']
         player.piece = details['piece']
         await player.client.write({"response": "join-game", "value": "join"})
-        await game.join(player)
+        await game.join(player, onjoin)
 
 class Game:
     board: Board
@@ -54,10 +54,12 @@ class Game:
         values = list(self.players.values())
         return values[self.curTurn]
 
-    async def join(self, player: Player):
+    async def join(self, player: Player, onjoin: Callable[[], Any] | None = None):
         self.players[player.id] = player
         self.board.addPlayer(player)
         self.clients.append(player.client)
+        if onjoin:
+            onjoin()
         await player.client.write({"response": "assignment", "value": player.id})
         await self.broadcast({"response": "board", "value": self.board.toJson()})
         await self.run(player)
@@ -172,8 +174,8 @@ async def gameServer(ws: ServerConnection):
     else:
         player = Player(str(ws.id), len(game.clients), c)
         lobby.join(player)
-        await lobby.moveToGame(player, game)
-        ipConnections[ws.remote_address[0]] = player
+        await lobby.moveToGame(player, game, onjoin=lambda: ipConnections.__setitem__(ws.remote_address[0], player))
+        
 
 async def main():
     if len(sys.argv) > 1 and sys.argv[1] == "t":
