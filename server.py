@@ -10,7 +10,7 @@ from websockets.legacy.server import WebSocketServerProtocol
 
 
 from boardbuilder import buildFromFile
-from board import S_BUY_NEW_SET, S_BUY_SUCCESS, S_BUY_FAIL, Board, Player, Space, statusreturn_t
+from board import Board, Player, Space, status_t, statusreturn_t
 from client import Client, WSClient, TermClient
 ipConnections: dict[Any, Player] = {}
 
@@ -114,13 +114,13 @@ class Game:
                 if not space:
                     await client.write(client.mknotif(f"invalid space id: {spaceId}"))
                 else:
-                    for status, *data in self.board.moveTo(self.players[playerId], space):
-                        await client.handleStatus(status, player, data)
+                    for status in self.board.moveTo(self.players[playerId], space):
+                        await client.handleStatus(status, player)
                     await self.broadcast({"response": "board", "value": self.board.toJson()})
 
             case "roll":
-                for status, *data in self.board.rollPlayer(player, self.dSides):
-                    await client.handleStatus(status, player, data)
+                for status in self.board.rollPlayer(player, self.dSides):
+                    await client.handleStatus(status, player)
                 await client.write({"response": "current-space", "value": player.space.toJson()})
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
 
@@ -137,8 +137,8 @@ class Game:
 
             case "buy":
                 property = self.board.spaces[action["spaceid"]]
-                result, *data = player.buy(property)
-                await self.broadcastStatus(result, player, data)
+                result = player.buy(property)
+                await self.broadcastStatus(result, player)
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
                 await client.write({"response": "current-space", "value": player.space.toJson()})
 
@@ -152,9 +152,10 @@ class Game:
     async def broadcast(self, message: dict):
         for client in self.clients:
             await client.write(message)
-    async def broadcastStatus(self, status, player: Player, data: list[Any]):
+
+    async def broadcastStatus(self, status: status_t, player: Player):
         for client in self.clients:
-            await client.handleStatus(status, player, data)
+            await client.handleStatus(status, player)
 
     async def sendToClient(client: Client, message: dict):
         client.write(message)

@@ -1,23 +1,59 @@
 from collections.abc import Generator
-import json
+from dataclasses import dataclass
 from typing import Any, Callable, Self
-import collections
 import random
 
-type status_t = str
-S_BUY_FAIL: status_t = "BUY_FAIL"
-S_BUY_SUCCESS: status_t = "BUY_SUCCESS"
-S_BUY_NEW_SET: status_t = "BUY_NEW_SET"
-S_PROMPT_TO_BUY: status_t = "PROMPT_TO_BUY"
-S_MONEY_LOST: status_t = "MONEY_LOST"
-S_MONEY_GIVEN: status_t = "MONEY_GIVEN"
-S_NONE: status_t = "NONE"
-S_PAY_OTHER: status_t = "PAY_OTHER"
-S_PAY_TAX: status_t = "PAY_TAX"
-S_PASS_GO: status_t = "PASS_GO"
-S_PAY_JAIL: status_t = "PAY_JAIL"
+class status_t:
+    pass
 
-type statusreturn_t = tuple[status_t, Any]
+@dataclass
+class BUY_FAIL(status_t):
+    space: "Space"
+
+@dataclass
+class BUY_SUCCESS(status_t):
+    space: "Space"
+
+@dataclass
+class BUY_NEW_SET(status_t):
+    space: "Space"
+
+@dataclass
+class PROMPT_TO_BUY(status_t):
+    space: "Space"
+
+@dataclass
+class MONEY_LOST(status_t):
+    amount: int
+
+@dataclass
+class MONEY_GIVEN(status_t):
+    amount: int
+
+@dataclass
+class NONE(status_t):
+    pass
+
+@dataclass
+class PAY_OTHER(status_t):
+    amount: int
+    other: "Player"
+
+@dataclass
+class PAY_TAX(status_t):
+    amount: int
+    taxname: str
+
+@dataclass
+class PASS_GO(status_t):
+    earned: int
+
+@dataclass
+class PAY_JAIL(status_t):
+    cost: int
+
+
+type statusreturn_t = status_t
 
 class Player:
     money: int
@@ -83,7 +119,7 @@ class Player:
     def payRent(self, other: Self, space: "Space") -> statusreturn_t:
         amount = space.calculatePropertyRent(self.hasSet(space.color, space.set_size))
         self.pay(amount, other)
-        return S_PAY_OTHER, amount, other
+        return PAY_OTHER(amount, other)
 
     def getUtilities(self):
         return [space for space in self.ownedSpaces if space.spaceType == ST_UTILITY]
@@ -102,7 +138,7 @@ class Player:
 
     def buy(self, space: "Space"):
         if space.cost > self.money or not space.purchaseable or space.owner:
-            return S_BUY_FAIL, space
+            return BUY_FAIL(space)
 
         self.money -= space.cost
         space.owner = self
@@ -110,9 +146,9 @@ class Player:
 
         if space.color not in self.sets and space.set_size and self.hasSet(space.color, space.set_size):
             self.sets.append(space.color)
-            return S_BUY_NEW_SET, space
+            return BUY_NEW_SET(space)
 
-        return S_BUY_SUCCESS, space
+        return BUY_SUCCESS(space)
 
     def getOwnedRailroads(self):
         number = 0
@@ -276,11 +312,11 @@ class Space:
 
         if self.cost < 0:
             player.money += abs(self.cost)
-            yield S_MONEY_GIVEN, abs(self.cost)
+            yield MONEY_GIVEN(abs(self.cost))
             return
 
         if self.isUnowned() and self.purchaseable:
-            yield S_PROMPT_TO_BUY, self
+            yield PROMPT_TO_BUY(self)
             return
 
         #we can't check if self.owner here because some spaces
@@ -288,7 +324,7 @@ class Space:
         if not player.owns(self):
             rent = self.attrs.get("rent")
             if not rent:
-                yield S_NONE, None
+                yield NONE()
                 return
             rent = str(rent)
             if rent.isnumeric() and self.owner:
@@ -297,18 +333,18 @@ class Space:
             elif (fn := getattr(self, rent)) and callable(fn):
                 yield fn(player)
                 return
-        yield S_NONE, None
+        yield NONE()
 
     def onrent_utility(self, player: Player):
         if self.owner is None or self.owner.id == player.id:
-            return S_NONE,
+            return NONE()
         amount = len(player.getUtilities()) * player.lastRoll
         player.pay(amount, self.owner)
-        return S_PAY_OTHER, amount, self.owner
+        return PAY_OTHER(amount, self.owner)
 
     def onrent_railroad(self, player: Player):
         if self.owner is None :
-            return S_NONE,
+            return NONE()
         owed = {
                 0: 0,
                 1: 25,
@@ -318,15 +354,15 @@ class Space:
         }[self.owner.getOwnedRailroads()]
         if owed:
             player.pay(owed, self.owner)
-            return S_PAY_OTHER, owed, self.owner
+            return PAY_OTHER(owed, self.owner)
 
     def onrent_incometax(self, player: Player):
         player.money -= round(player.money * 0.10)
-        return S_PAY_TAX, round(player.money * 0.10), "income"
+        return PAY_TAX(round(player.money * 0.10), "income")
 
     def onrent_luxurytax(self, player: Player):
         player.money -= 75
-        return S_PAY_TAX, 75, "luxury"
+        return PAY_TAX(75, "luxury")
 
     def onleave(self, player: Player):
         self.players.remove(player)
@@ -334,8 +370,8 @@ class Space:
     def onpass(self, player: Player) -> statusreturn_t:
         if self.spaceType == ST_GO:
             player.money += abs(self.cost)
-            return S_PASS_GO, abs(self.cost)
-        return S_NONE, None
+            return PASS_GO(abs(self.cost))
+        return NONE()
 
     def iterSpaces(self):
         #if we start on self, the last item in the list will be self,
@@ -412,11 +448,11 @@ class Board:
                 case Player.JAIL_DOUBLES_SUCCESS:
                     print("SUCCESS", d1, d2)
                     player.leaveJail()
-                    yield S_NONE, None
+                    yield NONE()
                 case Player.JAIL_DOUBLES_FORCE_LEAVE:
                     player.money -= 50
                     player.leaveJail()
-                    yield S_PAY_JAIL, player.space.attrs["bailcost"]
+                    yield PAY_JAIL(player.space.attrs["bailcost"])
 
         yield from self.move(player, amount)
 
