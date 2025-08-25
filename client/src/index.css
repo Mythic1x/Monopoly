@@ -17,6 +17,7 @@ body {
     display: grid;
     grid-template-columns: repeat(11, 1fr);
     grid-template-rows: repeat(11, 1fr);
+    background-color: #c9e3cd;
 
     .space::before {
         content: "";
@@ -58,4 +59,14 @@ body {
     justify-content: center;
     height: 300px;
     width: 300px;
+}
+
+.player-list {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    height: fit-content;
+    min-height: 100px;
+    min-width: 100px;
+    background-color: coral;
 }

@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react"
 import { Board, Space, Player, ServerResponse } from "../../index"
+import PlayerCard from "./PlayerCard"
 import useWebSocket, { ReadyState } from "react-use-websocket/dist"
 import usePlayer from "../hooks/useplayer"
 import GameBoard from "./board"
 
 function Monopoly({ playerDetails }: any) {
     const [rolled, setRolled] = useState<boolean>(false)
+    const [players, setPlayers] = useState<Player[] | []>([])
     const [board, setBoard] = useState<Board | null>(null)
     const [loading, setLoading] = useState(true)
     const [currentSpace, setCurrentSpace] = useState<Space | null>(null)
@@ -18,9 +20,6 @@ function Monopoly({ playerDetails }: any) {
     useEffect(() => {
         if (readyState === ReadyState.OPEN) {
             sendJsonMessage({ "action": "set-details", "details": playerDetails })
-            sendJsonMessage({ 'action': "connect" })
-            sendJsonMessage({ 'action': "current-space" })
-            console.log("connected to socket")
         }
     }, [readyState])
 
@@ -28,6 +27,9 @@ function Monopoly({ playerDetails }: any) {
         const message = lastJsonMessage as ServerResponse
         if (!message) return
         switch (message.response) {
+            case "player-list":
+                setPlayers(message.value)
+                break
             case "board":
                 setBoard(message.value)
                 setLoading(false)
@@ -43,6 +45,10 @@ function Monopoly({ playerDetails }: any) {
                 alert(`${player} achieved the set for ${color}`)
             case "notification":
                 alert(message.value)
+                break
+            case "join-game":
+                sendJsonMessage({ 'action': "connect" })
+                sendJsonMessage({ 'action': "current-space" })
                 break
         }
     }, [lastJsonMessage])
@@ -69,6 +75,9 @@ function Monopoly({ playerDetails }: any) {
             sendJsonMessage({ "action": "end-turn" })
             setRolled(false)
         }}>End Turn</button>
+        <div className="player-list">{players?.map((player) => (
+            <PlayerCard player={player}></PlayerCard>
+        ))}</div>
     </>
 }
 

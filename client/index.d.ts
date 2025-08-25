@@ -7,6 +7,10 @@ type _responses = {
     "notification": string
     "new-set": any
     "player-info": Player
+    "prompt": string
+    "join-game": string
+    "player-list": Player[] 
+    "reconnect": {"name": string, "piece": string}
 }
 type ServerResponse = {response: infer A extends keyof _responses, value: _responses[A]}
 
@@ -33,7 +37,7 @@ export interface Player {
     money: number;
     id: string;
     playerNumber: number;
-    ownedSpaces: Space[];
+    ownedSpaces: Space[] | [];
     piece: string
     space: Space
     name: string

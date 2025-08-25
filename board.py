@@ -28,6 +28,7 @@ class Player:
         self.playerNumber = playerNumber
         self.ownedSpaces = []
         self.name = "Timmy 3 (You were the third Timmy!)"
+        #this is PIECE
         self.piece = "PIECE"
         self.client = client
         self.sets = []
@@ -87,7 +88,8 @@ class Player:
             "playerNumber": self.playerNumber,
             "piece": self.piece,
             "space": self.space.id,
-            "sets": self.sets
+            "sets": self.sets,
+            "name": self.name
         }
 
 type spacetype_t = int

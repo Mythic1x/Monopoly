@@ -48,6 +48,9 @@ class Game:
         self.clients.append(player.client)
         await player.client.write({"response": "assignment", "value": player.id})
         await self.broadcast({"response": "board", "value": self.board.toJson()})
+        await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
+        await player.client.write({"response": "current-space", "value": player.space.toJson()})
+        await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 
     def startTurn(self):
         #START STATUS
@@ -67,8 +70,8 @@ class Game:
         match action["action"]:
             case "start-turn":
                 status, *data = self.startTurn()
+                await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
                 await client.handleStatus(status, self.curPlayer, data)
-
             case "end-turn":
                 self.endTurn()
                 await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
@@ -79,6 +82,8 @@ class Game:
                 await client.write({"response": "assignment", "value": player.id})
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
                 await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
+                await client.write({"response": "current-space", "value": player.space.toJson()})
+                await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 
             case "roll":
                 status, *data = self.board.rollPlayer(player, self.dSides)
@@ -97,7 +102,7 @@ class Game:
             case "buy":
                 property = self.board.spaces[action["property"]]
                 result, *data = player.buy(property)
-                await self.broadcastStatus(status, player, data)
+                await self.broadcastStatus(result, player, data)
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
 
     async def run(self, player: Player):
@@ -107,9 +112,9 @@ class Game:
     async def broadcast(self, message: dict):
         for client in self.clients:
             await client.write(message)
-    async def broadcastStatus(self, player: Player, data: list[Any]):
+    async def broadcastStatus(self, status, player: Player, data: list[Any]):
         for client in self.clients:
-            await client.handleStatus(self, player, data)
+            await client.handleStatus(status, player, data)
 
     async def sendToClient(client: Client, message: dict):
         client.write(message)
@@ -123,10 +128,16 @@ async def gameServer(ws: ServerConnection):
         player = ipConnections[ws.remote_address[0]]
         game.disconnectClient(player.client)
         player.client = c
+        await player.client.write({"response": "reconnect", "value": {"name": player.name, "piece": player.piece}})
         await game.rejoin(player)
     else:
         player = Player(str(ws.id), len(game.clients), c)
         ipConnections[ws.remote_address[0]] = player
+        response = json.loads(await c.read('waiting for details'))
+        details = response['details']
+        player.name = details['name']
+        player.piece = details['piece']
+        await c.write({"response": "join-game", "value": "join"})
         await game.join(player)
     await game.run(player)
 
