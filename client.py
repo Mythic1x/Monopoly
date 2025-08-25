@@ -1,5 +1,6 @@
 import abc
 import json
+from os import mknod
 from typing import Any, override
 
 from board import Player, Space
@@ -19,6 +20,9 @@ class Client(abc.ABC):
         status = await getattr(self, status)(player, *data)
         return status
 
+    def mknotif(self, text: str):
+        return { "response": "notification", "value": text}
+
     async def PROMPT_TO_BUY(self, player: Player, space: Space):
         await self.write({"response": "notification", "value": f"{space.name} is available for purchase for the price of ${space.cost}"})
 
@@ -33,8 +37,15 @@ class Client(abc.ABC):
 
     async def BUY_NEW_SET(self, player: Player, space: Space):
         await self.write({"response": "notification", "value": f"{player.name} successfully bought {space.name} for a complete {space.color} set"})
+
     async def MONEY_GIVEN(self, player: Player, amount: int):
         await self.write({"response": "notification", "value": f"{player.name} gained {amount}"})
+
+    async def PAY_OTHER(self, player: Player, amount: int, other: Player):
+        await self.write(self.mknotif(f"{player.name} paid {other.name} ${amount}"))
+
+    async def PAY_TAX(self, player: Player, amount: int, tax: str):
+        await self.write(self.mknotif(f"{player.name} paid {amount} in {tax} taxes"))
 
     async def NONE(self, *data):
         pass

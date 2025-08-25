@@ -10,6 +10,8 @@ S_PROMPT_TO_BUY = "PROMPT_TO_BUY"
 S_MONEY_LOST = "MONEY_LOST"
 S_MONEY_GIVEN = "MONEY_GIVEN"
 S_NONE = "NONE"
+S_PAY_OTHER = "PAY_OTHER"
+S_PAY_TAX = "PAY_TAX"
 
 class Player:
     money: int
@@ -45,6 +47,7 @@ class Player:
     def payRent(self, other: Self, space: "Space"):
         amount = space.calculatePropertyRent(self.hasSet(space.color, space.set_size))
         self.pay(amount, other)
+        return S_PAY_OTHER, amount, other
 
     def getUtilities(self):
         return [space for space in self.ownedSpaces if space.spaceType == ST_UTILITY]
@@ -131,8 +134,7 @@ class Space:
     players: list[Player]
     cost: int
     name: str
-    owner: Player
-    setAmount: int
+    owner: Player | None
     attrs: dict[str, Any]
     id: int
 
@@ -231,23 +233,27 @@ class Space:
         if self.isUnowned() and self.purchaseable:
             return S_PROMPT_TO_BUY, self
 
-        if not player.owns(self):
+        if not player.owns(self) and self.owner:
             rent = self.attrs.get("rent")
             if not rent:
-                return "NONE",
+                return S_NONE,
             rent = str(rent)
             if rent.isnumeric():
-                player.payRent(self.owner, self)
+                return player.payRent(self.owner, self)
             elif (fn := getattr(self, rent)) and callable(fn):
-                fn(player)
+                return fn(player)
         return S_NONE,
 
     def onrent_utility(self, player: Player):
-        return len(player.getUtilities()) * player.lastRoll
+        if self.owner is None or self.owner.id == player.id:
+            return S_NONE,
+        amount = len(player.getUtilities()) * player.lastRoll
+        player.pay(amount, self.owner)
+        return S_PAY_OTHER, amount, self.owner
 
     def onrent_railroad(self, player: Player):
         if self.owner is None :
-            return
+            return S_NONE,
         owed = {
                 0: 0,
                 1: 25,
@@ -257,10 +263,16 @@ class Space:
         }[self.owner.getOwnedRailroads()]
         if owed:
             player.pay(owed, self.owner)
+            return S_PAY_OTHER, owed, self.owner
+
     def onrent_incometax(self, player: Player):
         player.money -= round(player.money * 0.10)
+        return S_PAY_TAX, round(player.money * 0.10), "income"
+
     def onrent_luxurytax(self, player: Player):
         player.money -= 75
+        return S_PAY_TAX, 75, "luxury"
+
     def onleave(self, player: Player):
         self.players.remove(player)
 

@@ -28,7 +28,6 @@ export interface Space {
     cost: number;
     name: string;
     owner: playerid_t | null;
-    setAmount: number;
     attrs: { [key: string]: any };
     id: string
 }
