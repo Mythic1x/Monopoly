@@ -43,3 +43,11 @@ export interface Player {
     name: string
 }
 
+
+declare global {
+    interface Window {
+        BOARD: Board
+        findSpaceByName: (name: string) => Space | null,
+        me: Player
+    }
+}

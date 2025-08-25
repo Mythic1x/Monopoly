@@ -69,7 +69,7 @@ class Player:
         if roll1 == roll2:
             return Player.JAIL_DOUBLES_SUCCESS
         self.jailDoublesRemaining -= 1
-        if self.jailDoublesRemaining == 1:
+        if self.jailDoublesRemaining == 0:
             return Player.JAIL_DOUBLES_FORCE_LEAVE
         return Player.JAIL_DOUBLES_FAIL
 
@@ -410,10 +410,12 @@ class Board:
                 case Player.JAIL_DOUBLES_FAIL:
                     return
                 case Player.JAIL_DOUBLES_SUCCESS:
+                    print("SUCCESS", d1, d2)
+                    player.leaveJail()
                     yield S_NONE, None
-                    return
                 case Player.JAIL_DOUBLES_FORCE_LEAVE:
                     player.money -= 50
+                    player.leaveJail()
                     yield S_PAY_JAIL, player.space.attrs["bailcost"]
 
         yield from self.move(player, amount)

@@ -20,6 +20,15 @@ function Monopoly({ playerDetails }: any) {
     })
     const { player, playerLoaded } = usePlayer()
 
+    window["findSpaceByName"] = (name: string) => {
+        for(let space of board.spaces) {
+            if(space.name.toLowerCase() === name.toLowerCase()) {
+                return space
+            }
+        }
+    }
+    window["me"] = player
+
     useEffect(() => {
         if (readyState === ReadyState.OPEN) {
             sendJsonMessage({ "action": "set-details", "details": playerDetails })
