@@ -160,7 +160,7 @@ class Game:
     async def sendToClient(client: Client, message: dict):
         client.write(message)
             
-game = Game("./boards/main.board")
+game = Game("./boards/main.json")
 lobby = Lobby()
 
 async def gameServer(ws: ServerConnection):

@@ -280,9 +280,10 @@ class Space:
             return True
         return False
 
-    def copy(self):
+    def copy(self, withId = False):
         space = Space(self.spaceType, cost=self.cost, name=self.name, purchaseable=self.purchaseable, **self.attrs)
-        space.id = self.id
+        if withId:
+            space.id = self.id
         return space
 
     def setNext(self, space: Self):

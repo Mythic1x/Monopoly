@@ -280,7 +280,7 @@ Luxury Tax {
 
 Jail {
     type = JAIL;
-    cost = 0;
+    cost = 300;
 
     bailcost = 50;
 }
@@ -311,8 +311,10 @@ Chance {
 
 Free Parking {
     type = FREE_PARKING;
-    cost = 0;
+    cost = 75;
     not_purchaseable = true;
+
+    rent = 15;
 }
 
 Passing GO {
