@@ -12,6 +12,7 @@ S_MONEY_GIVEN = "MONEY_GIVEN"
 S_NONE = "NONE"
 S_PAY_OTHER = "PAY_OTHER"
 S_PAY_TAX = "PAY_TAX"
+S_PASS_GO = "PASS_GO"
 
 class Player:
     money: int
@@ -279,6 +280,8 @@ class Space:
     def onpass(self, player: Player):
         if self.spaceType == ST_GO:
             player.money += abs(self.cost)
+            return S_PASS_GO, abs(self.cost)
+        return S_NONE,
 
     def iterSpaces(self):
         #if we start on self, the last item in the list will be self,
@@ -341,7 +344,7 @@ class Board:
     def rollPlayer(self, player: Player, dSides: int):
         amount = random.randint(2, dSides * 2)
         player.lastRoll = amount
-        return self.move(player, amount)
+        yield from self.move(player, amount)
 
     #moves the player DOES NOT ROLL DICE
     def move(self, player: Player, amount: int):
@@ -350,11 +353,11 @@ class Board:
         curSpace.onleave(player)
         for i in range(amount):
             curSpace = curSpace.next
-            curSpace.onpass(player)
+            yield curSpace.onpass(player)
         status = curSpace.onland(player)
 
         self.playerSpaces[player.id] = curSpace
-        return status
+        yield status
 
     def toJson(self):
         dict =  {

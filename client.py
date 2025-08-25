@@ -47,6 +47,9 @@ class Client(abc.ABC):
     async def PAY_TAX(self, player: Player, amount: int, tax: str):
         await self.write(self.mknotif(f"{player.name} paid {amount} in {tax} taxes"))
 
+    async def PASS_GO(self, player: Player, amount: int):
+        await self.write(self.mknotif(f"{player.name} passed go and got ${amount}"))
+
     async def NONE(self, *data):
         pass
 

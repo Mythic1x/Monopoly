@@ -73,12 +73,6 @@ class Game:
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
         await self.run(player)
 
-    def startTurn(self):
-        #START STATUS
-        roll = random.randint(2, self.dSides * 2)
-        status = self.board.move(self.curPlayer, roll)
-        return status
-
     def endTurn(self):
         self.advanceTurn()
 
@@ -94,10 +88,7 @@ class Game:
         #player-info should only be used when the ui is connecting or calling send-player-info
 
         match action["action"]:
-            case "start-turn":
-                status, *data = self.startTurn()
-                await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
-                await client.handleStatus(status, self.curPlayer, data)
+
             case "end-turn":
                 self.endTurn()
                 await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
@@ -112,10 +103,10 @@ class Game:
                 await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 
             case "roll":
-                status, *data = self.board.rollPlayer(player, self.dSides)
-                await client.write({"response": "current-space", "value": player.space.toJson()})
+                for status, *data in self.board.rollPlayer(player, self.dSides):
+                    await client.write({"response": "current-space", "value": player.space.toJson()})
+                    await client.handleStatus(status, player, data)
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
-                await client.handleStatus(status, player, data)
 
             case "set-details":
                 details = action["details"]
