@@ -266,7 +266,7 @@ Short Line {
 
 Income Tax {
     type = INCOME_TAX;
-    rent = onrent_incometax;
+    onland = onland_incometax;
     cost = 0;
     not_purchaseable = true;
 }
@@ -274,7 +274,7 @@ Income Tax {
 Luxury Tax {
     type = LUXURY_TAX;
     cost = 0;
-    rent = onrent_luxurytax;
+    onland = onland_luxurytax;
     not_purchaseable = true;
 }
 

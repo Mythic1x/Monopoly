@@ -317,17 +317,14 @@ class Space:
 
         if self.isUnowned() and self.purchaseable:
             yield PROMPT_TO_BUY(self)
-            return
 
-        #we can't check if self.owner here because some spaces
-        #such as luxury tax rely on this running to run the onrent_luxurytax function
-        if not player.owns(self):
+        if not player.owns(self) and self.owner:
             rent = self.attrs.get("rent")
             if not rent:
                 yield NONE()
                 return
             rent = str(rent)
-            if rent.isnumeric() and self.owner:
+            if rent.isnumeric():
                 yield player.payRent(self.owner, self)
                 return
             elif (fn := getattr(self, rent)) and callable(fn):
@@ -356,13 +353,13 @@ class Space:
             player.pay(owed, self.owner)
             return PAY_OTHER(owed, self.owner)
 
-    def onrent_incometax(self, player: Player):
+    def onland_incometax(self, board: "Board", player: Player):
         player.money -= round(player.money * 0.10)
-        return PAY_TAX(round(player.money * 0.10), "income")
+        yield PAY_TAX(round(player.money * 0.10), "income")
 
-    def onrent_luxurytax(self, player: Player):
+    def onland_luxurytax(self, board: "Board", player: Player):
         player.money -= 75
-        return PAY_TAX(75, "luxury")
+        yield PAY_TAX(75, "luxury")
 
     def onleave(self, player: Player):
         self.players.remove(player)
