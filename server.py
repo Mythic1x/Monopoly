@@ -171,9 +171,9 @@ async def gameServer(ws: ServerConnection):
         await game.rejoin(player)
     else:
         player = Player(str(ws.id), len(game.clients), c)
-        ipConnections[ws.remote_address[0]] = player
         lobby.join(player)
         await lobby.moveToGame(player, game)
+        ipConnections[ws.remote_address[0]] = player
 
 async def main():
     if len(sys.argv) > 1 and sys.argv[1] == "t":
