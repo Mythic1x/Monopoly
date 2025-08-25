@@ -2,6 +2,7 @@ import { Board, Space } from "../../index";
 
 interface Props {
     board: Board
+    children?: React.ReactNode
 }
 
 type Logo = "QUESTION_MARK" | "CHEST"
@@ -43,7 +44,7 @@ function Space({ space, pieces }: { space: Space, pieces: string[] }) {
     </>
 }
 
-function GameBoard({ board }: Props) {
+function GameBoard({ board, children }: Props) {
     const colCount = board.spaces.length / 4 + 1
     const rowCount = board.spaces.length / 4 + 1
 
@@ -88,6 +89,7 @@ function GameBoard({ board }: Props) {
     return <>
         <div className="board">
             {spaces}
+            {children}
         </div>
     </>
 }

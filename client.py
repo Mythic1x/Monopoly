@@ -33,6 +33,8 @@ class Client(abc.ABC):
 
     async def BUY_NEW_SET(self, player: Player, space: Space):
         await self.write({"response": "notification", "value": f"{player.name} successfully bought {space.name} for a complete {space.color} set"})
+    async def MONEY_GIVEN(self, player: Player, amount: int):
+        await self.write({"response": "notification", "value": f"{player.name} gained {amount}"})
 
     async def NONE(self, *data):
         pass

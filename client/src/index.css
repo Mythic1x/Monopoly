@@ -2,10 +2,43 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
         Arial, sans-serif;
         margin: 0;
+    background-color: var(--main);
 }
-
+:root {
+    --main:rgb(33, 33, 46)
+}
 .board-container {
     width: fit-content;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        bottom: 80%;
+    }
+
+    90% {
+        visibility: visible;
+        opacity: 1;
+        bottom: 84%;
+    }
+
+    100% {
+        bottom: 84%;
+        opacity: 0;
+    }
+}
+.alert {
+    position: absolute;
+    left: 31%;
+    color: indianred;
+    font-size: 2rem;
+    animation: fadeIn 2.5s;
+    visibility: hidden;
+    max-width: 80%;
+    margin: 0 10%;
+    text-wrap: wrap;
+    z-index: 1000; 
 }
 
 #game {
@@ -18,7 +51,12 @@ body {
     display: grid;
     grid-template-columns: repeat(11, 1fr);
     grid-template-rows: repeat(11, 1fr);
+
     background-color: #c9e3cd;
+    background-image: url(https://static.seceurity.place/assets/monopoly/logo.png );
+    background-size: 500px;
+    background-repeat: no-repeat;
+    background-position: center;
 
     width: fit-content;
 
@@ -62,8 +100,38 @@ body {
     .cost[data-earn="true"]::after {
         content: "You earn $" attr(data-cost);
     }
+
+    .button-container {
+        position: absolute;
+        top: 55%;
+        left: 48%;
+        transform: translate(-50%, -50%);
+    }
 }
 
+.button-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+    button {
+        padding: 10px;
+        border-radius: 15px;
+        border: none;
+        background-color: var(--main);
+        color: white;
+        cursor: pointer;
+        --scale: 1;
+        transform: scale(var(--scale));
+        &:hover:not(:active):not([disabled]){
+            --scale: 1.1;
+        } 
+    }
+}
+
+button[disabled] {
+    cursor: not-allowed;
+    background-color: hsl(from var(--main) h s 40%);
+}
 .selection-box {
     --fucking-blue: #007bff;
     position: absolute;

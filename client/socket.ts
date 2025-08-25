@@ -1,1 +1,1 @@
-export const socketAddr = "ws://5.78.105.163:8765"
+export const socketAddr = "ws://localhost:8765"

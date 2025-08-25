@@ -24,7 +24,7 @@ function App() {
     }, [lastJsonMessage, readyState])
     if (playerDetails) {
         return <>
-            <center><h1>Monopoly</h1></center>
+            <center><h1 style={{color: "white"}}>Monopoly</h1></center>
             <Monopoly playerDetails={playerDetails} ></Monopoly>
         </>
     } else {

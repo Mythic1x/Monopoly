@@ -8,6 +8,7 @@ S_BUY_SUCCESS = "BUY_SUCCESS"
 S_BUY_NEW_SET = "BUY_NEW_SET"
 S_PROMPT_TO_BUY = "PROMPT_TO_BUY"
 S_MONEY_LOST = "MONEY_LOST"
+S_MONEY_GIVEN = "MONEY_GIVEN"
 S_NONE = "NONE"
 
 class Player:
@@ -61,7 +62,7 @@ class Player:
         return False
 
     def buy(self, space: "Space"):
-        if space.cost > self.money or not space.purchaseable:
+        if space.cost > self.money or not space.purchaseable or space.owner:
             return S_BUY_FAIL, space
 
         self.money -= space.cost
@@ -224,8 +225,8 @@ class Space:
         player.space = self
 
         if self.cost < 0:
-            player.money -= abs(self.cost)
-            return S_MONEY_LOST, abs(self.cost)
+            player.money += abs(self.cost)
+            return S_MONEY_GIVEN, abs(self.cost)
 
         if self.isUnowned() and self.purchaseable:
             return S_PROMPT_TO_BUY, self
@@ -256,7 +257,10 @@ class Space:
         }[self.owner.getOwnedRailroads()]
         if owed:
             player.pay(owed, self.owner)
-
+    def onrent_incometax(self, player: Player):
+        player.money -= round(player.money * 0.10)
+    def onrent_luxurytax(self, player: Player):
+        player.money -= 75
     def onleave(self, player: Player):
         self.players.remove(player)
 
@@ -277,6 +281,7 @@ class Space:
         for key in self.__dict__:
             if not callable(self.__dict__[key]) and not key.startswith("_"):
                 if type(self.__dict__[key]) is Player:
+                    dict[key] = self.__dict__[key].id
                     continue
                 if type(self.__dict__[key]) is Space:
                     continue
@@ -322,7 +327,7 @@ class Board:
 
     #rolls the dice for a player
     def rollPlayer(self, player: Player, dSides: int):
-        amount = random.randint(1, dSides)
+        amount = random.randint(2, dSides * 2)
         player.lastRoll = amount
         return self.move(player, amount)
 

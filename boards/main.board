@@ -266,13 +266,15 @@ Short Line {
 
 Income Tax {
     type = INCOME_TAX;
-    cost = -200;
+    rent = onrent_incometax;
+    cost = 0;
     not_purchaseable = true;
 }
 
 Luxury Tax {
     type = LUXURY_TAX;
-    cost = -100;
+    cost = 0;
+    rent = onrent_luxurytax;
     not_purchaseable = true;
 }
 

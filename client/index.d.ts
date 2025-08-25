@@ -9,10 +9,10 @@ type _responses = {
     "player-info": Player
     "prompt": string
     "join-game": string
-    "player-list": Player[] 
-    "reconnect": {"name": string, "piece": string}
+    "player-list": Player[]
+    "reconnect": { "name": string, "piece": string }
 }
-type ServerResponse = {response: infer A extends keyof _responses, value: _responses[A]}
+type ServerResponse = { response: infer A extends keyof _responses, value: _responses[A] }
 
 export interface Board {
     space: Space
@@ -27,15 +27,16 @@ export interface Space {
     players: Player[];
     cost: number;
     name: string;
-    owner: Player | null;
+    owner: playerid_t | null;
     setAmount: number;
     attrs: { [key: string]: any };
     id: string
 }
+type playerid_t = string | (Object & string)
 
 export interface Player {
     money: number;
-    id: string;
+    id: playerid_t
     playerNumber: number;
     ownedSpaces: Space[] | [];
     piece: string
