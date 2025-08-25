@@ -88,6 +88,11 @@ class Game:
 
     async def handleAction(self, action: dict[str, Any], player: Player):
         client: Client = player.client
+        
+        #player-info is for the ui to know who the player is
+        #player-list is generally how the ui knows the information about all the players
+        #player-info should only be used when the ui is connecting or calling send-player-info
+
         match action["action"]:
             case "start-turn":
                 status, *data = self.startTurn()
@@ -128,7 +133,6 @@ class Game:
                 result, *data = player.buy(property)
                 await self.broadcastStatus(result, player, data)
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
-        await client.write({"response": "player-info", "value": player.toJson()})
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 
     async def run(self, player: Player):
