@@ -89,7 +89,8 @@ class Player:
             "piece": self.piece,
             "space": self.space.id,
             "sets": self.sets,
-            "name": self.name
+            "name": self.name,
+            "ownedSpaces": [space.id for space in self.ownedSpaces]
         }
 
 type spacetype_t = int

@@ -155,6 +155,7 @@ async def gameServer(ws: ServerConnection):
         await game.rejoin(player)
     else:
         player = Player(str(ws.id), len(game.clients), c)
+        ipConnections[ws.remote_address[0]] = player
         lobby.join(player)
         await lobby.moveToGame(player, game)
 

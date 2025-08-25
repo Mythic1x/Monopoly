@@ -24,6 +24,15 @@ function Monopoly({ playerDetails }: any) {
     }, [readyState])
 
     useEffect(() => {
+        const id = setInterval(() => {
+            sendJsonMessage({ "action": "send-player-info" })
+        }, 200)
+
+        return () => clearInterval(id)
+    }, [])
+
+
+    useEffect(() => {
         const message = lastJsonMessage as ServerResponse
         if (!message) return
         switch (message.response) {
