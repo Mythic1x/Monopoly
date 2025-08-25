@@ -239,7 +239,7 @@ Water Company {
     set_size = 2;
 }
 
-Pennsylvania Avenue {
+Pennsylvania Railroad {
     type = RAILROAD;
     cost = 200;
     rent = onrent_railroad;
@@ -319,7 +319,7 @@ Passing GO {
 
 start = Passing GO -> Mediterranean Avenue -> Community Chest -> Baltic Avenue -> Income Tax -> Reading Railroad -> Oriental Avenue -> Chance -> Vermont Avenue -> Connecticut Avenue;
 
-left = Jail -> St. Charles Place -> Electric Company -> States Avenue -> Virginia Avenue -> Pennsylvania Avenue -> St. James Place -> Community Chest -> Tennessee Avenue -> New York Avenue -> Free Parking;
+left = Jail -> St. Charles Place -> Electric Company -> States Avenue -> Virginia Avenue -> Pennsylvania Railroad -> St. James Place -> Community Chest -> Tennessee Avenue -> New York Avenue -> Free Parking;
 
 top = Kentucky Avenue -> Chance -> Indiana Avenue -> Illinois Avenue -> B&O Railroad -> Atlantic Avenue -> Ventor Avenue -> Water Company -> Marvin Gardens -> Go To Jail;
 
