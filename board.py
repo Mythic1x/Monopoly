@@ -396,6 +396,12 @@ class Board:
 
         yield from self.move(player, amount)
 
+    #call order  using an example event: onland
+    #space.onland (DOES NOT STOP HERE)
+    #<board-name>.onland_<space-name>()
+    #<generic>.onland_<spae-name>()
+    #<board-name>.onland()
+    #<generic>.onland()
     def runevent(self, name: str, space: Space, player: Player):
         if hasattr(space, name):
             yield from getattr(space, name)(player)
