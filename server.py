@@ -139,6 +139,7 @@ class Game:
                 await self.broadcastStatus(result, player, data)
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
                 await client.write({"response": "current-space", "value": player.space.toJson()})
+
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 
     async def run(self, player: Player):

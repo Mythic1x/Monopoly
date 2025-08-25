@@ -281,12 +281,15 @@ Luxury Tax {
 Jail {
     type = JAIL;
     cost = 0;
+
+    bailcost = 50;
 }
 
 Go To Jail {
     type = GOTO_JAIL;
     cost = 0;
     not_purchaseable = true;
+    onland = onland_goto_jail;
 }
 
 Community Chest {

@@ -15,6 +15,7 @@ S_NONE: status_t = "NONE"
 S_PAY_OTHER: status_t = "PAY_OTHER"
 S_PAY_TAX: status_t = "PAY_TAX"
 S_PASS_GO: status_t = "PASS_GO"
+S_PAY_JAIL: status_t = "PAY_JAIL"
 
 type statusreturn_t = tuple[status_t, Any]
 
@@ -30,6 +31,13 @@ class Player:
     piece: str
     lastRoll: int
 
+    inJail: bool
+    jailDoublesRemaining: int
+
+    JAIL_DOUBLES_FAIL = 0
+    JAIL_DOUBLES_SUCCESS = 1
+    JAIL_DOUBLES_FORCE_LEAVE = -1
+
     def __init__(self, id: str, playerNumber: int, client, money: int = 1500):
         self.money = money
         self.id = id
@@ -41,6 +49,29 @@ class Player:
         self.client = client
         self.sets = []
         self.lastRoll = 0
+        self.inJail = False
+        self.jailDoublesRemaining = 3
+
+    def gotoJail(self, jail: "Space"):
+        self.jailDoublesRemaining = 3
+        self.inJail = True
+        self.space = jail
+
+    def leaveJail(self):
+        self.inJail = False
+
+    def tryDouble(self, roll1: int, roll2: int):
+        """
+        returns Player.JAIL_DOUBLES_SUCCESS if the double succeeds
+        returns Player.JAIL_DOUBLES_FAIL if the double fails
+        returns Player.JAIL_DOUBLES_FORCE_LEAVE if the player must leave jail
+        """
+        if roll1 == roll2:
+            return Player.JAIL_DOUBLES_SUCCESS
+        self.jailDoublesRemaining -= 1
+        if self.jailDoublesRemaining == 1:
+            return Player.JAIL_DOUBLES_FORCE_LEAVE
+        return Player.JAIL_DOUBLES_FAIL
 
     def owns(self, space: "Space"):
         return False if not space.owner else space.owner.id == self.id
@@ -49,7 +80,7 @@ class Player:
         self.money -= amount
         other.money += amount
 
-    def payRent(self, other: Self, space: "Space"):
+    def payRent(self, other: Self, space: "Space") -> statusreturn_t:
         amount = space.calculatePropertyRent(self.hasSet(space.color, space.set_size))
         self.pay(amount, other)
         return S_PAY_OTHER, amount, other
@@ -121,6 +152,7 @@ class SpaceAttr:
     name: str
     default_factory: Callable[[], Any]
     def __init__(self, default_factory: Callable[[], Any]):
+        self.name = ""
         self.default_factory = default_factory
 
     def __set_name__(self, owner, name: str):
@@ -225,31 +257,47 @@ class Space:
             self.players.append(player)
             player.space = self
 
-    def onland(self, player: Player) -> statusreturn_t:
+    def onland_goto_jail(self, board: "Board", player: Player):
+        jail = board.findJail()
+        if jail:
+            player.gotoJail(jail)
+            yield from board.moveTo(player, jail)
+
+    def onland(self, board: "Board", player: Player) -> Generator[statusreturn_t]:
         print("you landed on " + self.name)
 
         self.players.append(player)
         player.space = self
 
+        if (onland := self.attrs.get("onland")) and callable(onland := getattr(self, onland)):
+            print(self.attrs)
+            yield from onland(board, player)
+            return
+
         if self.cost < 0:
             player.money += abs(self.cost)
-            return S_MONEY_GIVEN, abs(self.cost)
+            yield S_MONEY_GIVEN, abs(self.cost)
+            return
 
         if self.isUnowned() and self.purchaseable:
-            return S_PROMPT_TO_BUY, self
+            yield S_PROMPT_TO_BUY, self
+            return
 
         #we can't check if self.owner here because some spaces
         #such as luxury tax rely on this running to run the onrent_luxurytax function
         if not player.owns(self):
             rent = self.attrs.get("rent")
             if not rent:
-                return S_NONE, None
+                yield S_NONE, None
+                return
             rent = str(rent)
             if rent.isnumeric() and self.owner:
-                return player.payRent(self.owner, self)
+                yield player.payRent(self.owner, self)
+                return
             elif (fn := getattr(self, rent)) and callable(fn):
-                return fn(player)
-        return S_NONE, None
+                yield fn(player)
+                return
+        yield S_NONE, None
 
     def onrent_utility(self, player: Player):
         if self.owner is None or self.owner.id == player.id:
@@ -313,15 +361,6 @@ class Space:
         return dict 
 
 
-def onland_railroad(self, rr: Space, player: Player):
-    if rr.isUnowned(): 
-        #prompt player
-        pass
-    elif rr.owner is not player:
-        self.onrent_railroad(self, player)
-        pass
-        
-
 class Board:
     #the board keeps track of only the starting space
     #because the space will point to the next space and so on
@@ -347,15 +386,36 @@ class Board:
                 return space
         return None
 
+    def findJail(self):
+        for space in self.startSpace.iterSpaces():
+            if space.spaceType == ST_JAIL:
+                return space
+        return None
+
     def moveTo(self, player: Player, space: Space):
         self.playerSpaces[player.id].onleave(player)
         self.playerSpaces[player.id] = space
-        yield space.onland(player)
+        yield from space.onland(self, player)
 
     #rolls the dice for a player
     def rollPlayer(self, player: Player, dSides: int) -> Generator[statusreturn_t]:
-        amount = random.randint(2, dSides * 2)
+        d1 = random.randint(1, dSides)
+        d2 = random.randint(1, dSides)
+        amount = d1 + d2
+
         player.lastRoll = amount
+
+        if player.inJail:
+            match player.tryDouble(d1, d2):
+                case Player.JAIL_DOUBLES_FAIL:
+                    return
+                case Player.JAIL_DOUBLES_SUCCESS:
+                    yield S_NONE, None
+                    return
+                case Player.JAIL_DOUBLES_FORCE_LEAVE:
+                    player.money -= 50
+                    yield S_PAY_JAIL, player.space.attrs["bailcost"]
+
         yield from self.move(player, amount)
 
     #moves the player DOES NOT ROLL DICE
@@ -366,10 +426,9 @@ class Board:
         for i in range(amount):
             curSpace = curSpace.next
             yield curSpace.onpass(player)
-        status = curSpace.onland(player)
+        yield from curSpace.onland(self, player)
 
         self.playerSpaces[player.id] = curSpace
-        yield status
 
     def toJson(self):
         dict =  {
