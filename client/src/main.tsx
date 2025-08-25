@@ -5,11 +5,12 @@ import GameBoard from './components/board';
 import usePlayer from './hooks/useplayer';
 import Monopoly from './components/Monopoly';
 import PlayerSetup from './components/PlayerSetup';
+import { socketAddr } from '../socket'
 
 
 function App() {
     const [playerDetails, setPlayerDetails] = useState(null)
-    const { lastJsonMessage, readyState, } = useWebSocket("ws://localhost:8765", {
+    const { lastJsonMessage, readyState, } = useWebSocket(socketAddr, {
         share: true
     })
     useEffect(() => {

@@ -4,6 +4,7 @@ import PlayerCard from "./PlayerCard"
 import useWebSocket, { ReadyState } from "react-use-websocket/dist"
 import usePlayer from "../hooks/useplayer"
 import GameBoard from "./board"
+import { socketAddr } from "../../socket"
 
 function Monopoly({ playerDetails }: any) {
     const [rolled, setRolled] = useState<boolean>(false)
@@ -12,7 +13,7 @@ function Monopoly({ playerDetails }: any) {
     const [loading, setLoading] = useState(true)
     const [currentSpace, setCurrentSpace] = useState<Space | null>(null)
     const [goingPlayer, setGoingPlayer] = useState<Player | null>(null)
-    const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket("ws://localhost:8765", {
+    const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket(socketAddr, {
         share: true
     })
     const { player, playerLoaded } = usePlayer()

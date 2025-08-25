@@ -1,11 +1,12 @@
 import { Player, ServerResponse } from "../../index";
 import { useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket/dist";
+import { socketAddr } from "../../socket";
 
 export default function usePlayer() {
     const [player, setPlayer] = useState<Player | null>(null)
     const [playerLoaded, setPlayerLoaded] = useState(false)
-    const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket("ws://localhost:8765", {
+    const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket(socketAddr, {
         share: true
     })
     useEffect(() => {
