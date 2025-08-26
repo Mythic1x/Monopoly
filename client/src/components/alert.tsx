@@ -1,5 +1,5 @@
 export default function Alert({ alert }: { alert: string }) {
     return <>
-        <span className="alert">{alert}</span>
+        <div className="alert">{alert}</div>
     </>
 }

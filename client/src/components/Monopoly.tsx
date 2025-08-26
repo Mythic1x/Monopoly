@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Board, Space, Player, ServerResponse } from "../../index"
 import PlayerCard from "./PlayerCard"
 import useWebSocket, { ReadyState } from "react-use-websocket/dist"
@@ -8,7 +8,8 @@ import { socketAddr } from "../../socket"
 import Alert from "./alert"
 
 function Monopoly({ playerDetails }: any) {
-    const [notification, alert] = useState('')
+    const alertQ = useRef<string[]>([])
+
     const [rolled, setRolled] = useState<boolean>(false)
     const [players, setPlayers] = useState<Player[] | []>([])
     const [board, setBoard] = useState<Board | null>(null)
@@ -21,24 +22,30 @@ function Monopoly({ playerDetails }: any) {
     const { player, playerLoaded } = usePlayer()
 
     window["findSpaceByName"] = (name: string) => {
-        for(let space of board.spaces) {
-            if(space.name.toLowerCase() === name.toLowerCase()) {
+        for (let space of board.spaces) {
+            if (space.name.toLowerCase() === name.toLowerCase()) {
                 return space
             }
         }
     }
     window["me"] = player
 
+    function alert(text: string) {
+        alertQ.current.push(text)
+    }
+
+    useEffect(() => {
+        const id = setInterval(() => {
+            alertQ.current.shift()
+        }, 2500)
+        return () => clearInterval(id)
+    }, [])
+
     useEffect(() => {
         if (readyState === ReadyState.OPEN) {
             sendJsonMessage({ "action": "set-details", "details": playerDetails })
         }
     }, [readyState])
-
-    useEffect(() => {
-        const id = setTimeout(() => alert(''), 2500)
-        return () => clearTimeout(id)
-    }, [notification])
 
     useEffect(() => {
         const message = lastJsonMessage as ServerResponse
@@ -80,7 +87,9 @@ function Monopoly({ playerDetails }: any) {
         <div id="game">
             <div className="board-container">
                 <GameBoard board={board} player={player}>
-                    {notification && <Alert alert={notification} />}
+                    <div className="alert-container">
+                    {alertQ.current.map(v => <Alert alert={v} />)}
+                    </div>
                     <div className="button-container">
                         <button className="roll" disabled={goingPlayer?.id !== player.id || rolled} onClick={() => {
                             sendJsonMessage({ "action": "roll" })

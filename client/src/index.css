@@ -13,31 +13,17 @@ body {
     width: fit-content;
 }
 
-@keyframes fadeIn {
-    0% {
-        opacity: 0;
-        bottom: 80%;
-    }
-
-    90% {
-        visibility: visible;
-        opacity: 1;
-        bottom: 84%;
-    }
-
-    100% {
-        bottom: 84%;
-        opacity: 0;
-    }
+.alert-container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 10%;
+    width: 100%;
 }
 
 .alert {
-    position: absolute;
-    left: 31%;
     color: indianred;
     font-size: 2rem;
-    animation: fadeIn 2.5s;
-    visibility: hidden;
     max-width: 80%;
     margin: 0 10%;
     text-wrap: wrap;
@@ -52,28 +38,28 @@ body {
 
 /* 2. Style the card's container */
 .space-card-container {
-  
-  opacity: 0;
-  visibility: hidden;
 
-  
-  position: absolute;
-  bottom: 100%; 
-  left: 50%;
-  transform: translateX(-50%); 
-  
- 
-  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+    opacity: 0;
+    visibility: hidden;
 
-  
-  pointer-events: none;
-  z-index: 10; 
+
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+
+
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+
+
+    pointer-events: none;
+    z-index: 10;
 }
 
 .space:hover .space-card-container {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto; 
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
 .space-card {
@@ -89,11 +75,13 @@ body {
     background-color: gold;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
 }
+
 .house-buttons-container {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
+
 .board {
     aspect-ratio: 1;
     display: grid;
@@ -159,6 +147,8 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
 
+    z-index: 2;
+
     display: flex;
     flex-direction: row;
     gap: 0.5em;
@@ -180,19 +170,19 @@ body {
 }
 
 button {
-        padding: 10px;
-        border-radius: 15px;
-        border: none;
-        background-color: var(--main);
-        color: white;
-        cursor: pointer;
-        --scale: 1;
-        transform: scale(var(--scale));
+    padding: 10px;
+    border-radius: 15px;
+    border: none;
+    background-color: var(--main);
+    color: white;
+    cursor: pointer;
+    --scale: 1;
+    transform: scale(var(--scale));
 
-        &:hover:not(:active):not([disabled]) {
-            --scale: 1.1;
-        }
+    &:hover:not(:active):not([disabled]) {
+        --scale: 1.1;
     }
+}
 
 button[disabled] {
     cursor: not-allowed;
