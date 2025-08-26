@@ -17,7 +17,6 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
         } else {
             const set = player.ownedSpaces.filter((s: Space) => s.attrs.color === space.attrs.color)
             for (const playerSpace of set) {
-            console.log(space.houses, playerSpace.houses)
                 if (space.houses > playerSpace.houses) {
                     return false
                 }

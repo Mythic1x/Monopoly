@@ -31,5 +31,5 @@ export default function usePlayer() {
             }
         }
     }, [lastJsonMessage])
-    return { player, playerLoaded }
+    return { player, playerLoaded, setPlayer }
 }

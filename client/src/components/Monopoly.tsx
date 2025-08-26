@@ -27,7 +27,7 @@ function Monopoly({ playerDetails }: any) {
     const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket(socketAddr, {
         share: true
     })
-    const { player, playerLoaded } = usePlayer()
+    const { player, playerLoaded, setPlayer } = usePlayer()
 
     window["findSpaceByName"] = (name: string) => {
         for (let space of board.spaces) {
@@ -84,9 +84,16 @@ function Monopoly({ playerDetails }: any) {
         if (!messages) return
         for (let message of Array.isArray(messages) ? messages : [messages]) {
             switch (message.response) {
-                case "player-list":
+                case "player-list": {
+                    if(playerLoaded)
+                        for(let p of message.value) {
+                            if(p.id === player.id) {
+                                setPlayer(p)
+                            }
+                        }
                     setPlayers(message.value)
                     break
+                }
                 case "board":
                     setBoard(message.value)
                     setLoading(false)
@@ -97,9 +104,10 @@ function Monopoly({ playerDetails }: any) {
                 case 'next-turn':
                     setGoingPlayer(message.value)
                     break
-                case 'new-set':
+                case 'new-set': {
                     const [color, player] = message.value.split(";")
                     alert(`${player} achieved the set for ${color}`)
+                }
                 case "notification":
                     alert(message.value)
                     break
