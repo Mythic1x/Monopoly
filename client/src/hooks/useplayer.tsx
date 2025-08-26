@@ -18,10 +18,17 @@ export default function usePlayer() {
 
     useEffect(() => {
         const message = lastJsonMessage as ServerResponse
-         if(!message) return
-        if (message.response === "player-info") {
-            setPlayer(message.value)
-            setPlayerLoaded(true)
+        if (!message) return
+        if (Array.isArray(message)) {
+            if (message[0].response === "player-info") {
+                setPlayer(message[0].value)
+                setPlayerLoaded(true)
+            }
+        } else {
+            if (message.response === "player-info") {
+                setPlayer(message.value)
+                setPlayerLoaded(true)
+            }
         }
     }, [lastJsonMessage])
     return { player, playerLoaded }

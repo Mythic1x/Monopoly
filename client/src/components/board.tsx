@@ -34,7 +34,7 @@ function renderSpaceNameFromSpace(space: Space) {
     return <span className="name">{space.name}</span>
 }
 
-function Space({ space, pieces, player }: { space: Space, pieces: string[], player: Player }) {
+function BoardSpace({ space, pieces, player }: { space: Space, pieces: string[], player: Player }) {
     return <>
         <div className="space" data-color={space.attrs.color} onClick={() => console.log(space.id)}>
             <div className="space-card-container">
@@ -64,25 +64,25 @@ function GameBoard({ board, player, children }: Props) {
         }
         if (row === 0) {
             const space = board.spaces[spaceNo]
-            spaces.push(<Space space={space} player={player} pieces={space.players.map((player) => (
+            spaces.push(<BoardSpace space={space} player={player} pieces={space.players.map((player) => (
                 player.piece
             ))} />)
             spaceNo++
         } else if (row === rowCount - 1) {
             const space: Space = board.spaces[spaceNo - col * 2 + 1]
-            spaces.push(<Space space={space} player={player} pieces={space.players.map((player) => (
+            spaces.push(<BoardSpace space={space} player={player} pieces={space.players.map((player) => (
                 player.piece
             ))} />)
             spaceNo++
         } else if (col === colCount - 1) {
             const space = board.spaces[spaceNo - row]
-            spaces.push(<Space space={space} player={player} pieces={space.players.map((player) => (
+            spaces.push(<BoardSpace space={space} player={player} pieces={space.players.map((player) => (
                 player.piece
             ))} />)
             spaceNo++
         } else if (col === 0) {
             const space = board.spaces[spaceNo - row * 3 + ((colCount - 1) * 3 + 1)]
-            spaces.push(<Space space={space} player={player} pieces={space.players.map((player) => (
+            spaces.push(<BoardSpace space={space} player={player} pieces={space.players.map((player) => (
                 player.piece
             ))} />)
             spaceNo++

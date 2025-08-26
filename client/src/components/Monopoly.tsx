@@ -6,6 +6,7 @@ import usePlayer from "../hooks/useplayer"
 import GameBoard from "./board"
 import { socketAddr } from "../../socket"
 import Alert from "./alert"
+import TradeMenu from "./TradeMenu"
 
 function Monopoly({ playerDetails }: any) {
     const [alertQ, setAQ] = useState<string[]>([])
@@ -52,13 +53,6 @@ function Monopoly({ playerDetails }: any) {
         }
     }, [readyState])
 
-    function acceptTrade(trade: Trade) {
-        sendJsonMessage({
-            action: "accept-trade",
-            trade: trade.trade,
-            with: trade.with
-        })
-    }
 
     useEffect(() => {
         let messages = lastJsonMessage as ServerResponse
@@ -90,7 +84,7 @@ function Monopoly({ playerDetails }: any) {
                     break
                 case "trade-proposal":
                     console.log(message.value)
-                    tradeDialog.current.show()
+                    tradeDialog.current.showModal()
                     setCurrentTrade(message.value)
                     break
             }
@@ -104,20 +98,7 @@ function Monopoly({ playerDetails }: any) {
     }
 
     return <>
-        <dialog ref={tradeDialog} id="trade-dialog">
-            <button onClick={() => tradeDialog.current.close()} className="close-button">X</button>
-            <div className="want">
-                <h4>Want</h4>
-                <p>&lt;- ${currentTrade?.trade.want.money || 0}</p>
-            </div>
-            <div className="give">
-                <h4>Give</h4>
-                <p>-&gt; ${currentTrade?.trade.give.money}</p>
-            </div>
-            <button onClick={() => acceptTrade(currentTrade)}>
-            ✅
-            </button>
-        </dialog>
+        <TradeMenu players={players} tradeDialog={tradeDialog} currentTrade={currentTrade}></TradeMenu>
 
         <div id="game">
             <div className="board-container">
@@ -130,7 +111,7 @@ function Monopoly({ playerDetails }: any) {
                             sendJsonMessage({ "action": "roll" })
                             setRolled(true)
                         }}>Roll</button>
-                        {(goingPlayer?.id === player.id) && <button className="buy" disabled={!!currentSpace?.owner} onClick={() => {
+                        {(goingPlayer?.id === player.id) && <button className="buy" disabled={!!currentSpace?.owner || !currentSpace.purchaseable} onClick={() => {
                             sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })
                         }}>Buy Property</button>
                         }
@@ -138,7 +119,7 @@ function Monopoly({ playerDetails }: any) {
                             sendJsonMessage({ "action": "end-turn" })
                             setRolled(false)
                         }}>End Turn</button>
-                        <button onClick={() => sendJsonMessage({"action": "propose-trade", "trade": {"give": {"money": 10}, "want": {}}, "playerid": player.id})} >
+                        <button onClick={() => sendJsonMessage({ "action": "propose-trade", "trade": { "give": { "money": 10 }, "want": {} }, "playerid": player.id })} >
                             Trade
                         </button>
                     </div>

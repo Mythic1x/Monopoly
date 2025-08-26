@@ -28,7 +28,7 @@ body {
     max-width: 80%;
     margin: 0 10%;
     text-wrap: wrap;
-    z-index: 1000;
+    z-index: 15;
 }
 
 #game {
@@ -54,7 +54,7 @@ body {
 
 
     pointer-events: none;
-    z-index: 10;
+    z-index: 20;
 }
 
 .space:hover .space-card-container {
@@ -240,12 +240,39 @@ button[disabled] {
 }
 
 #trade-dialog {
-    z-index: 2;
-    position: relative;
+    z-index: 10;
+    position: absolute;
+    top: 0%;
+    left: -12%;
+    height: 150px;
+    width: 150px;
+    height: fit-content;
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-radius: 5px;
+    background-color: var(--main);
+    color: white;
+    
 
     .close-button {
         position: absolute;
         right: 5px;
         top: 5px;
     }
+}
+
+#trade-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(2px);
+}
+
+.trade-button-container {
+    display: flex;
+    flex-direction: row;
+    button {
+        padding: 10px;
+        border-radius: 10px;
+        background-color: rgb(67, 150, 67);
+    }
+     
 }

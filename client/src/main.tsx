@@ -17,14 +17,20 @@ function App() {
     useEffect(() => {
         if (readyState === ReadyState.OPEN) {
             const message = lastJsonMessage as ServerResponse
-            if (message?.response === "reconnect") {
-                setPlayerDetails(message.value)
+            if (Array.isArray(message)) {
+                if (message[0]?.response === "reconnect") {
+                    setPlayerDetails(message[0].value)
+                }
+            } else {
+                if (message?.response === "reconnect") {
+                    setPlayerDetails(message.value)
+                }
             }
         }
     }, [lastJsonMessage, readyState])
     if (playerDetails) {
         return <>
-            <center><h1 style={{color: "white"}}>Monopoly</h1></center>
+            <center><h1 style={{ color: "white" }}>Monopoly</h1></center>
             <Monopoly playerDetails={playerDetails} ></Monopoly>
         </>
     } else {

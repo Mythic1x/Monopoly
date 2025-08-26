@@ -49,6 +49,7 @@ export interface Space {
     houseCost: number
     houses: number
     hotel: boolean
+    purchaseable: boolean
 }
 type playerid_t = string | (Object & string)
 
