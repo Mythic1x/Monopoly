@@ -129,7 +129,7 @@ function Monopoly({ playerDetails }: any) {
         <div id="game">
             <div className="board-container">
                 <GameBoard board={board} player={player}>
-                    <div className="alert-container">
+                    <div id="alert-container">
                         {alertQ.map(v => <Alert alert={v} />)}
                     </div>
                     <div className="button-container">

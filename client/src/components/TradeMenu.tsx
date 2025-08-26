@@ -25,11 +25,12 @@ export default function TradeMenu({ currentPlayer, players, tradeDialog, current
             with: trade.with
         })
     }
+
     return (
         <dialog ref={tradeDialog} id="trade-dialog">
             <button className="delete-button" onClick={() => tradeDialog.current.close()}>X</button>
             <div className="trade-menu-players">{players.map((player) => (
-                <button className="trade-list-player" onClick={() => {
+                <button className="trade-list-player" data-enable-shadow onClick={() => {
                     if (selectedPlayer === player) {
                         setSelectedPlayer(null)
                     } else {
@@ -65,34 +66,41 @@ function TradeSelection({ player, otherPlayer, sendJsonMessage }: { player: Play
                     <button className="space-give" onClick={() => {
                         setGive([...give, property])
                     }}>{property.name}</button>
-                ))}</div>
+                ))}
+            </div>
+
             <div className="give-list">
                 <h3 className="trade-selection-text">Give</h3>
+                <input type="text" className="give-money" placeholder="$0" onChange={(e) => setGiveMoney(Number(e.target.value))} />
                 {give.map((property) => (
                     <button className="space-give" onClick={() => {
-                        const updatedGive = give.filter(prop => prop.id !== property.id)
-                        setGive(updatedGive)
+                        const i = give.filter(prop => prop.id !== property.id)
+                        setGive(i)
                     }}>{property.name}</button>
                 ))}
-                <input type="text" className="give-money" placeholder="$0" onChange={(e) => setGiveMoney(Number(e.target.value))} /></div>
+            </div>
+
             <div className="receive-list">
                 <h3 className="trade-selection-text">Get</h3>
+                <input type="text" className="receieve-money" placeholder="$0" onChange={(e) => setReceieveMoney(Number(e.target.value))} />
                 {receieve.map((property) => (
                     <button className="receive" onClick={() => {
-                        const updatedReceieve = receieve.filter(prop => prop.id !== property.id)
-                        setReceieve(updatedReceieve)
+                        const i = receieve.filter(prop => prop.id !== property.id)
+                        setReceieve(i)
                     }}>{property.name}</button>
                 ))}
-                <input type="text" className="receieve-money" placeholder="$0" onChange={(e) => setReceieveMoney(Number(e.target.value))} />
             </div>
+
             <div className="receieve-options">
                 <h3 className="trade-selection-text">{`${otherPlayer.name}'s Properties`}</h3>
                 {canReceive.map((property) => (
                     <button className="receive" onClick={() => {
                         setReceieve([...receieve, property])
                     }}>{property.name}</button>
-                ))}</div>
-            <button className="send-trade" onClick={() => {
+                ))}
+            </div>
+
+            <button className="send-trade" data-enable-shadow onClick={() => {
                 const trade: Trade = {
                     trade: {
                         want: {
