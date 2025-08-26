@@ -149,6 +149,8 @@ body {
     .cost[data-earn="true"]::after {
         content: "You earn $" attr(data-cost);
     }
+
+    position: relative;
 }
 
 .button-container {
