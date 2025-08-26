@@ -1,3 +1,4 @@
+
 type _responses = {
     "board": Board,
     "assignment": string,
@@ -11,7 +12,12 @@ type _responses = {
     "join-game": string
     "player-list": Player[]
     "reconnect": { "name": string, "piece": string }
-    "trade-proposal": {
+    "trade-proposal": Trade
+}
+type ServerResponse = { response: infer A extends keyof _responses, value: _responses[A] } | { response: infer A extends keyof _responses, value: _responses[A] }[]
+
+type Trade = {
+    trade: {
         want: {
             properties: number[],
             money: number
@@ -21,8 +27,8 @@ type _responses = {
             money: number
         }
     }
+    with: string
 }
-type ServerResponse = { response: infer A extends keyof _responses, value: _responses[A] } |  { response: infer A extends keyof _responses, value: _responses[A] }[]
 
 export interface Board {
     space: Space

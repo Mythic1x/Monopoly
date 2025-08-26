@@ -18,6 +18,7 @@ body {
     flex-direction: column;
     position: absolute;
     top: 10%;
+    top: 30%;
     width: 100%;
 }
 
@@ -236,4 +237,15 @@ button[disabled] {
     min-height: 100px;
     min-width: 100px;
     background-color: coral;
+}
+
+#trade-dialog {
+    z-index: 2;
+    position: relative;
+
+    .close-button {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+    }
 }
