@@ -7,7 +7,8 @@
       "set_size": 2,
       "rent": 2,
       "house1": 10,
-      "hotel": 250
+      "hotel": 250,
+      "house_cost": 50
     },
     "Baltic Avenue": {
       "type": "PROPERTY",
@@ -16,7 +17,8 @@
       "set_size": 2,
       "rent": 4,
       "house1": 20,
-      "hotel": 450
+      "hotel": 450,
+      "house_cost": 50
     },
     "Oriental Avenue": {
       "type": "PROPERTY",
@@ -25,7 +27,8 @@
       "set_size": 3,
       "rent": 6,
       "house1": 30,
-      "hotel": 550
+      "hotel": 550,
+      "house_cost": 50
     },
     "Vermont Avenue": {
       "type": "PROPERTY",
@@ -34,7 +37,8 @@
       "set_size": 3,
       "rent": 6,
       "house1": 30,
-      "hotel": 550
+      "hotel": 550,
+      "house_cost": 50
     },
     "Connecticut Avenue": {
       "type": "PROPERTY",
@@ -43,7 +47,8 @@
       "set_size": 3,
       "rent": 8,
       "house1": 40,
-      "hotel": 600
+      "hotel": 600,
+      "house_cost": 50
     },
     "St. Charles Place": {
       "type": "PROPERTY",
@@ -52,7 +57,8 @@
       "set_size": 3,
       "rent": 10,
       "house1": 50,
-      "hotel": 750
+      "hotel": 750,
+      "house_cost": 100
     },
     "States Avenue": {
       "type": "PROPERTY",
@@ -61,7 +67,8 @@
       "set_size": 3,
       "rent": 10,
       "house1": 50,
-      "hotel": 750
+      "hotel": 750,
+      "house_cost": 100
     },
     "Virginia Avenue": {
       "type": "PROPERTY",
@@ -70,7 +77,8 @@
       "set_size": 3,
       "rent": 12,
       "house1": 60,
-      "hotel": 900
+      "hotel": 900,
+      "house_cost": 100
     },
     "St. James Place": {
       "type": "PROPERTY",
@@ -79,7 +87,8 @@
       "set_size": 3,
       "rent": 14,
       "house1": 70,
-      "hotel": 950
+      "hotel": 950,
+      "house_cost": 100
     },
     "Tennessee Avenue": {
       "type": "PROPERTY",
@@ -88,7 +97,8 @@
       "set_size": 3,
       "rent": 14,
       "house1": 70,
-      "hotel": 950
+      "hotel": 950,
+      "house_cost": 100
     },
     "New York Avenue": {
       "type": "PROPERTY",
@@ -97,7 +107,8 @@
       "set_size": 3,
       "rent": 16,
       "house1": 80,
-      "hotel": 1000
+      "hotel": 1000,
+      "house_cost": 100
     },
     "Kentucky Avenue": {
       "type": "PROPERTY",
@@ -106,7 +117,8 @@
       "set_size": 3,
       "rent": 18,
       "house1": 90,
-      "hotel": 1050
+      "hotel": 1050,
+      "house_cost": 150
     },
     "Indiana Avenue": {
       "type": "PROPERTY",
@@ -115,7 +127,8 @@
       "set_size": 3,
       "rent": 18,
       "house1": 90,
-      "hotel": 1050
+      "hotel": 1050,
+      "house_cost": 150
     },
     "Illinois Avenue": {
       "type": "PROPERTY",
@@ -124,7 +137,8 @@
       "set_size": 3,
       "rent": 20,
       "house1": 100,
-      "hotel": 1100
+      "hotel": 1100,
+      "house_cost": 150
     },
     "Atlantic Avenue": {
       "type": "PROPERTY",
@@ -133,7 +147,8 @@
       "set_size": 3,
       "rent": 22,
       "house1": 110,
-      "hotel": 1150
+      "hotel": 1150,
+      "house_cost": 150
     },
     "Ventor Avenue": {
       "type": "PROPERTY",
@@ -142,7 +157,8 @@
       "set_size": 3,
       "rent": 22,
       "house1": 110,
-      "hotel": 1150
+      "hotel": 1150,
+      "house_cost": 150
     },
     "Marvin Gardens": {
       "type": "PROPERTY",
@@ -151,7 +167,8 @@
       "set_size": 3,
       "rent": 24,
       "house1": 120,
-      "hotel": 1200
+      "hotel": 1200,
+      "house_cost": 150
     },
     "Pacific Avenue": {
       "type": "PROPERTY",
@@ -160,7 +177,8 @@
       "set_size": 3,
       "rent": 26,
       "house1": 130,
-      "hotel": 1275
+      "hotel": 1275,
+      "house_cost": 200
     },
     "North Carolina Avenue": {
       "type": "PROPERTY",
@@ -169,7 +187,8 @@
       "set_size": 3,
       "rent": 26,
       "house1": 130,
-      "hotel": 1275
+      "hotel": 1275,
+      "house_cost": 200
     },
     "Pennsylvania Avenue": {
       "type": "PROPERTY",
@@ -178,7 +197,8 @@
       "set_size": 3,
       "rent": 28,
       "house1": 150,
-      "hotel": 1400
+      "hotel": 1400,
+      "house_cost": 200
     },
     "Park Place": {
       "type": "PROPERTY",
@@ -187,7 +207,8 @@
       "set_size": 2,
       "rent": 35,
       "house1": 175,
-      "hotel": 1500
+      "hotel": 1500,
+      "house_cost": 200
     },
     "Boardwalk": {
       "type": "PROPERTY",
@@ -196,7 +217,8 @@
       "set_size": 2,
       "rent": 50,
       "house1": 200,
-      "hotel": 2000
+      "hotel": 2000,
+      "house_cost": 200
     },
     "Electric Company": {
       "type": "UTILITY",

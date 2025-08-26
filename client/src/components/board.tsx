@@ -1,7 +1,9 @@
-import { Board, Space } from "../../index";
+import { Board, Player, Space } from "../../index";
+import SpaceCard from "./SpaceCard";
 
 interface Props {
     board: Board
+    player: Player
     children?: React.ReactNode
 }
 
@@ -32,9 +34,12 @@ function renderSpaceNameFromSpace(space: Space) {
     return <span className="name">{space.name}</span>
 }
 
-function Space({ space, pieces }: { space: Space, pieces: string[] }) {
+function Space({ space, pieces, player }: { space: Space, pieces: string[], player: Player }) {
     return <>
         <div className="space" data-color={space.attrs.color} onClick={() => console.log(space.id)}>
+            <div className="space-card-container">
+                <SpaceCard space={space} player={player} />
+            </div>
             {renderSpaceNameFromSpace(space)}
             <span className="pieces">{pieces.map(piece => (
                 <span className="piece">{piece}</span>
@@ -44,7 +49,7 @@ function Space({ space, pieces }: { space: Space, pieces: string[] }) {
     </>
 }
 
-function GameBoard({ board, children }: Props) {
+function GameBoard({ board, player, children }: Props) {
     const colCount = board.spaces.length / 4 + 1
     const rowCount = board.spaces.length / 4 + 1
 
@@ -59,25 +64,25 @@ function GameBoard({ board, children }: Props) {
         }
         if (row === 0) {
             const space = board.spaces[spaceNo]
-            spaces.push(<Space space={space} pieces={space.players.map((player) => (
+            spaces.push(<Space space={space} player={player} pieces={space.players.map((player) => (
                 player.piece
             ))} />)
             spaceNo++
         } else if (row === rowCount - 1) {
             const space: Space = board.spaces[spaceNo - col * 2 + 1]
-            spaces.push(<Space space={space} pieces={space.players.map((player) => (
+            spaces.push(<Space space={space} player={player} pieces={space.players.map((player) => (
                 player.piece
             ))} />)
             spaceNo++
         } else if (col === colCount - 1) {
             const space = board.spaces[spaceNo - row]
-            spaces.push(<Space space={space} pieces={space.players.map((player) => (
+            spaces.push(<Space space={space} player={player} pieces={space.players.map((player) => (
                 player.piece
             ))} />)
             spaceNo++
         } else if (col === 0) {
             const space = board.spaces[spaceNo - row * 3 + ((colCount - 1) * 3 + 1)]
-            spaces.push(<Space space={space} pieces={space.players.map((player) => (
+            spaces.push(<Space space={space} player={player} pieces={space.players.map((player) => (
                 player.piece
             ))} />)
             spaceNo++

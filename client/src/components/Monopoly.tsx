@@ -79,7 +79,7 @@ function Monopoly({ playerDetails }: any) {
     return <>
         <div id="game">
             <div className="board-container">
-                <GameBoard board={board}>
+                <GameBoard board={board} player={player}>
                     {notification && <Alert alert={notification} />}
                     <div className="button-container">
                         <button className="roll" disabled={goingPlayer?.id !== player.id || rolled} onClick={() => {

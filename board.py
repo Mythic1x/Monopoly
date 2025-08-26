@@ -10,9 +10,24 @@ class status_t:
 @dataclass
 class BUY_FAIL(status_t):
     space: "Space"
+@dataclass
+class BUY_HOUSE_FAIL(status_t):
+    space: "Space"
+
+@dataclass
+class BUY_HOTEL_FAIL(status_t):
+    space: "Space"
 
 @dataclass
 class BUY_SUCCESS(status_t):
+    space: "Space"
+
+@dataclass
+class BUY_HOUSE_SUCCESS(status_t):
+    space: "Space"
+
+@dataclass
+class BUY_HOTEL_SUCCESS(status_t):
     space: "Space"
 
 @dataclass
@@ -150,6 +165,52 @@ class Player:
             return BUY_NEW_SET(space)
 
         return BUY_SUCCESS(space)
+    def buyHouse(self, space: "Space"):
+        if not self.canBuyHouse(space):
+            return BUY_HOUSE_FAIL(space)
+        
+        self.money -= space.house_cost
+        space.houses += 1
+        return BUY_HOUSE_SUCCESS(space)
+    
+    def buyHotel(self, space: "Space"):
+        if not self.canBuyHotel(space):
+            return BUY_HOTEL_FAIL(space)
+        
+        self.money -= space.house_cost
+        space.hotel = True
+        return BUY_HOTEL_SUCCESS(space)
+        
+    def canBuyHouse(self, space: "Space"):
+        if space.color not in self.sets:
+            return False
+      
+        if self.money < space.house_cost:
+            return False
+       
+        if space.houses == 4:
+            return False
+        
+        set_spaces = [s for s in self.ownedSpaces if s.color == space.color]
+        for player_space in set_spaces:
+            if space.houses > player_space.houses:
+                return False
+            
+        return True
+    def canBuyHotel(self, space: "Space"):
+        if self.money < space.house_cost:
+            return False
+        
+        if space.houses < 4:
+            return False
+        
+        set_spaces = [s for s in self.ownedSpaces if s.color == space.color]
+        for player_space in set_spaces:
+            if player_space.houses < 4:
+                return False
+            
+        return True
+
 
     def getOwnedRailroads(self):
         number = 0
@@ -211,12 +272,11 @@ class Space:
     owner: Player | None
     attrs: dict[str, Any]
     id: int
-
+    house_cost = SpaceAttr(int)
+    hotel_cost = SpaceAttr(int)
     purchaseable: bool
-
     houses: int
     hotel: bool
-
     color = SpaceAttr(str)
     set_size = SpaceAttr(int)
 
@@ -326,6 +386,20 @@ class Space:
                     continue
                 if key == "players":
                     dict[key] = [player.toJson() for player in self.__dict__[key]]
+                    continue
+                dict[key] = self.__dict__[key] 
+        return dict
+    def toJsonForPlayer(self):
+        dict = {}
+        dict["attrs"] = self.attrs
+        for key in self.__dict__:
+            if not callable(self.__dict__[key]) and not key.startswith("_"):
+                if type(self.__dict__[key]) is Player:
+                    dict[key] = self.__dict__[key].id
+                    continue
+                if type(self.__dict__[key]) is Space:
+                    continue
+                if key == "players":
                     continue
                 dict[key] = self.__dict__[key] 
         return dict 

@@ -49,6 +49,51 @@ body {
     justify-content: center;
 }
 
+
+/* 2. Style the card's container */
+.space-card-container {
+  
+  opacity: 0;
+  visibility: hidden;
+
+  
+  position: absolute;
+  bottom: 100%; 
+  left: 50%;
+  transform: translateX(-50%); 
+  
+ 
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+
+  
+  pointer-events: none;
+  z-index: 10; 
+}
+
+.space:hover .space-card-container {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto; 
+}
+
+.space-card {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: fit-content;
+    min-width: 200px;
+    height: fit-content;
+    border-radius: 5px;
+    padding: 15px;
+    background-color: gold;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+}
+.house-buttons-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 .board {
     aspect-ratio: 1;
     display: grid;
@@ -104,8 +149,6 @@ body {
     .cost[data-earn="true"]::after {
         content: "You earn $" attr(data-cost);
     }
-
-    position: relative;
 }
 
 .button-container {
@@ -133,6 +176,21 @@ body {
         }
     }
 }
+
+button {
+        padding: 10px;
+        border-radius: 15px;
+        border: none;
+        background-color: var(--main);
+        color: white;
+        cursor: pointer;
+        --scale: 1;
+        transform: scale(var(--scale));
+
+        &:hover:not(:active):not([disabled]) {
+            --scale: 1.1;
+        }
+    }
 
 button[disabled] {
     cursor: not-allowed;

@@ -30,6 +30,9 @@ export interface Space {
     owner: playerid_t | null;
     attrs: { [key: string]: any };
     id: string
+    houseCost: number
+    houses: number
+    hotel: boolean
 }
 type playerid_t = string | (Object & string)
 
@@ -41,7 +44,18 @@ export interface Player {
     piece: string
     space: Space
     name: string
+    sets: Color[]
 }
+
+export type Color =
+    | "brown"
+    | "lightblue"
+    | "pink"
+    | "orange"
+    | "red"
+    | "yellow"
+    | "green"
+    | "blue"
 
 
 declare global {

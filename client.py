@@ -2,7 +2,7 @@ import abc
 import json
 from typing import Any, override
 
-from board import Player, Space, status_t, PROMPT_TO_BUY, MONEY_LOST, PAY_JAIL, BUY_SUCCESS, BUY_FAIL, BUY_NEW_SET, MONEY_GIVEN, PAY_OTHER, PAY_TAX, PASS_GO, NONE
+from board import Player, Space, status_t, PROMPT_TO_BUY, MONEY_LOST, PAY_JAIL, BUY_SUCCESS, BUY_HOTEL_SUCCESS, BUY_HOUSE_SUCCESS, BUY_FAIL, BUY_HOUSE_FAIL, BUY_HOTEL_FAIL, BUY_NEW_SET, MONEY_GIVEN, PAY_OTHER, PAY_TAX, PASS_GO, NONE
     
 class Client(abc.ABC):
     @abc.abstractmethod
@@ -32,10 +32,22 @@ class Client(abc.ABC):
 
     async def BUY_SUCCESS(self, player: Player, status: BUY_SUCCESS):
         await self.write({"response": "notification", "value": f"{player.name} successfully bought {status.space.name}"})
+        
+    async def BUY_HOUSE_SUCCESS(self, player: Player, status: BUY_HOUSE_SUCCESS):
+        await self.write({"response": "notification", "value": f"{player.name} bought a house on {status.space.name}"})
+        
+    async def BUY_HOTEL_SUCCESS(self, player: Player, status: BUY_HOTEL_SUCCESS):
+        await self.write({"response": "notification", "value": f"{player.name} bought a hotel on {status.space.name}"})
 
     async def BUY_FAIL(self, player: Player, status: BUY_FAIL):
         await self.write({"response": "notification", "value": f"{player.name} failed"})
+        
+    async def BUY_HOUSE_FAIL(self, player: Player, status: BUY_HOUSE_FAIL):
+        await self.write({"response": "notification", "value": f"{player.name} failed to purchase house on {status.space.name}"})
 
+    async def BUY_HOTEL_FAIL(self, player: Player, status: BUY_HOTEL_FAIL):
+        await self.write({"response": "notification", "value": f"{player.name} failed to purchase hotel on {status.space.name}"})
+        
     async def BUY_NEW_SET(self, player: Player, status: BUY_NEW_SET):
         await self.write({"response": "notification", "value": f"{player.name} successfully bought {status.space.name} for a complete {status.space.color} set"})
 
