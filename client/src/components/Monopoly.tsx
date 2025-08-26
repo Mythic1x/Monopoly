@@ -98,7 +98,7 @@ function Monopoly({ playerDetails }: any) {
     }
 
     return <>
-        <TradeMenu players={players} tradeDialog={tradeDialog} currentTrade={currentTrade}></TradeMenu>
+        <TradeMenu currentPlayer={player} players={players} tradeDialog={tradeDialog} currentTrade={currentTrade}></TradeMenu>
 
         <div id="game">
             <div className="board-container">
