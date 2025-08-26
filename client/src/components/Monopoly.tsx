@@ -116,7 +116,6 @@ function Monopoly({ playerDetails }: any) {
                     sendJsonMessage({ 'action': "current-space" })
                     break
                 case "trade-proposal":
-                    console.log(message.value)
                     tradeDialog.current.showModal()
                     setCurrentTrade(message.value)
                     break

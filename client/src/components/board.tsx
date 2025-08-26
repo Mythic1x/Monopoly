@@ -21,9 +21,9 @@ function logo2img(logo: Logo) {
 function getLogoSize(logo: Logo) {
     switch (logo) {
         case "QUESTION_MARK":
-            return 50
+            return "50%"
         case "CHEST":
-            return 100
+            return "50%"
     }
 }
 
@@ -35,14 +35,15 @@ function renderSpaceNameFromSpace(space: Space) {
 }
 
 function BoardSpace({ space, pieces, player }: { space: Space, pieces: string[], player: Player }) {
+    console.log(space.name, pieces)
     return <>
         <div className="space" data-house-count={space.houses} data-has-hotel={space.hotel} data-anchor-name={`--space-${space.id}`} data-color={space.attrs.color} onClick={() => console.log(space.id)}>
             {space.purchaseable && <SpaceCard space={space} player={player} />}
             {renderSpaceNameFromSpace(space)}
+            <span className="cost" data-cost={Math.abs(space.cost)} data-earn={space.cost < 0 ? "true" : "false"}></span>
             <span className="pieces">{pieces.map(piece => (
                 <span className="piece">{piece}</span>
             ))}</span>
-            <span className="cost" data-cost={Math.abs(space.cost)} data-earn={space.cost < 0 ? "true" : "false"}></span>
         </div>
     </>
 }

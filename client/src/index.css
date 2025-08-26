@@ -6,6 +6,7 @@
     --fucking-blue: #007bff;
 
     --monopoly-clr: #c9e3cd;
+
 }
 
 @layer general {
@@ -114,11 +115,14 @@
 
         .space {
             anchor-name: attr(data-anchor-name type(<custom-ident>));
+            /* position: relative; */
 
             display: block;
 
             aspect-ratio: 1;
-            width: 100px;
+            max-width: 8vmin;
+
+            font-size: 1vmin;
 
             border: 1px solid black;
             text-align: center;
@@ -126,10 +130,10 @@
             .pieces {
                 bottom: 0;
                 left: 0;
-                position: absolute;
 
                 font-weight: bold;
                 display: flex;
+                min-height: 1cap;
             }
 
             .space-card {
