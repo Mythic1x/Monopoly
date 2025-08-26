@@ -10,7 +10,7 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
     function canBuyHouse() {
         if (!player.sets.includes(space.attrs.color)) {
             return false
-        } else if (player.money < space.houseCost) {
+        } else if (player.money < space.attrs.house_cost) {
             return false
         } else if (space.houses === 4) {
             return false

@@ -161,12 +161,14 @@ class Game:
                 await self.broadcastStatus(result, player)
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
                 await client.write({"response": "current-space", "value": player.space.toJson()})
+                await client.write({"response": "player-info", "value": player.toJson()})
                 
             case "buy-house":
                 property = self.board.spaces[action["spaceid"]]
                 result = player.buyHouse(property)
                 await self.broadcastStatus(result, player)
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
+                await client.write({"response": "player-info", "value": player.toJson()})
                 await client.write({"response": "current-space", "value": player.space.toJson()})
                 
             case "buy-hotel":
@@ -174,6 +176,7 @@ class Game:
                 result = player.buyHotel(property)
                 await self.broadcastStatus(result, player)
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
+                await client.write({"response": "player-info", "value": player.toJson()})
                 await client.write({"response": "current-space", "value": player.space.toJson()})
 
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})

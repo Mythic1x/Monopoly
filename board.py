@@ -228,7 +228,7 @@ class Player:
             "space": self.space.id,
             "sets": self.sets,
             "name": self.name,
-            "ownedSpaces": [space.id for space in self.ownedSpaces]
+            "ownedSpaces": [space.toJsonForPlayer() for space in self.ownedSpaces]
         }
 
 type spacetype_t = int
