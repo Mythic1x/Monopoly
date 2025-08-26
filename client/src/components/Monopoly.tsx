@@ -8,7 +8,7 @@ import { socketAddr } from "../../socket"
 import Alert from "./alert"
 
 function Monopoly({ playerDetails }: any) {
-    const alertQ = useRef<string[]>([])
+    const [alertQ, setAQ] = useState<string[]>([])
 
     const [rolled, setRolled] = useState<boolean>(false)
     const [players, setPlayers] = useState<Player[] | []>([])
@@ -31,12 +31,13 @@ function Monopoly({ playerDetails }: any) {
     window["me"] = player
 
     function alert(text: string) {
-        alertQ.current.push(text)
+        setAQ(alertQ.concat([text]))
     }
 
     useEffect(() => {
         const id = setInterval(() => {
-            alertQ.current.shift()
+            alertQ.shift()
+            setAQ(alertQ)
         }, 2500)
         return () => clearInterval(id)
     }, [])
@@ -88,7 +89,7 @@ function Monopoly({ playerDetails }: any) {
             <div className="board-container">
                 <GameBoard board={board} player={player}>
                     <div className="alert-container">
-                    {alertQ.current.map(v => <Alert alert={v} />)}
+                    {alertQ.map(v => <Alert alert={v} />)}
                     </div>
                     <div className="button-container">
                         <button className="roll" disabled={goingPlayer?.id !== player.id || rolled} onClick={() => {
