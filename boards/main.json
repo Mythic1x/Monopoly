@@ -1,306 +1,372 @@
 {
   "spaces": {
-    "Mediterranean Avenue": {
-      "type": "PROPERTY",
-      "cost": 60,
-      "color": "brown",
-      "set_size": 2,
-      "rent": 2,
-      "house1": 10,
-      "hotel": 250,
-      "house_cost": 50
-    },
-    "Baltic Avenue": {
-      "type": "PROPERTY",
-      "cost": 60,
-      "color": "brown",
-      "set_size": 2,
-      "rent": 4,
-      "house1": 20,
-      "hotel": 450,
-      "house_cost": 50
-    },
-    "Oriental Avenue": {
-      "type": "PROPERTY",
-      "cost": 100,
-      "color": "lightblue",
-      "set_size": 3,
-      "rent": 6,
-      "house1": 30,
-      "hotel": 550,
-      "house_cost": 50
-    },
-    "Vermont Avenue": {
-      "type": "PROPERTY",
-      "cost": 100,
-      "color": "lightblue",
-      "set_size": 3,
-      "rent": 6,
-      "house1": 30,
-      "hotel": 550,
-      "house_cost": 50
-    },
-    "Connecticut Avenue": {
-      "type": "PROPERTY",
-      "cost": 120,
-      "color": "lightblue",
-      "set_size": 3,
-      "rent": 8,
-      "house1": 40,
-      "hotel": 600,
-      "house_cost": 50
-    },
-    "St. Charles Place": {
-      "type": "PROPERTY",
-      "cost": 140,
-      "color": "pink",
-      "set_size": 3,
-      "rent": 10,
-      "house1": 50,
-      "hotel": 750,
-      "house_cost": 100
-    },
-    "States Avenue": {
-      "type": "PROPERTY",
-      "cost": 140,
-      "color": "pink",
-      "set_size": 3,
-      "rent": 10,
-      "house1": 50,
-      "hotel": 750,
-      "house_cost": 100
-    },
-    "Virginia Avenue": {
-      "type": "PROPERTY",
-      "cost": 160,
-      "color": "pink",
-      "set_size": 3,
-      "rent": 12,
-      "house1": 60,
-      "hotel": 900,
-      "house_cost": 100
-    },
-    "St. James Place": {
-      "type": "PROPERTY",
-      "cost": 180,
-      "color": "orange",
-      "set_size": 3,
-      "rent": 14,
-      "house1": 70,
-      "hotel": 950,
-      "house_cost": 100
-    },
-    "Tennessee Avenue": {
-      "type": "PROPERTY",
-      "cost": 180,
-      "color": "orange",
-      "set_size": 3,
-      "rent": 14,
-      "house1": 70,
-      "hotel": 950,
-      "house_cost": 100
-    },
-    "New York Avenue": {
-      "type": "PROPERTY",
-      "cost": 200,
-      "color": "orange",
-      "set_size": 3,
-      "rent": 16,
-      "house1": 80,
-      "hotel": 1000,
-      "house_cost": 100
-    },
-    "Kentucky Avenue": {
-      "type": "PROPERTY",
-      "cost": 220,
-      "color": "red",
-      "set_size": 3,
-      "rent": 18,
-      "house1": 90,
-      "hotel": 1050,
-      "house_cost": 150
-    },
-    "Indiana Avenue": {
-      "type": "PROPERTY",
-      "cost": 220,
-      "color": "red",
-      "set_size": 3,
-      "rent": 18,
-      "house1": 90,
-      "hotel": 1050,
-      "house_cost": 150
-    },
-    "Illinois Avenue": {
-      "type": "PROPERTY",
-      "cost": 240,
-      "color": "red",
-      "set_size": 3,
-      "rent": 20,
-      "house1": 100,
-      "hotel": 1100,
-      "house_cost": 150
-    },
-    "Atlantic Avenue": {
-      "type": "PROPERTY",
-      "cost": 260,
-      "color": "yellow",
-      "set_size": 3,
-      "rent": 22,
-      "house1": 110,
-      "hotel": 1150,
-      "house_cost": 150
-    },
-    "Ventor Avenue": {
-      "type": "PROPERTY",
-      "cost": 260,
-      "color": "yellow",
-      "set_size": 3,
-      "rent": 22,
-      "house1": 110,
-      "hotel": 1150,
-      "house_cost": 150
-    },
-    "Marvin Gardens": {
-      "type": "PROPERTY",
-      "cost": 280,
-      "color": "yellow",
-      "set_size": 3,
-      "rent": 24,
-      "house1": 120,
-      "hotel": 1200,
-      "house_cost": 150
-    },
-    "Pacific Avenue": {
-      "type": "PROPERTY",
-      "cost": 300,
-      "color": "green",
-      "set_size": 3,
-      "rent": 26,
-      "house1": 130,
-      "hotel": 1275,
-      "house_cost": 200
-    },
-    "North Carolina Avenue": {
-      "type": "PROPERTY",
-      "cost": 300,
-      "color": "green",
-      "set_size": 3,
-      "rent": 26,
-      "house1": 130,
-      "hotel": 1275,
-      "house_cost": 200
-    },
-    "Pennsylvania Avenue": {
-      "type": "PROPERTY",
-      "cost": 320,
-      "color": "green",
-      "set_size": 3,
-      "rent": 28,
-      "house1": 150,
-      "hotel": 1400,
-      "house_cost": 200
-    },
-    "Park Place": {
-      "type": "PROPERTY",
-      "cost": 350,
-      "color": "blue",
-      "set_size": 2,
-      "rent": 35,
-      "house1": 175,
-      "hotel": 1500,
-      "house_cost": 200
-    },
-    "Boardwalk": {
-      "type": "PROPERTY",
-      "cost": 400,
-      "color": "blue",
-      "set_size": 2,
-      "rent": 50,
-      "house1": 200,
-      "hotel": 2000,
-      "house_cost": 200
-    },
-    "Electric Company": {
-      "type": "UTILITY",
-      "cost": 150,
-      "rent": "onrent_utility",
-      "set_size": 2
-    },
-    "Water Company": {
-      "type": "UTILITY",
-      "cost": 150,
-      "rent": "onrent_utility",
-      "set_size": 2
-    },
-    "Pennsylvania Railroad": {
-      "type": "RAILROAD",
-      "cost": 200,
-      "rent": "onrent_railroad",
-      "set_size": 4
-    },
-    "Reading Railroad": {
-      "type": "RAILROAD",
-      "cost": 200,
-      "rent": "onrent_railroad",
-      "set_size": 4
-    },
-    "B&O Railroad": {
-      "type": "RAILROAD",
-      "cost": 200,
-      "rent": "onrent_railroad",
-      "set_size": 4
-    },
-    "Short Line": {
-      "type": "RAILROAD",
-      "cost": 200,
-      "rent": "onrent_railroad",
-      "set_size": 4
-    },
-    "Income Tax": {
-      "type": "INCOME_TAX",
-      "cost": 0,
-      "not_purchaseable": "true"
-    },
-    "Luxury Tax": {
-      "type": "LUXURY_TAX",
-      "cost": 0,
-      "onland": "onland_luxurytax",
-      "not_purchaseable": "true"
-    },
-    "Jail": {
-      "type": "JAIL",
-      "cost": 300,
-      "bailcost": 50
-    },
-    "Go To Jail": {
-      "type": "GOTO_JAIL",
-      "cost": 0,
-      "not_purchaseable": "true",
-      "onland": "onland_goto_jail"
-    },
-    "Community Chest": {
-      "cost": 0,
-      "type": "COMMUNITY_CHEST",
-      "not_purchaseable": "true",
-      "logo": "CHEST"
-    },
-    "Chance": {
-      "type": "CHANCE",
-      "cost": 0,
-      "not_purchaseable": "true",
-      "logo": "QUESTION_MARK"
-    },
-    "Free Parking": {
-      "type": "FREE_PARKING",
-      "cost": 75,
-      "not_purchaseable": "true",
-      "rent": 15
-    },
-    "Passing GO": {
-      "type": "GO",
-      "cost": -200,
-      "not_purchaseable": "true"
-    }
+      "Mediterranean Avenue": {
+        "type": "PROPERTY",
+        "cost": 60,
+        "color": "brown",
+        "set_size": 2,
+        "rent": 2,
+        "house1": 10,
+        "house2": 30,
+        "house3": 90,
+        "house4": 160,
+        "hotel": 250,
+        "house_cost": 50
+      },
+      "Baltic Avenue": {
+        "type": "PROPERTY",
+        "cost": 60,
+        "color": "brown",
+        "set_size": 2,
+        "rent": 4,
+        "house1": 20,
+        "house2": 60,
+        "house3": 180,
+        "house4": 320,
+        "hotel": 450,
+        "house_cost": 50
+      },
+      "Oriental Avenue": {
+        "type": "PROPERTY",
+        "cost": 100,
+        "color": "lightblue",
+        "set_size": 3,
+        "rent": 6,
+        "house1": 30,
+        "house2": 90,
+        "house3": 270,
+        "house4": 450,
+        "hotel": 550,
+        "house_cost": 50
+      },
+      "Vermont Avenue": {
+        "type": "PROPERTY",
+        "cost": 100,
+        "color": "lightblue",
+        "set_size": 3,
+        "rent": 6,
+        "house1": 30,
+        "house2": 90,
+        "house3": 270,
+        "house4": 450,
+        "hotel": 550,
+        "house_cost": 50
+      },
+      "Connecticut Avenue": {
+        "type": "PROPERTY",
+        "cost": 120,
+        "color": "lightblue",
+        "set_size": 3,
+        "rent": 8,
+        "house1": 40,
+        "house2": 120,
+        "house3": 360,
+        "house4": 600,
+        "hotel": 600,
+        "house_cost": 50
+      },
+      "St. Charles Place": {
+        "type": "PROPERTY",
+        "cost": 140,
+        "color": "pink",
+        "set_size": 3,
+        "rent": 10,
+        "house1": 50,
+        "house2": 150,
+        "house3": 450,
+        "house4": 750,
+        "hotel": 750,
+        "house_cost": 100
+      },
+      "States Avenue": {
+        "type": "PROPERTY",
+        "cost": 140,
+        "color": "pink",
+        "set_size": 3,
+        "rent": 10,
+        "house1": 50,
+        "house2": 150,
+        "house3": 450,
+        "house4": 750,
+        "hotel": 750,
+        "house_cost": 100
+      },
+      "Virginia Avenue": {
+        "type": "PROPERTY",
+        "cost": 160,
+        "color": "pink",
+        "set_size": 3,
+        "rent": 12,
+        "house1": 60,
+        "house2": 180,
+        "house3": 540,
+        "house4": 900,
+        "hotel": 900,
+        "house_cost": 100
+      },
+      "St. James Place": {
+        "type": "PROPERTY",
+        "cost": 180,
+        "color": "orange",
+        "set_size": 3,
+        "rent": 14,
+        "house1": 70,
+        "house2": 210,
+        "house3": 630,
+        "house4": 950,
+        "hotel": 950,
+        "house_cost": 100
+      },
+      "Tennessee Avenue": {
+        "type": "PROPERTY",
+        "cost": 180,
+        "color": "orange",
+        "set_size": 3,
+        "rent": 14,
+        "house1": 70,
+        "house2": 210,
+        "house3": 630,
+        "house4": 950,
+        "hotel": 950,
+        "house_cost": 100
+      },
+      "New York Avenue": {
+        "type": "PROPERTY",
+        "cost": 200,
+        "color": "orange",
+        "set_size": 3,
+        "rent": 16,
+        "house1": 80,
+        "house2": 240,
+        "house3": 720,
+        "house4": 1000,
+        "hotel": 1000,
+        "house_cost": 100
+      },
+      "Kentucky Avenue": {
+        "type": "PROPERTY",
+        "cost": 220,
+        "color": "red",
+        "set_size": 3,
+        "rent": 18,
+        "house1": 90,
+        "house2": 270,
+        "house3": 810,
+        "house4": 1050,
+        "hotel": 1050,
+        "house_cost": 150
+      },
+      "Indiana Avenue": {
+        "type": "PROPERTY",
+        "cost": 220,
+        "color": "red",
+        "set_size": 3,
+        "rent": 18,
+        "house1": 90,
+        "house2": 270,
+        "house3": 810,
+        "house4": 1050,
+        "hotel": 1050,
+        "house_cost": 150
+      },
+      "Illinois Avenue": {
+        "type": "PROPERTY",
+        "cost": 240,
+        "color": "red",
+        "set_size": 3,
+        "rent": 20,
+        "house1": 100,
+        "house2": 300,
+        "house3": 900,
+        "house4": 1100,
+        "hotel": 1100,
+        "house_cost": 150
+      },
+      "Atlantic Avenue": {
+        "type": "PROPERTY",
+        "cost": 260,
+        "color": "yellow",
+        "set_size": 3,
+        "rent": 22,
+        "house1": 110,
+        "house2": 330,
+        "house3": 990,
+        "house4": 1150,
+        "hotel": 1150,
+        "house_cost": 150
+      },
+      "Ventor Avenue": {
+        "type": "PROPERTY",
+        "cost": 260,
+        "color": "yellow",
+        "set_size": 3,
+        "rent": 22,
+        "house1": 110,
+        "house2": 330,
+        "house3": 990,
+        "house4": 1150,
+        "hotel": 1150,
+        "house_cost": 150
+      },
+      "Marvin Gardens": {
+        "type": "PROPERTY",
+        "cost": 280,
+        "color": "yellow",
+        "set_size": 3,
+        "rent": 24,
+        "house1": 120,
+        "house2": 360,
+        "house3": 1080,
+        "house4": 1200,
+        "hotel": 1200,
+        "house_cost": 150
+      },
+      "Pacific Avenue": {
+        "type": "PROPERTY",
+        "cost": 300,
+        "color": "green",
+        "set_size": 3,
+        "rent": 26,
+        "house1": 130,
+        "house2": 390,
+        "house3": 1170,
+        "house4": 1275,
+        "hotel": 1275,
+        "house_cost": 200
+      },
+      "North Carolina Avenue": {
+        "type": "PROPERTY",
+        "cost": 300,
+        "color": "green",
+        "set_size": 3,
+        "rent": 26,
+        "house1": 130,
+        "house2": 390,
+        "house3": 1170,
+        "house4": 1275,
+        "hotel": 1275,
+        "house_cost": 200
+      },
+      "Pennsylvania Avenue": {
+        "type": "PROPERTY",
+        "cost": 320,
+        "color": "green",
+        "set_size": 3,
+        "rent": 28,
+        "house1": 150,
+        "house2": 450,
+        "house3": 1350,
+        "house4": 1400,
+        "hotel": 1400,
+        "house_cost": 200
+      },
+      "Park Place": {
+        "type": "PROPERTY",
+        "cost": 350,
+        "color": "blue",
+        "set_size": 2,
+        "rent": 35,
+        "house1": 175,
+        "house2": 525,
+        "house3": 1575,
+        "house4": 1500,
+        "hotel": 1500,
+        "house_cost": 200
+      },
+      "Boardwalk": {
+        "type": "PROPERTY",
+        "cost": 400,
+        "color": "blue",
+        "set_size": 2,
+        "rent": 50,
+        "house1": 200,
+        "house2": 600,
+        "house3": 1800,
+        "house4": 2000,
+        "hotel": 2000,
+        "house_cost": 200
+      },
+      "Electric Company": {
+        "type": "UTILITY",
+        "cost": 150,
+        "rent": "onrent_utility",
+        "set_size": 2
+      },
+      "Water Company": {
+        "type": "UTILITY",
+        "cost": 150,
+        "rent": "onrent_utility",
+        "set_size": 2
+      },
+      "Pennsylvania Railroad": {
+        "type": "RAILROAD",
+        "cost": 200,
+        "rent": "onrent_railroad",
+        "set_size": 4
+      },
+      "Reading Railroad": {
+        "type": "RAILROAD",
+        "cost": 200,
+        "rent": "onrent_railroad",
+        "set_size": 4
+      },
+      "B&O Railroad": {
+        "type": "RAILROAD",
+        "cost": 200,
+        "rent": "onrent_railroad",
+        "set_size": 4
+      },
+      "Short Line": {
+        "type": "RAILROAD",
+        "cost": 200,
+        "rent": "onrent_railroad",
+        "set_size": 4
+      },
+      "Income Tax": {
+        "type": "INCOME_TAX",
+        "cost": 0,
+        "not_purchaseable": "true"
+      },
+      "Luxury Tax": {
+        "type": "LUXURY_TAX",
+        "cost": 0,
+        "onland": "onland_luxurytax",
+        "not_purchaseable": "true"
+      },
+      "Jail": {
+        "type": "JAIL",
+        "cost": 300,
+        "bailcost": 50
+      },
+      "Go To Jail": {
+        "type": "GOTO_JAIL",
+        "cost": 0,
+        "not_purchaseable": "true",
+        "onland": "onland_goto_jail"
+      },
+      "Community Chest": {
+        "cost": 0,
+        "type": "COMMUNITY_CHEST",
+        "not_purchaseable": "true",
+        "logo": "CHEST"
+      },
+      "Chance": {
+        "type": "CHANCE",
+        "cost": 0,
+        "not_purchaseable": "true",
+        "logo": "QUESTION_MARK"
+      },
+      "Free Parking": {
+        "type": "FREE_PARKING",
+        "cost": 75,
+        "not_purchaseable": "true",
+        "rent": 15
+      },
+      "Passing GO": {
+        "type": "GO",
+        "cost": -200,
+        "not_purchaseable": "true"
+      }
   },
   "start": "Passing GO -> Mediterranean Avenue -> Community Chest -> Baltic Avenue -> Income Tax -> Reading Railroad -> Oriental Avenue -> Chance -> Vermont Avenue -> Connecticut Avenue",
   "left": "Jail -> St. Charles Place -> Electric Company -> States Avenue -> Virginia Avenue -> Pennsylvania Railroad -> St. James Place -> Community Chest -> Tennessee Avenue -> New York Avenue -> Free Parking",
