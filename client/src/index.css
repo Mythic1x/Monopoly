@@ -97,8 +97,9 @@
         }
 
         .space {
+            anchor-name: attr(data-anchor-name type(<custom-ident>));
+
             display: block;
-            position: relative;
 
             aspect-ratio: 1;
             width: 100px;
@@ -123,7 +124,8 @@
                 display: revert;
 
                 position: absolute;
-                bottom: 20%;
+                position-anchor: attr(data-anchor-name type(<custom-ident>));
+                position-area: center;
 
                 z-index: 20;
 

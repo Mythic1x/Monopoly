@@ -41,7 +41,7 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
         return true
     }
     return (
-        <div className="space-card">
+        <div className="space-card" data-anchor-name={`--space-${space.id}`}>
             <div className="space-card-name">{space.name}</div>
             <span className="owner">{space.owner ?? "Unowned"}</span>
             <div className="house-list">
