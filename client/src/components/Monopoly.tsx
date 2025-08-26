@@ -11,6 +11,9 @@ import TradeMenu from "./TradeMenu"
 function Monopoly({ playerDetails }: any) {
     const [alertQ, setAQ] = useState<string[]>([])
 
+    const rollBtn = useRef<HTMLButtonElement>(null)
+    const buyBtn = useRef<HTMLButtonElement>(null)
+
     const tradeDialog = useRef<HTMLDialogElement>(null)
 
     const [currentTrade, setCurrentTrade] = useState<Trade | null>(null)
@@ -53,6 +56,28 @@ function Monopoly({ playerDetails }: any) {
         }
     }, [readyState])
 
+    function endTurn() {
+        sendJsonMessage({ "action": "end-turn" })
+        setRolled(false)
+    }
+
+    useEffect(() => {
+        function handleKeys(e: KeyboardEvent) {
+            switch (e.key) {
+                case "r":
+                    rollBtn.current.click()
+                    break
+                case "e":
+                    endTurn()
+                    break
+                case "b":
+                    buyBtn.current.click()
+                    break
+            }
+        }
+        addEventListener("keypress", handleKeys)
+        return () => removeEventListener("keypress", handleKeys)
+    }, [])
 
     useEffect(() => {
         let messages = lastJsonMessage as ServerResponse
@@ -108,18 +133,15 @@ function Monopoly({ playerDetails }: any) {
                         {alertQ.map(v => <Alert alert={v} />)}
                     </div>
                     <div className="button-container">
-                        <button className="roll" disabled={goingPlayer?.id !== player.id || rolled} onClick={() => {
+                        <button ref={rollBtn} className="roll" disabled={goingPlayer?.id !== player.id || rolled} onClick={() => {
                             sendJsonMessage({ "action": "roll" })
                             setRolled(true)
                         }}>Roll</button>
-                        {(goingPlayer?.id === player.id) && <button className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable} onClick={() => {
+                        {(goingPlayer?.id === player.id) && <button ref={buyBtn} className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable} onClick={() => {
                             sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })
                         }}>Buy Property</button>
                         }
-                        <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled} onClick={() => {
-                            sendJsonMessage({ "action": "end-turn" })
-                            setRolled(false)
-                        }}>End Turn</button>
+                        <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled} onClick={endTurn}>End Turn</button>
                         <button onClick={() => sendJsonMessage({ "action": "propose-trade", "trade": { "give": { "money": 10 }, "want": {} }, "playerid": player.id })} >
                             Trade
                         </button>
