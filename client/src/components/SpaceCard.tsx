@@ -44,22 +44,17 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
         <div className="space-card" data-anchor-name={`--space-${space.id}`}>
             <div className="space-card-name">{space.name}</div>
             <span className="owner">{space.owner ?? "Unowned"}</span>
-            <div className="house-list">
-                <li className="houses">
-                    <div className="house1">{`House 1 🏚, Owned: ${space.houses >= 1}`}</div>
-                    <div className="house2">{`House 2 🏠, Owned: ${space.houses >= 2}`}</div>
-                    <div className="house3">{`House 3 🏡, Owned: ${space.houses >= 3}`}</div>
-                    <div className="house4">{`House 4 🏘, Owned: ${space.houses >= 4}`}</div>
-                    <div className="hotel">{`Hotel 🏨, Owned: ${space.hotel}`}</div>
-                </li>
-                <div className="house-buttons-container">
-                    <button className="buy-house" disabled={!canBuyHouse()} onClick={() => {
-                        sendJsonMessage({ "action": "buy-house", "spaceid": space.id })
-                    }}>Buy House</button>
-                    <button className="buy-hotel" disabled={!canBuyHotel()} onClick={() => {
-                        sendJsonMessage({ "action": "buy-hotel", "spaceid": space.id })
-                    }}>Buy Hotel</button>
-                </div>
+            <div className="house-info">
+                <div className="house-count">{space.houses} 🏠</div>
+                <div className="hotel">{space.hotel ? 1 : 0} 🏨</div>
+            </div>
+            <div className="house-buttons-container">
+                <button className="buy-house" disabled={!canBuyHouse()} onClick={() => {
+                    sendJsonMessage({ "action": "buy-house", "spaceid": space.id })
+                }}>Buy House</button>
+                <button className="buy-hotel" disabled={!canBuyHotel()} onClick={() => {
+                    sendJsonMessage({ "action": "buy-hotel", "spaceid": space.id })
+                }}>Buy Hotel</button>
             </div>
         </div>
     )

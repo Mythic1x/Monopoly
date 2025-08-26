@@ -116,23 +116,12 @@
                 display: flex;
             }
 
-            &:not(:hover) .space-card {
-                display: none;
-            }
-
-            &:hover .space-card {
-                display: revert;
-
+            .space-card {
                 position: absolute;
                 position-anchor: attr(data-anchor-name type(<custom-ident>));
                 position-area: center;
 
                 z-index: 20;
-
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 0.5rem;
 
                 width: fit-content;
                 min-width: 200px;
@@ -149,6 +138,22 @@
                     align-items: center;
                     gap: 1em;
                 }
+
+                .house-info {
+                    display: flex;
+                    justify-content: center;
+                }
+            }
+
+            &:not(:hover) .space-card {
+                display: none;
+            }
+
+            &:hover .space-card {
+                display: grid;
+                grid-auto-flow: row;
+                align-items: center;
+                gap: 0.5rem;
             }
         }
 
@@ -288,7 +293,7 @@
                 background: var(--good);
             }
 
-            > div {
+            >div {
                 display: flex;
                 flex-direction: column;
             }
