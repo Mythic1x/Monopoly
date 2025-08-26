@@ -160,13 +160,13 @@ class Game:
                 result = player.buy(property)
                 await self.broadcastStatus(result, player)
                 await self.sendUpdatedStateToClient(client, player)
-                
+
             case "buy-house":
                 property = self.board.spaces[action["spaceid"]]
                 result = player.buyHouse(property)
                 await self.broadcastStatus(result, player)
                 await self.sendUpdatedStateToClient(client, player)
-                
+
             case "buy-hotel":
                 property = self.board.spaces[action["spaceid"]]
                 result = player.buyHotel(property)

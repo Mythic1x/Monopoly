@@ -464,8 +464,16 @@ class Board:
                     player.leaveJail()
                     yield NONE()
                 case Player.JAIL_DOUBLES_FORCE_LEAVE:
-                    player.money -= 50
+                    jail = player.space
+                    bail = player.space.attrs["bailcost"]
+
+                    if jail.owner:
+                        player.pay(bail, jail.owner)
+                    else:
+                        player.money -= bail
+
                     player.leaveJail()
+
                     yield PAY_JAIL(player.space.attrs["bailcost"])
 
         yield from self.move(player, amount)
