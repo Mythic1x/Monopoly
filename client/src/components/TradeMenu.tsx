@@ -29,7 +29,7 @@ export default function TradeMenu({ currentPlayer, players, tradeDialog, current
         <dialog ref={tradeDialog} id="trade-dialog">
             <button className="delete-button" onClick={() => tradeDialog.current.close()}>X</button>
             <div className="trade-menu-players">{players.map((player) => (
-                <div className="trade-list-player" onClick={() => {
+                <button className="trade-list-player" onClick={() => {
                     if (selectedPlayer === player) {
                         setSelectedPlayer(null)
                     } else {
@@ -37,7 +37,7 @@ export default function TradeMenu({ currentPlayer, players, tradeDialog, current
                     }
                 }} style={{ cursor: "pointer" }}>
                     <PlayerCard player={player}></PlayerCard>
-                </div>
+                </button>
             ))}</div>
             {selectedPlayer && <TradeSelection player={currentPlayer} otherPlayer={selectedPlayer} sendJsonMessage={sendJsonMessage}></TradeSelection>}
         </dialog>
@@ -54,7 +54,7 @@ function TradeSelection({ player, otherPlayer, sendJsonMessage }: { player: Play
     const canReceive = otherPlayer.ownedSpaces.filter((p: Space) => !receieve.some((r) => r.id === p.id))
 
     function sendTrade(trade: Trade) {
-        sendJsonMessage({ trade })
+        sendJsonMessage({ action: "propose-trade", trade, playerid: trade.with })
     }
 
     return (

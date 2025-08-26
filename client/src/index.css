@@ -177,6 +177,9 @@ button {
     background-color: var(--main);
     color: white;
     cursor: pointer;
+
+    font: inherit;
+
     --scale: 1;
     transform: scale(var(--scale));
     transition: transform 100ms;

@@ -97,6 +97,7 @@ function Monopoly({ playerDetails }: any) {
             <span className="loading">loading...</span></>
     }
 
+
     return <>
         <TradeMenu currentPlayer={player} players={players} tradeDialog={tradeDialog} currentTrade={currentTrade}></TradeMenu>
 
@@ -111,7 +112,7 @@ function Monopoly({ playerDetails }: any) {
                             sendJsonMessage({ "action": "roll" })
                             setRolled(true)
                         }}>Roll</button>
-                        {(goingPlayer?.id === player.id) && <button className="buy" disabled={!!currentSpace?.owner || !currentSpace.purchaseable} onClick={() => {
+                        {(goingPlayer?.id === player.id) && <button className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable} onClick={() => {
                             sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })
                         }}>Buy Property</button>
                         }
