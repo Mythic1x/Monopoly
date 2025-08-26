@@ -36,7 +36,7 @@ function renderSpaceNameFromSpace(space: Space) {
 
 function BoardSpace({ space, pieces, player }: { space: Space, pieces: string[], player: Player }) {
     return <>
-        <div className="space" data-anchor-name={`--space-${space.id}`} data-color={space.attrs.color} onClick={() => console.log(space.id)}>
+        <div className="space" data-house-count={space.houses} data-has-hotel={space.hotel} data-anchor-name={`--space-${space.id}`} data-color={space.attrs.color} onClick={() => console.log(space.id)}>
             {space.purchaseable && <SpaceCard space={space} player={player} />}
             {renderSpaceNameFromSpace(space)}
             <span className="pieces">{pieces.map(piece => (

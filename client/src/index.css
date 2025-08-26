@@ -96,6 +96,22 @@
             background-color: attr(data-color type(<color>));
         }
 
+        .space[data-house-count="1"]::before {
+            content: "🏠";
+        }
+        .space[data-house-count="2"]::before {
+            content: "🏠🏠";
+        }
+        .space[data-house-count="3"]::before {
+            content: "🏠🏠🏠";
+        }
+        .space[data-house-count="4"]::before {
+            content: "🏠🏠🏠🏠";
+        }
+        .space[data-has-hotel="true"]::before {
+            content: "🏨";
+        }
+
         .space {
             anchor-name: attr(data-anchor-name type(<custom-ident>));
 
