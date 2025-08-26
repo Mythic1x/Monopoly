@@ -9,7 +9,7 @@ class Client(abc.ABC):
     async def read(self, prompt: str) -> str: ...
 
     @abc.abstractmethod
-    async def write(self, data: dict): ...
+    async def write(self, data: dict | list[dict]): ...
 
     @abc.abstractmethod
     async def __anext__(self) -> dict[str, Any]: ...
@@ -79,7 +79,7 @@ class WSClient(Client):
         return await self.ws.recv()
 
     @override
-    async def write(self, data: dict):
+    async def write(self, data: dict | list[dict]):
         await self.ws.send(json.dumps(data))
     
     @override
@@ -98,7 +98,7 @@ class TermClient(Client):
         return input(prompt)
 
     @override
-    async def write(self, data: dict):
+    async def write(self, data: dict | list[dict]):
         print(data)
 
     @override

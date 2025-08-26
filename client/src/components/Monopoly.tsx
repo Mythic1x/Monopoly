@@ -49,32 +49,34 @@ function Monopoly({ playerDetails }: any) {
     }, [readyState])
 
     useEffect(() => {
-        const message = lastJsonMessage as ServerResponse
-        if (!message) return
-        switch (message.response) {
-            case "player-list":
-                setPlayers(message.value)
-                break
-            case "board":
-                setBoard(message.value)
-                setLoading(false)
-                break
-            case 'current-space':
-                setCurrentSpace(message.value)
-                break
-            case 'next-turn':
-                setGoingPlayer(message.value)
-                break
-            case 'new-set':
-                const [color, player] = message.value.split(";")
-                alert(`${player} achieved the set for ${color}`)
-            case "notification":
-                alert(message.value)
-                break
-            case "join-game":
-                sendJsonMessage({ 'action': "connect" })
-                sendJsonMessage({ 'action': "current-space" })
-                break
+        let messages = lastJsonMessage as ServerResponse
+        if (!messages) return
+        for (let message of Array.isArray(messages) ? messages : [messages]) {
+            switch (message.response) {
+                case "player-list":
+                    setPlayers(message.value)
+                    break
+                case "board":
+                    setBoard(message.value)
+                    setLoading(false)
+                    break
+                case 'current-space':
+                    setCurrentSpace(message.value)
+                    break
+                case 'next-turn':
+                    setGoingPlayer(message.value)
+                    break
+                case 'new-set':
+                    const [color, player] = message.value.split(";")
+                    alert(`${player} achieved the set for ${color}`)
+                case "notification":
+                    alert(message.value)
+                    break
+                case "join-game":
+                    sendJsonMessage({ 'action': "connect" })
+                    sendJsonMessage({ 'action': "current-space" })
+                    break
+            }
         }
     }, [lastJsonMessage])
 
@@ -89,7 +91,7 @@ function Monopoly({ playerDetails }: any) {
             <div className="board-container">
                 <GameBoard board={board} player={player}>
                     <div className="alert-container">
-                    {alertQ.map(v => <Alert alert={v} />)}
+                        {alertQ.map(v => <Alert alert={v} />)}
                     </div>
                     <div className="button-container">
                         <button className="roll" disabled={goingPlayer?.id !== player.id || rolled} onClick={() => {

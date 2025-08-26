@@ -12,7 +12,7 @@ type _responses = {
     "player-list": Player[]
     "reconnect": { "name": string, "piece": string }
 }
-type ServerResponse = { response: infer A extends keyof _responses, value: _responses[A] }
+type ServerResponse = { response: infer A extends keyof _responses, value: _responses[A] } |  { response: infer A extends keyof _responses, value: _responses[A] }[]
 
 export interface Board {
     space: Space

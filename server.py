@@ -179,7 +179,7 @@ class Game:
         async for message in player.client:
             await self.handleAction(message, player)
 
-    async def broadcast(self, message: dict):
+    async def broadcast(self, message: dict | list[dict]):
         for client in self.clients:
             await client.write(message)
 
@@ -189,12 +189,17 @@ class Game:
 
     async def sendToClient(client: Client, message: dict):
         client.write(message)
+
     async def sendUpdatedStateToClient(self, client: Client, player: Player):
-            await client.write({"response": "assignment", "value": player.id})
-            await self.broadcast({"response": "board", "value": self.board.toJson()})
-            await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
-            await client.write({"response": "current-space", "value": player.space.toJson()})
-            await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
+            await client.write([
+                {"response": "current-space", "value": player.space.toJson()},
+                {"response": "assignment", "value": player.id}
+            ])
+            await self.broadcast([
+                {"response": "next-turn", "value": self.curPlayer.toJson()},
+                {"response": "board", "value": self.board.toJson()},
+                {"response": "player-list", "value": [player.toJson() for player in self.players.values()]}
+            ])
             
 game = Game("main")
 lobby = Lobby()
