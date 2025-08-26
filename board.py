@@ -8,6 +8,16 @@ class status_t:
     pass
 
 @dataclass
+class TradeInfo:
+    properties: list[int] | None
+    money: int | None
+
+@dataclass
+class Trade:
+    want: TradeInfo
+    give: TradeInfo
+
+@dataclass
 class BUY_FAIL(status_t):
     space: "Space"
 @dataclass
@@ -103,6 +113,29 @@ class Player:
         self.lastRoll = 0
         self.inJail = False
         self.jailDoublesRemaining = 3
+
+    def trade(self, board: "Board", other: Self, trade: Trade):
+        for id in trade.give.properties or []:
+            space = board.getSpaceById(id)
+            if not space or space in other.ownedSpaces:
+                continue
+            other.ownedSpaces.append(space)
+            self.ownedSpaces.remove(space)
+
+        if trade.give.money:
+            other.money += trade.give.money
+            self.money -= trade.give.money
+
+        for id in trade.want.properties or []:
+            space = board.getSpaceById(id)
+            if not space or space in self.ownedSpaces:
+                continue
+            other.ownedSpaces.remove(space)
+            self.ownedSpaces.append(space)
+
+        if trade.want.money:
+            other.money -= trade.want.money
+            self.money += trade.want.money
 
     def gotoJail(self, jail: "Space"):
         self.jailDoublesRemaining = 3

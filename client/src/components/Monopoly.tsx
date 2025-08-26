@@ -109,7 +109,7 @@ function Monopoly({ playerDetails }: any) {
                             sendJsonMessage({ "action": "end-turn" })
                             setRolled(false)
                         }}>End Turn</button>
-                        <button onClick={() => sendJsonMessage({"action": "propose-trade", "trade": {"money": 10}, "playerid": player.id})} >
+                        <button onClick={() => sendJsonMessage({"action": "propose-trade", "trade": {"give": {"money": 10}}, "playerid": player.id})} >
                             Trade
                         </button>
                     </div>

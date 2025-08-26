@@ -174,6 +174,8 @@ class Game:
                 await self.broadcastStatus(result, player)
                 await self.sendUpdatedStateToClient(client, player)
 
+            #trade obj should look like
+            #{"want": {"properties": ["id 1", "id2", "id3"], "money": 432483}, "give": {"money": 3432}}
             case "propose-trade":
                 trade = action["trade"]
                 to = action["playerid"]
@@ -182,6 +184,13 @@ class Game:
                     await client.write({"response": "notification", "value": "invalid player id"})
                 else:
                     await client.write({"response": "trade-proposal", "value": trade})
+
+            case "accept-trade":
+                trade = action["trade"]
+                otherId = action["playerid"]
+                otherPlayer = self.players.get(otherId)
+                if otherPlayer:
+                    player.trade(self.board, otherPlayer, trade)
 
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 
