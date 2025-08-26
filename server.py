@@ -137,12 +137,12 @@ class Game:
                     for status in self.board.moveTo(self.players[playerId], space):
                         await client.handleStatus(status, player)
                     await self.broadcast({"response": "board", "value": self.board.toJson()})
+                    await self.sendUpdatedStateToClient(client, player)
 
             case "roll":
                 for status in self.board.rollPlayer(player, self.dSides):
                     await client.handleStatus(status, player)
-                await client.write({"response": "current-space", "value": player.space.toJson()})
-                await self.broadcast({"response": "board", "value": self.board.toJson()})
+                await self.sendUpdatedStateToClient(client, player)
 
             case "set-details":
                 details = action["details"]
@@ -159,25 +159,19 @@ class Game:
                 property = self.board.spaces[action["spaceid"]]
                 result = player.buy(property)
                 await self.broadcastStatus(result, player)
-                await self.broadcast({"response": "board", "value": self.board.toJson()})
-                await client.write({"response": "current-space", "value": player.space.toJson()})
-                await client.write({"response": "player-info", "value": player.toJson()})
+                await self.sendUpdatedStateToClient(client, player)
                 
             case "buy-house":
                 property = self.board.spaces[action["spaceid"]]
                 result = player.buyHouse(property)
                 await self.broadcastStatus(result, player)
-                await self.broadcast({"response": "board", "value": self.board.toJson()})
-                await client.write({"response": "player-info", "value": player.toJson()})
-                await client.write({"response": "current-space", "value": player.space.toJson()})
+                await self.sendUpdatedStateToClient(client, player)
                 
             case "buy-hotel":
                 property = self.board.spaces[action["spaceid"]]
                 result = player.buyHotel(property)
                 await self.broadcastStatus(result, player)
-                await self.broadcast({"response": "board", "value": self.board.toJson()})
-                await client.write({"response": "player-info", "value": player.toJson()})
-                await client.write({"response": "current-space", "value": player.space.toJson()})
+                await self.sendUpdatedStateToClient(client, player)
 
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 
@@ -195,6 +189,12 @@ class Game:
 
     async def sendToClient(client: Client, message: dict):
         client.write(message)
+    async def sendUpdatedStateToClient(self, client: Client, player: Player):
+            await client.write({"response": "assignment", "value": player.id})
+            await self.broadcast({"response": "board", "value": self.board.toJson()})
+            await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
+            await client.write({"response": "current-space", "value": player.space.toJson()})
+            await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
             
 game = Game("main")
 lobby = Lobby()
