@@ -11,6 +11,7 @@ type _responses = {
     "join-game": string
     "player-list": Player[]
     "reconnect": { "name": string, "piece": string }
+    "trade-proposal": {properties: string[], money: number}
 }
 type ServerResponse = { response: infer A extends keyof _responses, value: _responses[A] } |  { response: infer A extends keyof _responses, value: _responses[A] }[]
 

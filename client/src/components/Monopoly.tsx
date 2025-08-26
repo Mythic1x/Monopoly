@@ -76,6 +76,9 @@ function Monopoly({ playerDetails }: any) {
                     sendJsonMessage({ 'action': "connect" })
                     sendJsonMessage({ 'action': "current-space" })
                     break
+                case "trade-proposal":
+                    console.log(message.value)
+                break
             }
         }
     }, [lastJsonMessage])
@@ -106,6 +109,9 @@ function Monopoly({ playerDetails }: any) {
                             sendJsonMessage({ "action": "end-turn" })
                             setRolled(false)
                         }}>End Turn</button>
+                        <button onClick={() => sendJsonMessage({"action": "propose-trade", "trade": {"money": 10}, "playerid": player.id})} >
+                            Trade
+                        </button>
                     </div>
                 </GameBoard>
 

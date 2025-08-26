@@ -47,6 +47,7 @@ class Lobby:
 
 class Game:
     board: Board
+    #id: Player
     players: dict[str, Player]
     curTurn: int
     dSides: int
@@ -172,6 +173,15 @@ class Game:
                 result = player.buyHotel(property)
                 await self.broadcastStatus(result, player)
                 await self.sendUpdatedStateToClient(client, player)
+
+            case "propose-trade":
+                trade = action["trade"]
+                to = action["playerid"]
+                p = self.players.get(to)
+                if not p:
+                    await client.write({"response": "notification", "value": "invalid player id"})
+                else:
+                    await client.write({"response": "trade-proposal", "value": trade})
 
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 
