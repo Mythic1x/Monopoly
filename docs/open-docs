@@ -1,0 +1,4 @@
+#!/bin/bash
+python -m http.server &
+$BROWSER "http://localhost:8000/docs.xml"
+

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="./server-actions.xsl" type="text/xsl" ?>
+<data>
+    <actions>
+        <action>
+            <name>connect</name>
+            <desc>tells the server that a client has connected</desc>
+            <reply>
+                <ref kind="response" name="assignment" />
+                <ref kind="response" name="board" />
+                <ref kind="response" name="next-turn" />
+                <ref kind="response" name="current-space" />
+                <ref kind="response" name="player-list" />
+            </reply>
+        </action>
+
+        <action>
+            <name>set-details</name>
+            <arg>
+                <name>details</name>
+                <type><ref kind="type" name="details" /></type>
+            </arg>
+            <desc>sets the details (such as name, piece, ...) for the sending client</desc>
+        </action>
+
+        <action>
+            <name>roll</name>
+            <desc>Rolls the dice for whoever's turn it is</desc>
+        </action>
+
+        <action>
+            <name>buy</name>
+            <arg>
+                <name>spaceid</name>
+                <type><ref kind="type" name="spaceid_t" /></type>
+                <desc>the id of the space to buy</desc>
+            </arg>
+            <desc>
+                buys a property for the client's player.
+            </desc>
+        </action>
+
+        <action>
+            <name>buy-house</name>
+            <arg>
+                <name>spaceid</name>
+                <type><ref kind="type" name="spaceid_t" /></type>
+                <desc>the id of the space to buy a house for</desc>
+            </arg>
+            <desc>buys a house on a space for the client's player</desc>
+        </action>
+
+        <action>
+            <name>buy-hotel</name>
+            <arg>
+                <name>spaceid</name>
+                <type><ref kind="type" name="spaceid_t" /></type>
+                <desc>the id of the space to buy a hotel for</desc>
+            </arg>
+            <desc>buys a hotel on a space for the client's player</desc>
+        </action>
+
+        <action>
+            <name>propose-trade</name>
+            <arg>
+                <name>trade</name>
+                <type><ref kind="type" name="trade"/></type>
+            </arg>
+            <arg>
+                <name>to</name>
+                <type><ref kind="type" name="playerid_t"/></type>
+                <desc>the player that will recieve the trade offer</desc>
+            </arg>
+            <arg>
+                <name>from</name>
+                <type><ref kind="type" name="playerid_t"/></type>
+                <desc>the player that is sending the trade offer</desc>
+            </arg>
+            <reply>
+                <ref kind="response" name="trade-proposal" />
+            </reply>
+        </action>
+
+        <action>
+            <name>end-turn</name>
+            <desc>ends the current turn</desc>
+            <reply>
+                <ref kind="response" name="next-turn" />
+            </reply>
+        </action>
+
+        <action>
+            <name>send-player-info</name>
+            <reply>
+                <ref kind="response" name="player-info" />
+            </reply>
+        </action>
+
+        <action>
+            <name>request-space</name>
+            <reply>
+                <ref kind="response" name="current-space" />
+            </reply>
+        </action>
+
+        <action>
+            <name>set-bail</name>
+            <arg>
+                <name>spaceid</name>
+                <type><ref kind="type" name="spaceid_t" /></type>
+                <desc>the space to set bail for</desc>
+            </arg>
+            <arg>
+                <name>amount</name>
+                <type>int</type>
+                <desc>the new bail cost</desc>
+            </arg>
+            <desc>sets the bail for a space (generally you want this to be jail)</desc>
+        </action>
+
+        <action>
+            <name>set-money</name>
+            <arg>
+                <type>int</type>
+            </arg>
+        </action>
+
+        <action>
+            <name>teleport</name>
+            <arg>
+                <name>playerid</name>
+                <type>playerid_t</type>
+                <desc>the player to teleport</desc>
+            </arg>
+            <arg>
+                <name>spaceid</name>
+                <type>spaceid_t</type>
+                <desc>the space to teleport to</desc>
+            </arg>
+            <desc>teleports a player</desc>
+        </action>
+
+    </actions>
+
+    <responses>
+        <resp>
+            <name>next-turn</name>
+            <value>
+                <ref kind="type" name="player" />
+            </value>
+            <desc>
+                Indicates that it's the next player's turn, where player is who should be going.
+            </desc>
+        </resp>
+
+        <resp>
+            <name>current-space</name>
+            <value>
+                <ref kind="type" name="space" />
+            </value>
+            <desc>
+                The space that the client's player is currently on
+            </desc>
+        </resp>
+
+        <resp>
+            <name>player-info</name>
+            <value>
+                <ref kind="type" name="player" />
+            </value>
+        </resp>
+
+        <resp>
+            <name>player-list</name>
+            <value>
+                list[<ref kind="type" name="player" />]
+            </value>
+        </resp>
+    </responses>
+
+    <types>
+        <ty>
+            <name>player</name>
+            <prop name="money" type="int" />
+            <prop name="id" type="str" />
+            <prop name="playerNumber" type="int" />
+            <prop name="piece" type="str" />
+            <prop name="space" type="int" />
+            <prop name="sets" type="list[str]" />
+            <prop name="name" type="str" />
+            <prop name="ownedSpaces">
+                <type>list[<ref kind="type" name="SpaceLite" />]</type>
+            </prop>
+        </ty>
+
+        <ty>
+            <name>details</name>
+            <prop name="name" type="str" />
+            <prop name="piece" type="str" />
+            <desc>used in <act name="set-details" /></desc>
+        </ty>
+
+        <ty>
+            <name>trade</name>
+            <prop name="want">
+                <type><ref kind="type" name="trade_data" /></type>
+            </prop>
+            <prop name="give">
+                <type><ref kind="type" name="trade_data" /></type>
+            </prop>
+        </ty>
+
+        <ty>
+            <name>trade_data</name>
+            <prop name="properties" type="list[int]" />
+            <prop name="money" type="int" />
+        </ty>
+
+        <ty>
+            <name>spaceid_t</name>
+            <desc>alias of int</desc>
+        </ty>
+
+        <ty>
+            <name>playerid_t</name>
+            <desc>alias of str</desc>
+        </ty>
+    </types>
+</data>
