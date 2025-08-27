@@ -24,7 +24,8 @@ export default function TradeMenu({ currentPlayer, players, tradeDialog, current
         sendJsonMessage({
             action: "accept-trade",
             trade: trade.trade,
-            with: trade.with
+            with: trade.with,
+            from: trade.from
         })
         setCurrentTrade(null)
     }
@@ -70,7 +71,7 @@ function TradeSelection({ player, otherPlayer, sendJsonMessage, setSelectedPlaye
     const canReceive = otherPlayer.ownedSpaces.filter((p: Space) => !receieve.some((r) => r.id === p.id))
 
     function sendTrade(trade: Trade) {
-        sendJsonMessage({ action: "propose-trade", trade: trade.trade, playerid: trade.with })
+        sendJsonMessage({ action: "propose-trade", trade: trade.trade, playerid: trade.with, from: player.id })
         setSelectedPlayer(null)
     }
 

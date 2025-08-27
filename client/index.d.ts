@@ -27,6 +27,7 @@ type Trade = {
             money: number
         }
     }
+    from: string
     with: string
 }
 

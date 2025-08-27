@@ -179,18 +179,20 @@ class Game:
             case "propose-trade":
                 trade = action["trade"]
                 to = action["playerid"]
+                fromPlayer = action["from"]
                 p = self.players.get(to)
                 if not p:
                     await client.write({"response": "notification", "value": "invalid player id"})
                 else:
-                    await client.write({"response": "trade-proposal", "value": {"trade": trade, "with": player.id}})
+                    await client.write({"response": "trade-proposal", "value": {"trade": trade, "with": player.id, "from": fromPlayer}})
 
             case "accept-trade":
                 trade = action["trade"]
-                tradeWith = action["with"]
+                tradeWith = action["from"]
                 otherPlayer = self.players.get(tradeWith)
                 if otherPlayer:
-                    player.trade(self.board, otherPlayer, trade)
+                    #we do otherPlayer.trade(player) because otherPlayer is the player who initialized the trade in the first place
+                    otherPlayer.trade(self.board, player, trade)
 
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 
