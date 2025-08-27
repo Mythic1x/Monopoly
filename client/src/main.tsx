@@ -6,6 +6,7 @@ import usePlayer from './hooks/useplayer';
 import Monopoly from './components/Monopoly';
 import PlayerSetup from './components/PlayerSetup';
 import { socketAddr } from '../socket'
+import { MonopolyProvider } from './Contexts/MonopolyContext';
 
 
 function App() {
@@ -30,7 +31,9 @@ function App() {
     }, [lastJsonMessage, readyState])
     if (playerDetails) {
         return <>
-            <Monopoly playerDetails={playerDetails} ></Monopoly>
+            <MonopolyProvider>
+                <Monopoly playerDetails={playerDetails} ></Monopoly>
+            </MonopolyProvider>
         </>
     } else {
         return <PlayerSetup onSetupComplete={setPlayerDetails}></PlayerSetup>

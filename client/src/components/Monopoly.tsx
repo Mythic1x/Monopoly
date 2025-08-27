@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useContext } from "react"
 import { Board, Space, Player, ServerResponse, Trade } from "../../index"
 import PlayerCard from "./PlayerCard"
 import useWebSocket, { ReadyState } from "react-use-websocket/dist"
@@ -7,6 +7,7 @@ import GameBoard from "./board"
 import { socketAddr } from "../../socket"
 import Alert from "./alert"
 import TradeMenu from "./TradeMenu"
+import MonopolyContext, { MonopolyProvider } from "../../src/Contexts/MonopolyContext"
 
 function Monopoly({ playerDetails }: any) {
     const [alertQ, setAQ] = useState<string[]>([])
@@ -18,16 +19,15 @@ function Monopoly({ playerDetails }: any) {
 
     const [currentTrade, setCurrentTrade] = useState<Trade | null>(null)
 
+    const { board, player, players, setBoard, setPlayers, playerLoaded, setPlayer } = useContext(MonopolyContext)
+
     const [rolled, setRolled] = useState<boolean>(false)
-    const [players, setPlayers] = useState<Player[] | []>([])
-    const [board, setBoard] = useState<Board | null>(null)
     const [loading, setLoading] = useState(true)
     const [currentSpace, setCurrentSpace] = useState<Space | null>(null)
     const [goingPlayer, setGoingPlayer] = useState<Player | null>(null)
     const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket(socketAddr, {
         share: true
     })
-    const { player, playerLoaded, setPlayer } = usePlayer()
 
     window["findSpaceByName"] = (name: string) => {
         for (let space of board.spaces) {
@@ -85,9 +85,9 @@ function Monopoly({ playerDetails }: any) {
         for (let message of Array.isArray(messages) ? messages : [messages]) {
             switch (message.response) {
                 case "player-list": {
-                    if(playerLoaded)
-                        for(let p of message.value) {
-                            if(p.id === player.id) {
+                    if (playerLoaded)
+                        for (let p of message.value) {
+                            if (p.id === player.id) {
                                 setPlayer(p)
                             }
                         }
@@ -131,38 +131,38 @@ function Monopoly({ playerDetails }: any) {
 
 
     return <>
-        <TradeMenu currentPlayer={player} players={players} tradeDialog={tradeDialog} currentTrade={currentTrade}></TradeMenu>
+            <TradeMenu currentPlayer={player} players={players} tradeDialog={tradeDialog} currentTrade={currentTrade} setCurrentTrade={setCurrentTrade}></TradeMenu>
 
-        <div id="game">
-            <div className="board-container">
-                <GameBoard board={board} player={player}>
-                    <div id="alert-container">
-                        {alertQ.map(v => <Alert alert={v} />)}
-                    </div>
-                    <div className="button-container">
-                        <button ref={rollBtn} className="roll" disabled={goingPlayer?.id !== player.id || rolled} onClick={() => {
-                            sendJsonMessage({ "action": "roll" })
-                            setRolled(true)
-                        }}>Roll</button>
-                        {(goingPlayer?.id === player.id) && <button ref={buyBtn} className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable} onClick={() => {
-                            sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })
-                        }}>Buy Property</button>
-                        }
-                        <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled} onClick={endTurn}>End Turn</button>
-                        <button onClick={() => sendJsonMessage({ "action": "propose-trade", "trade": { "give": { "money": 10 }, "want": {} }, "playerid": player.id })} >
-                            Trade
-                        </button>
-                    </div>
-                </GameBoard>
+            <div id="game">
+                <div className="board-container">
+                    <GameBoard board={board} player={player}>
+                        <div id="alert-container">
+                            {alertQ.map(v => <Alert alert={v} />)}
+                        </div>
+                        <div className="button-container">
+                            <button ref={rollBtn} className="roll" disabled={goingPlayer?.id !== player.id || rolled} onClick={() => {
+                                sendJsonMessage({ "action": "roll" })
+                                setRolled(true)
+                            }}>Roll</button>
+                            {(goingPlayer?.id === player.id) && <button ref={buyBtn} className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable} onClick={() => {
+                                sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })
+                            }}>Buy Property</button>
+                            }
+                            <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled} onClick={endTurn}>End Turn</button>
+                            <button onClick={() => sendJsonMessage({ "action": "propose-trade", "trade": { "give": { "money": 10 }, "want": {} }, "playerid": player.id })} >
+                                Trade
+                            </button>
+                        </div>
+                    </GameBoard>
 
+                </div>
+                <div className="player-list">
+                    <h3>Players</h3>
+                    {players?.map((player) => (
+                        <PlayerCard player={player}></PlayerCard>
+                    ))}
+                </div>
             </div>
-            <div className="player-list">
-                <h3>Players</h3>
-                {players?.map((player) => (
-                    <PlayerCard player={player}></PlayerCard>
-                ))}
-            </div>
-        </div>
     </>
 }
 

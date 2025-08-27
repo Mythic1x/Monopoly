@@ -2,17 +2,19 @@ import useWebSocket from "react-use-websocket/dist";
 import { Player, Space, Trade } from "../../index";
 import { socketAddr } from "../../socket";
 import PlayerCard from "./PlayerCard";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { SendJsonMessage } from "react-use-websocket/dist/lib/types";
+import MonopolyContext from "../../src/Contexts/MonopolyContext";
 
 interface Props {
     currentPlayer: Player
     players: Player[]
     tradeDialog: React.RefObject<HTMLDialogElement>
     currentTrade: Trade
+    setCurrentTrade: React.Dispatch<React.SetStateAction<Trade>>
 }
 
-export default function TradeMenu({ currentPlayer, players, tradeDialog, currentTrade }: Props) {
+export default function TradeMenu({ currentPlayer, players, tradeDialog, currentTrade, setCurrentTrade }: Props) {
     const [selectedPlayer, setSelectedPlayer] = useState<Player>(null)
     const { sendJsonMessage } = useWebSocket(socketAddr, {
         share: true
@@ -24,28 +26,41 @@ export default function TradeMenu({ currentPlayer, players, tradeDialog, current
             trade: trade.trade,
             with: trade.with
         })
+        setCurrentTrade(null)
+    }
+
+    function declineTrade() {
+        setCurrentTrade(null)
+    }
+
+    if (currentTrade) {
+        return (
+            <dialog ref={tradeDialog} id="trade-dialog"><TradeProposal trade={currentTrade} proposingPlayer={players.find(p => p.id === currentTrade.with)} acceptTrade={acceptTrade} declineTrade={declineTrade}></TradeProposal></dialog>
+        )
     }
 
     return (
         <dialog ref={tradeDialog} id="trade-dialog">
             <button className="delete-button" onClick={() => tradeDialog.current.close()}>X</button>
-            <div className="trade-menu-players">{players.map((player) => (
-                <button className="trade-list-player" data-enable-shadow onClick={() => {
-                    if (selectedPlayer === player) {
-                        setSelectedPlayer(null)
-                    } else {
-                        setSelectedPlayer(player)
-                    }
-                }} style={{ cursor: "pointer" }}>
-                    <PlayerCard player={player}></PlayerCard>
-                </button>
-            ))}</div>
-            {selectedPlayer && <TradeSelection player={currentPlayer} otherPlayer={selectedPlayer} sendJsonMessage={sendJsonMessage}></TradeSelection>}
+            <div className="trade-menu-players">
+                <center><h3 className="trade-header">Trade</h3></center>
+                {players.map((player) => (
+                    <button className="trade-list-player" data-enable-shadow onClick={() => {
+                        if (selectedPlayer === player) {
+                            setSelectedPlayer(null)
+                        } else {
+                            setSelectedPlayer(player)
+                        }
+                    }} style={{ cursor: "pointer" }}>
+                        <PlayerCard player={player}></PlayerCard>
+                    </button>
+                ))}</div>
+            {selectedPlayer && <TradeSelection player={currentPlayer} otherPlayer={selectedPlayer} sendJsonMessage={sendJsonMessage} setSelectedPlayer={setSelectedPlayer}></TradeSelection>}
         </dialog>
     )
 }
 
-function TradeSelection({ player, otherPlayer, sendJsonMessage }: { player: Player, otherPlayer: Player, sendJsonMessage: SendJsonMessage }) {
+function TradeSelection({ player, otherPlayer, sendJsonMessage, setSelectedPlayer }: { player: Player, otherPlayer: Player, sendJsonMessage: SendJsonMessage, setSelectedPlayer: React.Dispatch<React.SetStateAction<Player>> }) {
     const [give, setGive] = useState<Space[]>([])
     const [receieve, setReceieve] = useState<Space[]>([])
     const [giveMoney, setGiveMoney] = useState(0)
@@ -56,6 +71,8 @@ function TradeSelection({ player, otherPlayer, sendJsonMessage }: { player: Play
 
     function sendTrade(trade: Trade) {
         sendJsonMessage({ action: "propose-trade", trade, playerid: trade.with })
+        alert("trade sent")
+        setSelectedPlayer(null)
     }
 
     return (
@@ -118,4 +135,71 @@ function TradeSelection({ player, otherPlayer, sendJsonMessage }: { player: Play
             }}>Send Trade</button>
         </div >
     )
+}
+
+function TradeProposal({
+    trade,
+    proposingPlayer,
+    acceptTrade,
+    declineTrade,
+}: {
+    trade: Trade
+    proposingPlayer: Player
+    acceptTrade: (trade: any) => void;
+    declineTrade: () => void;
+}) {
+
+    const { board } = useContext(MonopolyContext)
+    console.log(board)
+
+    const propertiesToReceive = board.spaces.filter(space =>
+        trade.trade.give.properties?.includes(Number(space.id))
+    );
+    const propertiesToGive = board.spaces.filter(space =>
+        trade.trade.want.properties?.includes(Number(space.id))
+    );
+
+    const moneyToReceive = trade.trade.give.money;
+    const moneyToGive = trade.trade.want.money;
+
+    return (
+        <div className="trade-proposal-menu">
+
+            <center><h2 className="trade-proposal-title">
+                Trade Proposal from {proposingPlayer.name}
+            </h2>
+            </center>
+            <div className="give-list">
+                <h3 className="trade-selection-text">You Give</h3>
+
+                <div className="money-display">${moneyToGive}</div>
+
+                {propertiesToGive.map((property) => (
+                    <div key={property.id} className="space-display space-give">
+                        {property.name}
+                    </div>
+                ))}
+            </div>
+
+            <div className="receive-list">
+                <h3 className="trade-selection-text">You Get</h3>
+                <div className="money-display">${moneyToReceive}</div>
+
+                {propertiesToReceive.map((property) => (
+                    <div key={property.id} className="space-display space-receive">
+                        {property.name}
+                    </div>
+                ))}
+            </div>
+
+            <div className="trade-proposal-actions">
+                <button className="accept-trade" data-enable-shadow onClick={acceptTrade}>
+                    Accept
+                </button>
+                <button className="decline-trade" data-enable-shadow onClick={declineTrade}>
+                    Decline
+                </button>
+            </div>
+        </div>
+    );
 }

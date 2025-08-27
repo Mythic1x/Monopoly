@@ -319,4 +319,35 @@
             }
         }
     }
+    .trade-proposal-menu {
+        display: grid;
+        flex-direction: row;
+        grid-template-columns: repeat(4, 1fr);
+        column-rule: 1px solid coral;
+        height: fit-content;
+        width: fit-content;
+        padding: 10px;
+        gap: 2em;
+
+        .trade-selection-text {
+            text-align: center;
+        }
+
+        .accept-trade {
+            background: var(--good);
+        }
+
+        .decline-trade {
+            background-color: red;
+        }
+
+        >div {
+            display: flex;
+            flex-direction: column;
+        }
+        .trade-proposal-actions {
+            display: flex;
+            flex-direction: row;
+        }
+    }
 }
