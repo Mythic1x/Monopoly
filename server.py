@@ -125,6 +125,17 @@ class Game:
             case "send-player-info":
                 await client.write({"response": "player-info", "value": player.toJson()})
 
+            case "set-bail":
+                spaceid = action["spaceid"]
+                amount = action["amount"]
+                space = self.board.getSpaceById(spaceid)
+                if not space:
+                    await client.write({"response": "error", "value": f"space id {spaceid} does not exist"})
+                elif not isinstance(amount, int):
+                    await client.write({"response": "error", "value": f"{amount} is not an integer"})
+                else:
+                    space.attrs["bailcost"] = amount
+
             case "connect":
                 await client.write({"response": "assignment", "value": player.id})
                 await self.broadcast({"response": "board", "value": self.board.toJson()})
