@@ -111,8 +111,13 @@ class Game:
         #player-list is generally how the ui knows the information about all the players
         #player-info should only be used when the ui is connecting or calling send-player-info
 
-        match action["action"]:
+        async def handleStatus(status: status_t):
+            if status.broadcast:
+                await self.broadcastStatus(status, player)
+            else:
+                await client.handleStatus(status, player)
 
+        match action["action"]:
             case "end-turn":
                 self.endTurn()
                 await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
@@ -136,13 +141,13 @@ class Game:
                     await client.write(client.mknotif(f"invalid space id: {spaceId}"))
                 else:
                     for status in self.board.moveTo(self.players[playerId], space):
-                        await client.handleStatus(status, player)
+                        await handleStatus(status)
                     await self.broadcast({"response": "board", "value": self.board.toJson()})
                     await self.sendUpdatedStateToClient(client, player)
 
             case "roll":
                 for status in self.board.rollPlayer(player, self.dSides):
-                    await client.handleStatus(status, player)
+                    await handleStatus(status)
                 await self.sendUpdatedStateToClient(client, player)
 
             case "set-details":

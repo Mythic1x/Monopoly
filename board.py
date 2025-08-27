@@ -5,11 +5,12 @@ from typing import Any, Callable, Self
 import random
 
 class status_t:
-    pass
+    broadcast: bool = False
 
 @dataclass
 class BUY_FAIL(status_t):
     space: "Space"
+
 @dataclass
 class BUY_HOUSE_FAIL(status_t):
     space: "Space"
@@ -25,14 +26,17 @@ class BUY_SUCCESS(status_t):
 @dataclass
 class BUY_HOUSE_SUCCESS(status_t):
     space: "Space"
+    broadcast: bool = True
 
 @dataclass
 class BUY_HOTEL_SUCCESS(status_t):
     space: "Space"
+    broadcast: bool = True
 
 @dataclass
 class BUY_NEW_SET(status_t):
     space: "Space"
+    broadcast: bool = True
 
 @dataclass
 class PROMPT_TO_BUY(status_t):
@@ -41,10 +45,12 @@ class PROMPT_TO_BUY(status_t):
 @dataclass
 class MONEY_LOST(status_t):
     amount: int
+    broadcast: bool = True
 
 @dataclass
 class MONEY_GIVEN(status_t):
     amount: int
+    broadcast: bool = True
 
 @dataclass
 class NONE(status_t):
@@ -53,20 +59,25 @@ class NONE(status_t):
 @dataclass
 class PAY_OTHER(status_t):
     amount: int
-    other: "Player"
+    payer: str
+    other: str
+    broadcast: bool = True
 
 @dataclass
 class PAY_TAX(status_t):
     amount: int
     taxname: str
+    broadcast: bool = True
 
 @dataclass
 class PASS_GO(status_t):
     earned: int
+    broadcast: bool = True
 
 @dataclass
 class PAY_JAIL(status_t):
     cost: int
+    broadcast: bool = True
 
 
 type statusreturn_t = status_t
@@ -158,7 +169,7 @@ class Player:
     def payRent(self, other: Self, space: "Space") -> statusreturn_t:
         amount = space.calculatePropertyRent(self.hasSet(space.color, space.set_size))
         self.pay(amount, other)
-        return PAY_OTHER(amount, other)
+        return PAY_OTHER(amount, self.id, other.id)
 
     def getUtilities(self):
         return [space for space in self.ownedSpaces if space.spaceType == ST_UTILITY]
