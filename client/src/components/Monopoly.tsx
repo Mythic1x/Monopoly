@@ -130,6 +130,7 @@ function Monopoly({ playerDetails }: any) {
                     setAuction(message.value)
                     break
                 case "auction-end":
+                    console.log("ENDED")
                     setAuction(null)
                     break
             }
