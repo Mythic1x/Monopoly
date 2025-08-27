@@ -6,9 +6,9 @@ import MonopolyContext from "../../src/Contexts/MonopolyContext";
 //time in ms
 export default function AuctionMenu({ space, time, auction, sendJsonMessage }: { space: Space, time: number, auction: Auction, sendJsonMessage: SendJsonMessage }) {
     const { player, players } = useContext(MonopolyContext)
-    let bidder: Player | undefined = players.find(p => p.id === auction.bidder)
+    const bidder: Player | undefined = players.find(p => p.id === auction.bidder)
     const [bidAmount, setBidAmount] = useState(null)
-    const [bidTime, setBidTime] = useState(time)
+    const [timerWidth, setTimerWidth] = useState(100)
 
     function sendBid(amount: number) {
         sendJsonMessage({ "action": "bid", "bid": amount })
@@ -18,23 +18,26 @@ export default function AuctionMenu({ space, time, auction, sendJsonMessage }: {
         if (player.money < bidAmount) {
             return false
         }
-        if (bidAmount < auction.current_bid) {
+        if (bidAmount <= auction.current_bid) {
             return false
         }
-        if(isNaN(bidAmount)) {
+        if (isNaN(bidAmount)) {
             return false
         }
         return true
     }
-
+  
     useEffect(() => {
-        const id = setInterval(() => setBidTime(t => t - 1))
-        return () => clearInterval(id)
-    }, [])
+        const id = setInterval(() => setTimerWidth(t => t - 1), ((time) / 100))
+        return () => {
+            setTimerWidth(100)
+            clearInterval(id)
+        }
+    }, [auction])
     return (
         <div className="auction-menu">
             <div className="auction-timer">
-                <div className="timer-bar-container"><div className="time-bar" style={{ width: `${bidTime / 1000}%` }}></div></div>
+                <div className="timer-bar-container"><div className="time-bar" style={{ width: `${timerWidth}%` }}></div></div>
             </div>
             <div className="auction-status">
                 <span className="bidder">{bidder?.name ?? "No bidder"}: </span>

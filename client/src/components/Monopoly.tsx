@@ -46,7 +46,7 @@ function Monopoly({ playerDetails }: any) {
 
     useEffect(() => {
         const id = setInterval(() => {
-            setAQ(q => q.reverse().slice(0, q.length - 1))
+            setAQ(q => q.slice(1))
         }, 2500)
         return () => clearInterval(id)
     }, [])
