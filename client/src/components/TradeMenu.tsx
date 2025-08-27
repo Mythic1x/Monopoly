@@ -70,8 +70,7 @@ function TradeSelection({ player, otherPlayer, sendJsonMessage, setSelectedPlaye
     const canReceive = otherPlayer.ownedSpaces.filter((p: Space) => !receieve.some((r) => r.id === p.id))
 
     function sendTrade(trade: Trade) {
-        sendJsonMessage({ action: "propose-trade", trade, playerid: trade.with })
-        alert("trade sent")
+        sendJsonMessage({ action: "propose-trade", trade: trade.trade, playerid: trade.with })
         setSelectedPlayer(null)
     }
 
@@ -145,12 +144,11 @@ function TradeProposal({
 }: {
     trade: Trade
     proposingPlayer: Player
-    acceptTrade: (trade: any) => void;
+    acceptTrade: (trade: Trade) => void;
     declineTrade: () => void;
 }) {
 
     const { board } = useContext(MonopolyContext)
-    console.log(board)
 
     const propertiesToReceive = board.spaces.filter(space =>
         trade.trade.give.properties?.includes(Number(space.id))
@@ -193,7 +191,7 @@ function TradeProposal({
             </div>
 
             <div className="trade-proposal-actions">
-                <button className="accept-trade" data-enable-shadow onClick={acceptTrade}>
+                <button className="accept-trade" data-enable-shadow onClick={() => acceptTrade(trade)}>
                     Accept
                 </button>
                 <button className="decline-trade" data-enable-shadow onClick={declineTrade}>

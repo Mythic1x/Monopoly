@@ -189,7 +189,6 @@ class Game:
                 trade = action["trade"]
                 tradeWith = action["with"]
                 otherPlayer = self.players.get(tradeWith)
-                print(trade)
                 if otherPlayer:
                     player.trade(self.board, otherPlayer, trade)
 

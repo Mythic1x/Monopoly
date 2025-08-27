@@ -116,8 +116,8 @@ function Monopoly({ playerDetails }: any) {
                     sendJsonMessage({ 'action': "current-space" })
                     break
                 case "trade-proposal":
-                    tradeDialog.current.showModal()
                     setCurrentTrade(message.value)
+                    tradeDialog.current.showModal()
                     break
             }
         }
@@ -149,7 +149,7 @@ function Monopoly({ playerDetails }: any) {
                             }}>Buy Property</button>
                             }
                             <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled} onClick={endTurn}>End Turn</button>
-                            <button onClick={() => sendJsonMessage({ "action": "propose-trade", "trade": { "give": { "money": 10 }, "want": {} }, "playerid": player.id })} >
+                            <button onClick={() => tradeDialog.current.showModal()} >
                                 Trade
                             </button>
                         </div>
