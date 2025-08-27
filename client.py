@@ -2,7 +2,7 @@ import abc
 import json
 from typing import Any, Self, override
 
-from board import Player, Space, status_t, PROMPT_TO_BUY, MONEY_LOST, PAY_JAIL, BUY_SUCCESS, BUY_HOTEL_SUCCESS, BUY_HOUSE_SUCCESS, BUY_FAIL, BUY_HOUSE_FAIL, BUY_HOTEL_FAIL, BUY_NEW_SET, MONEY_GIVEN, PAY_OTHER, PAY_TAX, PASS_GO, NONE
+from board import Player, Space, status_t, PROMPT_TO_BUY, MONEY_LOST, PAY_JAIL, BUY_SUCCESS, BUY_HOTEL_SUCCESS, BUY_HOUSE_SUCCESS, BUY_FAIL, BUY_HOUSE_FAIL, BUY_HOTEL_FAIL, BUY_NEW_SET, MONEY_GIVEN, PAY_OTHER, PAY_TAX, PASS_GO, NONE, DRAW_CHANCE
     
 class Client(abc.ABC):
     @abc.abstractmethod
@@ -20,6 +20,9 @@ class Client(abc.ABC):
 
     def mknotif(self, text: str):
         return { "response": "notification", "value": text}
+
+    async def DRAW_CHANCE(self, player: Player, status: DRAW_CHANCE):
+        await self.write({"repsonse": "notification", "value": status.event})
 
     async def PROMPT_TO_BUY(self, player: Player, status: PROMPT_TO_BUY):
         await self.write({"response": "notification", "value": f"{status.space.name} is available for purchase for the price of ${status.space.cost}"})

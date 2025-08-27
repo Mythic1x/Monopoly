@@ -65,7 +65,7 @@ class Game:
         except Exception as e:
             print(e)
         handlers["generic"] = generic_handlers
-        self.board = Board(boardname, handlers, buildFromFile(boardFile))
+        self.board = Board(boardname, handlers, buildFromFile(boardFile), [])
         self.players = {}
         self.curTurn = 0
         self.dSides = dSides

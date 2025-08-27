@@ -1,5 +1,5 @@
 import random
-from board import MONEY_GIVEN, NONE, PASS_GO, PAY_JAIL, PAY_OTHER, PAY_TAX, PROMPT_TO_BUY, ST_RAILROAD, ST_UTILITY, Board, Space, Player
+from board import DRAW_CHANCE, MONEY_GIVEN, NONE, PASS_GO, PAY_JAIL, PAY_OTHER, PAY_TAX, PROMPT_TO_BUY, ST_RAILROAD, ST_UTILITY, Board, Space, Player
 
 def onroll(board: Board, space: Space, player: Player, amount: int, d1: int, d2: int):
     yield from board.move(player, amount)
@@ -36,6 +36,10 @@ def onrent(board: Board, space: Space, player: Player):
 def onpass_passing_go(board: Board, space: Space, player: Player):
     player.money += space.cost
     yield PASS_GO(space.cost)
+
+def onland_chance(board: Board, space: Space, player: Player):
+    card = board.drawChance(player)
+    yield DRAW_CHANCE(card.event, player)
 
 def onrent_utility(board: Board, space: Space, player: Player):
     if space.owner is None or space.owner.id == player.id:

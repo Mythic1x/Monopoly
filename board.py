@@ -9,6 +9,11 @@ class status_t:
     broadcast: bool = False
 
 @dataclass
+class DRAW_CHANCE(status_t):
+    event: str
+    player: "Player"
+
+@dataclass
 class BUY_FAIL(status_t):
     space: "Space"
 
@@ -86,6 +91,13 @@ class PAY_JAIL(status_t):
     cost: int
     broadcast: bool = True
 
+
+@dataclass
+class Chance:
+    event: str
+    gain: int | None
+    lose: int | None
+    type: str
 
 type statusreturn_t = status_t
 
@@ -462,7 +474,9 @@ class Board:
     eventHandlers: dict[str, ModuleType]
     boardName: str
 
-    def __init__(self, name: str, eventHandlers: dict[str, ModuleType], startSpace: Space):
+    chanceCards: list[Chance]
+
+    def __init__(self, name: str, eventHandlers: dict[str, ModuleType], startSpace: Space, chanceCards: list[Chance]):
         self.startSpace = startSpace
 
         self.playerSpaces = {}
@@ -471,6 +485,11 @@ class Board:
 
         self.eventHandlers = eventHandlers
         self.boardName = name
+
+        self.chanceCards = chanceCards
+
+    def drawChance(self, player: Player):
+        return random.choice(self.chanceCards)
 
     def addPlayer(self, player: Player):
         self.startSpace.put(player)
