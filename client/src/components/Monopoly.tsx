@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext } from "react"
-import { Board, Space, Player, ServerResponse, Trade } from "../../index"
+import { Board, Space, Player, ServerResponse, Trade, Auction } from "../../index"
 import PlayerCard from "./PlayerCard"
 import useWebSocket, { ReadyState } from "react-use-websocket/dist"
 import usePlayer from "../hooks/useplayer"
@@ -8,6 +8,7 @@ import { socketAddr } from "../../socket"
 import Alert from "./alert"
 import TradeMenu from "./TradeMenu"
 import MonopolyContext, { MonopolyProvider } from "../../src/Contexts/MonopolyContext"
+import AuctionMenu from "./Auction"
 
 function Monopoly({ playerDetails }: any) {
     const [alertQ, setAQ] = useState<string[]>([])
@@ -18,6 +19,7 @@ function Monopoly({ playerDetails }: any) {
     const tradeDialog = useRef<HTMLDialogElement>(null)
 
     const [currentTrade, setCurrentTrade] = useState<Trade | null>(null)
+    const [auction, setAuction] = useState<Auction | null>(null)
 
     const { board, player, players, setBoard, setPlayers, playerLoaded, setPlayer } = useContext(MonopolyContext)
 
@@ -119,6 +121,12 @@ function Monopoly({ playerDetails }: any) {
                     setCurrentTrade(message.value)
                     tradeDialog.current.showModal()
                     break
+                case "auction-status":
+                    setAuction(message.value)
+                    break
+                case "auction-end":
+                    setAuction(null)
+                    break
             }
         }
     }, [lastJsonMessage])
@@ -131,38 +139,43 @@ function Monopoly({ playerDetails }: any) {
 
 
     return <>
-            <TradeMenu currentPlayer={player} players={players} tradeDialog={tradeDialog} currentTrade={currentTrade} setCurrentTrade={setCurrentTrade}></TradeMenu>
+        <TradeMenu currentPlayer={player} players={players} tradeDialog={tradeDialog} currentTrade={currentTrade} setCurrentTrade={setCurrentTrade}></TradeMenu>
+        <div id="game">
+            <div className="board-container">
+                <GameBoard board={board} player={player}>
+        {auction &&
+                <AuctionMenu space={currentSpace} time={1000} auction={auction} sendJsonMessage={sendJsonMessage}></AuctionMenu>
+            }
+                    <div id="alert-container">
+                        {alertQ.map(v => <Alert alert={v} />)}
+                    </div>
+                    <div className="button-container">
+                        <button ref={rollBtn} className="roll" disabled={goingPlayer?.id !== player.id || rolled} onClick={() => {
+                            sendJsonMessage({ "action": "roll" })
+                            setRolled(true)
+                        }}>Roll</button>
+                        {(goingPlayer?.id === player.id) && <button ref={buyBtn} className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable} onClick={() => {
+                            sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })
+                        }}>Buy Property</button>
+                        }
+                        <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled} onClick={endTurn}>End Turn</button>
+                        <button onClick={() => tradeDialog.current.showModal()} >
+                            Trade
+                        </button>
+                        <button className="start-auction" onClick={() => {
+                            sendJsonMessage({ "action": "start-auction", "spaceid": currentSpace.id })
+                        }}>Auction</button>
+                    </div>
+                </GameBoard>
 
-            <div id="game">
-                <div className="board-container">
-                    <GameBoard board={board} player={player}>
-                        <div id="alert-container">
-                            {alertQ.map(v => <Alert alert={v} />)}
-                        </div>
-                        <div className="button-container">
-                            <button ref={rollBtn} className="roll" disabled={goingPlayer?.id !== player.id || rolled} onClick={() => {
-                                sendJsonMessage({ "action": "roll" })
-                                setRolled(true)
-                            }}>Roll</button>
-                            {(goingPlayer?.id === player.id) && <button ref={buyBtn} className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable} onClick={() => {
-                                sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })
-                            }}>Buy Property</button>
-                            }
-                            <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled} onClick={endTurn}>End Turn</button>
-                            <button onClick={() => tradeDialog.current.showModal()} >
-                                Trade
-                            </button>
-                        </div>
-                    </GameBoard>
-
-                </div>
-                <div className="player-list">
-                    <h3>Players</h3>
-                    {players?.map((player) => (
-                        <PlayerCard player={player}></PlayerCard>
-                    ))}
-                </div>
             </div>
+            <div className="player-list">
+                <h3>Players</h3>
+                {players?.map((player) => (
+                    <PlayerCard player={player}></PlayerCard>
+                ))}
+            </div>
+        </div>
     </>
 }
 

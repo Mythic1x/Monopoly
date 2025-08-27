@@ -59,6 +59,9 @@ class Client(abc.ABC):
 
     async def PAY_TAX(self, player: Player, status: PAY_TAX):
         await self.write(self.mknotif(f"{player.name} paid {status.amount} in {status.taxname} taxes"))
+        
+    async def AUCTION_END(self, winner: Player, space: Space):
+        await self.write({"response": "notification", "value": f"{winner.name} won {space.name} in an auction!"})
 
     async def PASS_GO(self, player: Player, status: PASS_GO):
         await self.write(self.mknotif(f"{player.name} passed go and got ${status.earned}"))

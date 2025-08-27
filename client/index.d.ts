@@ -13,6 +13,8 @@ type _responses = {
     "player-list": Player[]
     "reconnect": { "name": string, "piece": string }
     "trade-proposal": Trade
+    "auction-status": Auction
+    "auction-end": any
 }
 type ServerResponse = { response: infer A extends keyof _responses, value: _responses[A] } | { response: infer A extends keyof _responses, value: _responses[A] }[]
 
@@ -29,6 +31,11 @@ type Trade = {
     }
     from: string
     with: string
+}
+
+export interface Auction {
+    current_bid: number
+    bidder: playerid_t
 }
 
 export interface Board {
