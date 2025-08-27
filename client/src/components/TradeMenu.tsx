@@ -45,7 +45,7 @@ export default function TradeMenu({ currentPlayer, players, tradeDialog, current
             <button className="delete-button" onClick={() => tradeDialog.current.close()}>X</button>
             <div className="trade-menu-players">
                 <center><h3 className="trade-header">Trade</h3></center>
-                {players.map((player) => (
+                {players.filter(p => p.id !== currentPlayer.id).map((player) => (
                     <button className="trade-list-player" data-enable-shadow onClick={() => {
                         if (selectedPlayer === player) {
                             setSelectedPlayer(null)
