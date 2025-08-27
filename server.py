@@ -184,7 +184,7 @@ class Game:
                 if not p:
                     await client.write({"response": "notification", "value": "invalid player id"})
                 else:
-                    await client.write({"response": "trade-proposal", "value": {"trade": trade, "with": player.id, "from": fromPlayer}})
+                    await p.client.write({"response": "trade-proposal", "value": {"trade": trade, "with": player.id, "from": fromPlayer}})
 
             case "accept-trade":
                 trade = action["trade"]
