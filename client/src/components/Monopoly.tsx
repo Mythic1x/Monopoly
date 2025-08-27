@@ -89,6 +89,7 @@ function Monopoly({ playerDetails }: any) {
                         for (let p of message.value as Player[]) {
                             if (p.id === player.id) {
                                 setPlayer(p)
+                                setCurrentSpace(board.playerSpaces[p.id])
                             }
                         }
                     setPlayers(message.value)

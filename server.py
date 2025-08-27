@@ -259,9 +259,6 @@ class Game:
         client.write(message)
 
     async def sendUpdatedStateToClient(self, client: Client, player: Player):
-            await client.write(
-                {"response": "current-space", "value": player.space.toJson()},
-            )
             await self.broadcast([
                 {"response": "next-turn", "value": self.curPlayer.toJson()},
                 {"response": "board", "value": self.board.toJson()},
