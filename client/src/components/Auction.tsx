@@ -34,7 +34,7 @@ export default function AuctionMenu({ space, time, auction, sendJsonMessage }: {
     return (
         <div className="auction-menu">
             <div className="auction-timer">
-                <div className="timer-bar-container"><span className="time-bar" style={{ width: `${bidTime / 10}%` }}></span></div>
+                <div className="timer-bar-container"><div className="time-bar" style={{ width: `${bidTime / 1000}%` }}></div></div>
             </div>
             <div className="auction-status">
                 <span className="bidder">{bidder?.name ?? "No bidder"}: </span>
@@ -42,8 +42,8 @@ export default function AuctionMenu({ space, time, auction, sendJsonMessage }: {
             </div>
             <div className="space-auctioned">
                 <span className="space-name" style={{ color: space.attrs.color }}>{space.name}</span>
-                <span className="space-cost">{space.cost}</span>
-                <span className="house-cost">{space.attrs.house_cost}</span>
+                <span className="space-cost">Value: {space.cost}</span>
+                <span className="house-cost">House Cost: {space.attrs.house_cost}</span>
             </div>
             <input type="text" placeholder="enter your bid" onChange={(e) => setBidAmount(e.target.value)} />
             <button className="send-bid" disabled={!checkValidBid()} onClick={() => sendBid(bidAmount)}>Bid</button>

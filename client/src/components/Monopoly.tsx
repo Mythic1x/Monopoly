@@ -144,7 +144,7 @@ function Monopoly({ playerDetails }: any) {
             <div className="board-container">
                 <GameBoard board={board} player={player}>
         {auction &&
-                <AuctionMenu space={currentSpace} time={1000} auction={auction} sendJsonMessage={sendJsonMessage}></AuctionMenu>
+                <AuctionMenu space={currentSpace} time={auction.end_time} auction={auction} sendJsonMessage={sendJsonMessage}></AuctionMenu>
             }
                     <div id="alert-container">
                         {alertQ.map(v => <Alert alert={v} />)}
@@ -154,7 +154,7 @@ function Monopoly({ playerDetails }: any) {
                             sendJsonMessage({ "action": "roll" })
                             setRolled(true)
                         }}>Roll</button>
-                        {(goingPlayer?.id === player.id) && <button ref={buyBtn} className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable} onClick={() => {
+                        {(goingPlayer?.id === player.id) && <button ref={buyBtn} className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable || player.money < currentSpace.cost} onClick={() => {
                             sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })
                         }}>Buy Property</button>
                         }
@@ -162,7 +162,7 @@ function Monopoly({ playerDetails }: any) {
                         <button onClick={() => tradeDialog.current.showModal()} >
                             Trade
                         </button>
-                        <button className="start-auction" onClick={() => {
+                        <button className="start-auction" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable} onClick={() => {
                             sendJsonMessage({ "action": "start-auction", "spaceid": currentSpace.id })
                         }}>Auction</button>
                     </div>

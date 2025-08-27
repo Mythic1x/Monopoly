@@ -175,7 +175,7 @@ class Game:
                 
             case "start-auction":
                 space = self.board.spaces[action["spaceid"]]
-                auction = space.auction(1000, self.players)
+                auction = space.auction(10000, self.players)
                 self.activeAuction = auction
                 self.auctionState = next(auction)
                 await self.broadcast({"response": "auction-status", "value": self.auctionState})
@@ -249,21 +249,16 @@ class Game:
             ])
             
     async def auctionTimer(self):
-        #blocks for some reason
-        current_auction_time = self.auctionState["end_time"]
-        target_time = time.time() + current_auction_time
         while True:
-            if current_auction_time != self.auctionState["end_time"]:
-                current_auction_time = self.auctionState["end_time"]
-                target_time += current_auction_time
-            if time.time() > target_time:
+            if time.time() > self.auctionState['end_timestamp']:
                 try: 
                     self.activeAuction.send(("END", self.auctionState["current_bid"]))
                 except StopIteration:
-                    await self.broadcast({"response": "auction-end"})
+                    await self.broadcast([{"response": "auction-end"}, {"response": "board", "value": self.board.toJson()}])
                     self.auctionState = None
                     self.activeAuction = None
                 break
+            await asyncio.sleep(1)
             
             
 game = Game("main")

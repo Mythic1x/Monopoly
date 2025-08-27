@@ -409,11 +409,13 @@ class Space:
         yield NONE()
     #auction_time is in milliseconds
     def auction(self, auction_time: int, players: dict[str, Player]):
+        auction_time_s = auction_time / 1000
         auction_dict = {
             "current_bid": 0,
             "bidder": None,
             "end_time": auction_time,
-            "space": self.id
+            "space": self.id,
+            "end_timestamp": time.time() + auction_time_s
         }
         
         while True:
@@ -424,7 +426,7 @@ class Space:
                     break
                 auction_dict["bidder"] = player.id
                 auction_dict["current_bid"] = bid_amount
-                auction_dict["end_time"] += 1000
+                auction_dict["end_timestamp"] = time.time() + auction_time_s
                 
         winner = players.get(auction_dict["bidder"])
         if winner is not None:
