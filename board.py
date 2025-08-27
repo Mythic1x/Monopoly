@@ -59,8 +59,8 @@ class NONE(status_t):
 @dataclass
 class PAY_OTHER(status_t):
     amount: int
-    payer: str
-    other: str
+    payer: "Player"
+    other: "Player"
     broadcast: bool = True
 
 @dataclass
@@ -169,7 +169,7 @@ class Player:
     def payRent(self, other: Self, space: "Space") -> statusreturn_t:
         amount = space.calculatePropertyRent(self.hasSet(space.color, space.set_size))
         self.pay(amount, other)
-        return PAY_OTHER(amount, self.id, other.id)
+        return PAY_OTHER(amount, self, other)
 
     def getUtilities(self):
         return [space for space in self.ownedSpaces if space.spaceType == ST_UTILITY]

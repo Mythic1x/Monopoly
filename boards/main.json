@@ -330,7 +330,6 @@
       "Luxury Tax": {
         "type": "LUXURY_TAX",
         "cost": 0,
-        "onland": "onland_luxurytax",
         "not_purchaseable": "true"
       },
       "Jail": {

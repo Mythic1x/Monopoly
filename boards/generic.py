@@ -12,7 +12,7 @@ def onrent_utility(board: Board, space: Space, player: Player):
         return NONE()
     amount = len(player.getUtilities()) * player.lastRoll
     player.pay(amount, space.owner)
-    return PAY_OTHER(amount, space.owner)
+    return PAY_OTHER(amount, player, space.owner)
 
 def onrent_railroad(board: Board, space: Space, player: Player):
     if space.owner is None :
@@ -26,7 +26,7 @@ def onrent_railroad(board: Board, space: Space, player: Player):
     }[space.owner.getOwnedRailroads()]
     if owed:
         player.pay(owed, space.owner)
-        return PAY_OTHER(owed, space.owner)
+        return PAY_OTHER(owed, player, space.owner)
 
 def onland_income_tax(board: Board, space: Space, player: Player):
     player.money -= round(player.money * 0.10)
