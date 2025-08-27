@@ -62,7 +62,9 @@ export interface Space {
     hotel: boolean
     purchaseable: boolean
 }
+
 type playerid_t = string | (Object & string)
+type spaceid_t = number | (Object & number)
 
 export interface Player {
     money: number;
@@ -70,7 +72,7 @@ export interface Player {
     playerNumber: number;
     ownedSpaces: Space[] | [];
     piece: string
-    space: Space
+    space: spaceid_t
     name: string
     sets: Color[]
 }

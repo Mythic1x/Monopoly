@@ -86,7 +86,7 @@ function Monopoly({ playerDetails }: any) {
             switch (message.response) {
                 case "player-list": {
                     if (playerLoaded)
-                        for (let p of message.value) {
+                        for (let p of message.value as Player[]) {
                             if (p.id === player.id) {
                                 setPlayer(p)
                             }
