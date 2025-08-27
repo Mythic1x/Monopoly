@@ -129,7 +129,8 @@ function TradeSelection({ player, otherPlayer, sendJsonMessage, setSelectedPlaye
                             money: giveMoney
                         },
                     },
-                    with: otherPlayer.id
+                    with: otherPlayer.id,
+                    from: player.id,
                 }
                 sendTrade(trade)
             }}>Send Trade</button>
