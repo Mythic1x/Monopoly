@@ -36,7 +36,7 @@ def onland_luxurytax(board: Board, space: Space, player: Player):
     player.money -= 75
     yield PAY_TAX(75, "luxury")
 
-def onland_goto_jail(board: Board, space: Space, player: Player):
+def onland_go_to_jail(board: Board, space: Space, player: Player):
     jail = board.findJail()
     if jail:
         player.gotoJail(jail)
