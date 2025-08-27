@@ -170,6 +170,7 @@ class Game:
                     await client.write({"response": "error", "value": f"{amount} is not an integer"})
                 else:
                     space.attrs["bailcost"] = amount
+                    await self.sendUpdatedStateToClient(client, player)
 
             case "connect":
                 await client.write({"response": "assignment", "value": player.id})

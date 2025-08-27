@@ -44,6 +44,7 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
         <div className="space-card" data-anchor-name={`--space-${space.id}`}>
             <div className="space-card-name">{space.name}</div>
             <span className="owner">{space.owner ?? "Unowned"}</span>
+            {space.name === "Jail" && <span className="bail-cost">Bail: ${space.attrs.bailcost}</span>}
             <div className="house-info">
                 <div className="house-count">{space.houses} 🏠</div>
                 <div className="hotel">{space.hotel ? 1 : 0} 🏨</div>

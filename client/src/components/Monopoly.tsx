@@ -145,7 +145,7 @@ function Monopoly({ playerDetails }: any) {
         return <span className="loading">loading...</span>
     }
 
-
+    let jail = board.spaces.find(v => v.name === "Jail")
     return <>
         <TradeMenu currentPlayer={player} players={players} tradeDialog={tradeDialog} currentTrade={currentTrade} setCurrentTrade={setCurrentTrade}></TradeMenu>
         <div id="game">
@@ -172,6 +172,10 @@ function Monopoly({ playerDetails }: any) {
                         <button className="start-auction" ref={auctionBtn} disabled={!!currentSpace?.owner || !currentSpace?.purchaseable || (auction ? true : false)} onClick={() => {
                             sendJsonMessage({ "action": "start-auction", "spaceid": currentSpace.id })
                         }}>Auction</button>
+                    {jail?.owner === player.id &&
+                        <input type="number" title="bail cost" className="bail" onChange={(e) => {
+                            sendJsonMessage({"action": "set-bail", spaceid: jail.id, amount: Number(e.target.value)})
+                        }} placeholder="bail cost" />}
                     </div>
                 </GameBoard>
 
