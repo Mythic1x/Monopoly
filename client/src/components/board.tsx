@@ -1,5 +1,7 @@
+import { useContext } from "react";
 import { Board, Player, Space } from "../../index";
 import SpaceCard from "./SpaceCard";
+import MonopolyContext from "../../src/Contexts/MonopolyContext";
 
 interface Props {
     board: Board
@@ -35,6 +37,7 @@ function renderSpaceNameFromSpace(space: Space) {
 }
 
 function BoardSpace({ space, pieces, player }: { space: Space, pieces: string[], player: Player }) {
+    const { players } = useContext(MonopolyContext)
     return <>
         <div className="space" data-house-count={space.houses} data-has-hotel={space.hotel} data-anchor-name={`--space-${space.id}`} data-color={space.attrs.color} onClick={() => console.log(space.id)}>
             {space.purchaseable && <SpaceCard space={space} player={player} />}
@@ -43,6 +46,7 @@ function BoardSpace({ space, pieces, player }: { space: Space, pieces: string[],
             <span className="pieces">{pieces.map(piece => (
                 <span className="piece">{piece}</span>
             ))}</span>
+            <span className="owner">{players.find(p => p.id === space.owner)?.name}</span>
         </div>
     </>
 }
