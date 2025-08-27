@@ -97,9 +97,9 @@ class Player:
     inJail: bool
     jailDoublesRemaining: int
 
-    JAIL_DOUBLES_FAIL = 0
-    JAIL_DOUBLES_SUCCESS = 1
-    JAIL_DOUBLES_FORCE_LEAVE = -1
+    JAIL_FAIL = 0
+    JAIL_ESCAPE = 1
+    JAIL_FORCE_LEAVE = -1
 
     def __init__(self, id: str, playerNumber: int, client, money: int = 1500):
         self.money = money
@@ -146,18 +146,18 @@ class Player:
     def leaveJail(self):
         self.inJail = False
 
-    def tryDouble(self, roll1: int, roll2: int):
+    def tryLeaveJailWithDice(self, roll1: int, roll2: int):
         """
         returns Player.JAIL_DOUBLES_SUCCESS if the double succeeds
         returns Player.JAIL_DOUBLES_FAIL if the double fails
         returns Player.JAIL_DOUBLES_FORCE_LEAVE if the player must leave jail
         """
         if roll1 == roll2:
-            return Player.JAIL_DOUBLES_SUCCESS
+            return Player.JAIL_ESCAPE
         self.jailDoublesRemaining -= 1
         if self.jailDoublesRemaining == 0:
-            return Player.JAIL_DOUBLES_FORCE_LEAVE
-        return Player.JAIL_DOUBLES_FAIL
+            return Player.JAIL_FORCE_LEAVE
+        return Player.JAIL_FAIL
 
     def owns(self, space: "Space"):
         return False if not space.owner else space.owner.id == self.id
@@ -490,28 +490,7 @@ class Board:
 
         player.lastRoll = amount
 
-        if player.inJail:
-            match player.tryDouble(d1, d2):
-                case Player.JAIL_DOUBLES_FAIL:
-                    return
-                case Player.JAIL_DOUBLES_SUCCESS:
-                    print("SUCCESS", d1, d2)
-                    player.leaveJail()
-                    yield NONE()
-                case Player.JAIL_DOUBLES_FORCE_LEAVE:
-                    jail = player.space
-                    bail = player.space.attrs["bailcost"]
-
-                    if jail.owner:
-                        player.pay(bail, jail.owner)
-                    else:
-                        player.money -= bail
-
-                    player.leaveJail()
-
-                    yield PAY_JAIL(player.space.attrs["bailcost"])
-
-        yield from self.move(player, amount)
+        yield from self.runevent("onroll", player.space, player, amount, d1, d2)
 
     #call order  using an example event: onland
     #space.onland (DOES NOT STOP HERE)
@@ -519,17 +498,17 @@ class Board:
     #<generic>.onland_<spae-name>()
     #<board-name>.onland()
     #<generic>.onland()
-    def runevent(self, name: str, space: Space, player: Player):
+    def runevent(self, name: str, space: Space, player: Player, *args: Any):
         if hasattr(space, name):
-            yield from getattr(space, name)(player)
+            yield from getattr(space, name)(player, *args)
 
         for fn in (f"{name}_{space.name.replace(" ", "_").lower()}", name):
             print(fn)
             if hasattr(self.eventHandlers.get(self.boardName), fn):
-                yield from getattr(self.eventHandlers[self.boardName], fn)(self, space, player)
+                yield from getattr(self.eventHandlers[self.boardName], fn)(self, space, player, *args)
                 return
             elif hasattr(self.eventHandlers["generic"], fn):
-                yield from getattr(self.eventHandlers["generic"], fn)(self, space, player)
+                yield from getattr(self.eventHandlers["generic"], fn)(self, space, player, *args)
                 return
 
 

@@ -1,4 +1,34 @@
-from board import MONEY_GIVEN, NONE, PASS_GO, PAY_OTHER, PAY_TAX, PROMPT_TO_BUY, ST_RAILROAD, ST_UTILITY, Board, Space, Player
+import random
+from board import MONEY_GIVEN, NONE, PASS_GO, PAY_JAIL, PAY_OTHER, PAY_TAX, PROMPT_TO_BUY, ST_RAILROAD, ST_UTILITY, Board, Space, Player
+
+def onroll(board: Board, space: Space, player: Player, amount: int, d1: int, d2: int):
+    yield from board.move(player, amount)
+
+def onroll_jail(board: Board, space: Space, player: Player, amount: int, d1: int, d2: int):
+    if not player.inJail:
+        yield from onroll(board, space, player, amount, d1, d2)
+        return
+
+    match player.tryLeaveJailWithDice(d1, d2):
+        case Player.JAIL_FAIL:
+            return
+        case Player.JAIL_ESCAPE:
+            print("SUCCESS", d1, d2)
+            player.leaveJail()
+            yield NONE()
+        case Player.JAIL_FORCE_LEAVE:
+            yield from board.runevent("onbail", player.space, player)
+
+def onbail(board: Board, space: Space, player: Player):
+    bail = space.attrs["bailcost"]
+    if space.owner:
+        player.pay(bail, space.owner)
+    else:
+        player.money -= bail
+
+    player.leaveJail()
+
+    yield PAY_JAIL(bail)
 
 def onrent(board: Board, space: Space, player: Player):
     pass
