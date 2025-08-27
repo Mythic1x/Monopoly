@@ -491,7 +491,9 @@ class Board:
         self.chanceCards = chanceCards
 
     def drawChance(self, player: Player):
-        return random.choice(self.chanceCards)
+        if self.chanceCards:
+            return random.choice(self.chanceCards)
+        return Chance("None", 0, 0, "gain")
 
     def addPlayer(self, player: Player):
         self.startSpace.put(player)
