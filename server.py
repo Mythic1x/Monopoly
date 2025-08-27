@@ -193,6 +193,7 @@ class Game:
                 self.auctionState = next(auction)
                 await self.broadcast({"response": "auction-status", "value": self.auctionState})
                 asyncio.create_task(self.auctionTimer())                
+
             case "bid":
                 bid = int(action['bid'])
                 if player.money < self.auctionState['current_bid'] or bid < self.auctionState["current_bid"]:

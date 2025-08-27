@@ -407,6 +407,7 @@ class Space:
 
     def onpass(self, player: Player) -> Generator[statusreturn_t]:
         yield NONE()
+
     #auction_time is in milliseconds
     def auction(self, auction_time: int, players: dict[str, Player]):
         auction_time_s = auction_time / 1000

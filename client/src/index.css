@@ -3,7 +3,9 @@
 :root {
     --main: rgb(33, 33, 46);
     --good: rgb(67, 150, 67);
-    --fucking-blue: #007bff;
+    --fucking-blue: #3f88c5;
+    --red: #ff5757
+    --error: var(--red);
 
     --monopoly-clr: #c9e3cd;
 
@@ -44,6 +46,10 @@
             cursor: not-allowed;
             background-color: hsl(from var(--main) h s 40%);
         }
+    }
+
+    input {
+        font: inherit;
     }
 }
 
@@ -236,7 +242,7 @@
         }
 
         input {
-            caret-color: red;
+            caret-color: var(--red);
             color: var(--fucking-blue);
 
             cursor: text;
@@ -331,129 +337,139 @@
     }
 }
 
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 /* --- Main Auction Menu Container --- */
 .auction-menu {
-    background-color: #1f283e; /* Dark blue-gray background */
+    background-color: var(--main);
+
     color: #e0e0e0;
-    font-family: 'Poppins', sans-serif;
-    width: 360px;
+    width: 25%;
+
     padding: 24px;
     border-radius: 16px;
-    border: 1px solid #3f88c5;
+    border: 1px solid var(--fucking-blue);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+
+    animation: fadeIn 0.5s ease-out;
+
+    position: absolute;
+    position-anchor: --board;
+    position-area: top;
+    top: 10%;
+
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Spacing between elements */
-    animation: fadeIn 0.5s ease-out;
-    position: absolute;
-    top: 30%;
-}
+    gap: 20px;
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-}
+    .time-bar {
+        width: 100%;
+        height: 1ex;
+        background-color: var(--red);
+        border-radius: 10px;
+        overflow: hidden;
+    }
 
-/* --- Auction Timer Bar --- */
-.auction-timer .timer-bar-container {
-    width: 100%;
-    height: 10px;
-    background-color: #1a1a2e; /* Even darker background for the track */
-    border-radius: 10px;
-    overflow: hidden;
-}
+    .time-bar::before {
+        display: block;
+        content: "";
+        height: 100%;
+        width: attr(data-timer-width type(<percentage>));
+        background: linear-gradient(90deg, var(--fucking-blue), hsl(from var(--fucking-blue) h s 80%));
+        border-radius: 10px;
+        /* This transition makes the timer shrink smoothly */
+        transition: width 0.2s linear;
+    }
 
-.auction-timer .time-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #3f88c5, #56cfe1);
-    border-radius: 10px;
-    /* This transition makes the timer shrink smoothly */
-    transition: width 0.2s linear;
-}
+    .auction-status {
+        text-align: center;
+        font-size: 1.75rem;
+        font-weight: 700;
 
-/* --- Current Bid Status --- */
-.auction-status {
-    text-align: center;
-    font-size: 1.75rem;
-    font-weight: 700;
-}
+        .bidder {
+            font-weight: 400;
+            color: #a0aec0;
+            margin-right: 8px;
+        }
 
-.auction-status .bidder {
-    font-weight: 400;
-    color: #a0aec0; /* Lighter gray for the name */
-    margin-right: 8px;
-}
+        .bid {
+            color: #56cfe1;
+        }
+    }
 
-.auction-status .bid {
-    color: #56cfe1; /* Accent color for the bid amount */
-}
+    .space-auctioned {
+        --space-color: attr(data-space-color type(<color>), white);
 
-/* --- Property Card --- */
-.space-auctioned {
-    background-color: #1a1a2e;
-    padding: 16px;
-    border-radius: 10px;
-    border-left: 4px solid var(--space-color, #3f88c5);
-}
+        padding: 16px;
+        border-radius: 10px;
+        border: 4px solid var(--space-color);
 
-/* Use the inline style for the border color */
-.space-auctioned .space-name {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #fff; /* White for the name to pop */
-    margin-bottom: 12px;
-    display: block;
-}
+        .space-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--space-color);
+            margin-bottom: 12px;
+            display: block;
+        }
 
-.space-auctioned .space-cost,
-.space-auctioned .house-cost {
-    display: block;
-    color: #a0aec0;
-    font-size: 0.9rem;
-    margin-top: 4px;
-}
+        .space-cost,
+        .house-cost {
+            display: block;
+            color: #a0aec0;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+    }
 
-/* --- Bid Input and Button --- */
-.auction-menu input[type="text"] {
-    width: 100%;
-    padding: 14px;
-    border-radius: 8px;
-    border: 1px solid #4a5568;
-    background-color: #1a1a2e;
-    color: #e0e0e0;
-    font-size: 1rem;
-    box-sizing: border-box; /* Prevents padding from affecting width */
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
+    input[type="number"] {
+        width: 100%;
 
-.auction-menu input[type="text"]:focus {
-    outline: none;
-    border-color: #3f88c5;
-    box-shadow: 0 0 0 3px rgba(63, 136, 197, 0.3);
-}
+        padding: 14px;
+        border-radius: 8px;
+        border: 1px solid #4a5568;
+        background-color: #1a1a2e;
+        color: #e0e0e0;
 
-.auction-menu .send-bid {
-    width: 100%;
-    padding: 14px;
-    border-radius: 8px;
-    border: none;
-    background-color: #3f88c5;
-    color: #fff;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
+        /* Prevents padding from affecting width */
+        box-sizing: border-box;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
-.auction-menu .send-bid:hover:not(:disabled) {
-    background-color: #56a9e1;
-    transform: translateY(-2px); /* Slight lift on hover */
-}
+        caret-color: var(--fucking-blue);
 
-.auction-menu .send-bid:disabled {
-    background-color: #4a5568;
-    color: #a0aec0;
-    cursor: not-allowed;
-    transform: none;
-}
+        &:focus {
+            outline: none;
+            border-color: var(--fucking-blue);
+            box-shadow: 0 0 0 3px rgb(from var(--fucking-blue) / 0.3);
+        }
 
+        /*if the adjecent button is disabled that means the user has entered an invalid bid*/
+        &:not(:placeholder-shown):has(~ button[disabled]) {
+            color: red;
+            border-color: currentColor;
+        }
+    }
+
+    .send-bid {
+        width: 100%;
+        background-color: var(--fucking-blue);
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+
+        &[disabled] {
+            background-color: #4a5568;
+            color: #a0aec0;
+        }
+    }
+}
