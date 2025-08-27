@@ -99,6 +99,8 @@ class Game:
         await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
         await player.client.write({"response": "current-space", "value": player.space.toJson()})
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
+        if self.auctionState is not None: 
+             await self.broadcast({"response": "auction-status", "value": self.auctionState})
         await self.run(player)
 
     def endTurn(self):
