@@ -125,8 +125,13 @@ class Game:
 
         match action["action"]:
             case "end-turn":
-                self.endTurn()
-                await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
+                if not self.auctionState:
+                    prevPlayer = self.curPlayer
+                    self.endTurn()
+                    await self.broadcast([
+                        {"response": "turn-ended", "value": prevPlayer.toJson()},
+                        {"response": "next-turn", "value": self.curPlayer.toJson()}
+                    ])
 
             case "send-player-info":
                 await client.write({"response": "player-info", "value": player.toJson()})
@@ -165,9 +170,11 @@ class Game:
                     await self.sendUpdatedStateToClient(client, player)
 
             case "roll":
-                for status in self.board.rollPlayer(player, self.dSides):
-                    await handleStatus(status)
-                await self.sendUpdatedStateToClient(client, player)
+                if not self.auctionState:
+                    for status in self.board.rollPlayer(player, self.dSides):
+                        await handleStatus(status)
+                    await client.write({"response": "roll-complete", "value": None})
+                    await self.sendUpdatedStateToClient(client, player)
 
             case "set-details":
                 details = action["details"]

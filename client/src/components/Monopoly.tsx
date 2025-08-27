@@ -59,7 +59,6 @@ function Monopoly({ playerDetails }: any) {
 
     function endTurn() {
         sendJsonMessage({ "action": "end-turn" })
-        setRolled(false)
     }
 
     useEffect(() => {
@@ -102,6 +101,12 @@ function Monopoly({ playerDetails }: any) {
                 case 'current-space':
                     setCurrentSpace(message.value)
                     break
+                case "turn-ended":
+                    setRolled(false)
+                    break
+                case "roll-complete":
+                    setRolled(true)
+                    break
                 case 'next-turn':
                     setGoingPlayer(message.value)
                     break
@@ -142,16 +147,15 @@ function Monopoly({ playerDetails }: any) {
         <div id="game">
             <div className="board-container">
                 <GameBoard board={board} player={player}>
-        {auction &&
-                <AuctionMenu space={currentSpace} time={auction.end_time} auction={auction} sendJsonMessage={sendJsonMessage}></AuctionMenu>
-            }
+                    {auction &&
+                        <AuctionMenu space={currentSpace} time={auction.end_time} auction={auction} sendJsonMessage={sendJsonMessage}></AuctionMenu>
+                    }
                     <div id="alert-container">
                         {alertQ.map(v => <Alert alert={v} />)}
                     </div>
                     <div className="button-container">
                         <button ref={rollBtn} className="roll" disabled={goingPlayer?.id !== player.id || rolled} onClick={() => {
                             sendJsonMessage({ "action": "roll" })
-                            setRolled(true)
                         }}>Roll</button>
                         {(goingPlayer?.id === player.id) && <button ref={buyBtn} className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable || player.money < currentSpace.cost} onClick={() => {
                             sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })

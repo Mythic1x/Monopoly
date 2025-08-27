@@ -15,6 +15,8 @@ type _responses = {
     "trade-proposal": Trade
     "auction-status": Auction
     "auction-end": any
+    "turn-ended": Player
+    "roll-complete": null
 }
 type ServerResponse = { response: infer A extends keyof _responses, value: _responses[A] } | { response: infer A extends keyof _responses, value: _responses[A] }[]
 
