@@ -54,7 +54,7 @@ class Game:
     dSides: int
     playerTurn: int
     clients: list[Client]
-    activeAuction: Generator[dict[str, Any], Any]
+    activeAuction: Generator[dict[str, Any], Any, AUCTION_END]
     auctionState: dict
 
     def __init__(self, boardname: str, dSides: int = 6):
