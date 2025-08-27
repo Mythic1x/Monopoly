@@ -98,6 +98,7 @@ class Game:
         await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
         await player.client.write({"response": "current-space", "value": player.space.toJson()})
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
+        print("JOIN", self.activeAuction)
         if self.activeAuction is not None: 
              await self.broadcast({"response": "auction-status", "value": self.activeAuction})
         await self.run(player)
@@ -126,8 +127,11 @@ class Game:
 
     async def endAuction(self):
         if not self.activeAuction: return
-        self.players[self.activeAuction["bidder"]].takeOwnership(self.board.getSpaceById(self.activeAuction["space"]))
-        await self.broadcast([{"response": "auction-end"}, {"response": "board", "value": self.board.toJson()}])
+        if self.activeAuction["bidder"]:
+            self.players[self.activeAuction["bidder"]].takeOwnership(self.board.getSpaceById(self.activeAuction["space"]))
+            await self.broadcast([{"response": "auction-end"}, {"response": "board", "value": self.board.toJson()}])
+        else:
+            await self.broadcast({"response": "auction-end"})
         self.activeAuction = None
 
     async def handleAction(self, action: dict[str, Any], player: Player):
@@ -289,11 +293,7 @@ class Game:
         while time.time() < self.activeAuction["end_timestamp"] / 1000:
             await asyncio.sleep(1)
 
-        if self.activeAuction["bidder"]:
-            await self.endAuction()
-        else:
-            #no one bidded
-            await self.broadcast({"response": "auction-end"})
+        await self.endAuction()
 
 
 game = Game("main")

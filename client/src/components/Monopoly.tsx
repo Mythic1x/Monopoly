@@ -15,6 +15,7 @@ function Monopoly({ playerDetails }: any) {
 
     const rollBtn = useRef<HTMLButtonElement>(null)
     const buyBtn = useRef<HTMLButtonElement>(null)
+    const auctionBtn = useRef<HTMLButtonElement>(null)
 
     const tradeDialog = useRef<HTMLDialogElement>(null)
 
@@ -73,6 +74,9 @@ function Monopoly({ playerDetails }: any) {
                 case "b":
                     buyBtn.current.click()
                     break
+                case "a":
+                    auctionBtn.current.click()
+                    break
             }
         }
         addEventListener("keypress", handleKeys)
@@ -130,7 +134,6 @@ function Monopoly({ playerDetails }: any) {
                     setAuction(message.value)
                     break
                 case "auction-end":
-                    console.log("ENDED")
                     setAuction(null)
                     break
             }
@@ -139,8 +142,7 @@ function Monopoly({ playerDetails }: any) {
 
 
     if (loading || !playerLoaded) {
-        return <>
-            <span className="loading">loading...</span></>
+        return <span className="loading">loading...</span>
     }
 
 
@@ -156,18 +158,18 @@ function Monopoly({ playerDetails }: any) {
                         {alertQ.map(v => <Alert alert={v} />)}
                     </div>
                     <div className="button-container">
-                        <button ref={rollBtn} className="roll" disabled={goingPlayer?.id !== player.id || rolled} onClick={() => {
+                        <button ref={rollBtn} className="roll" disabled={goingPlayer?.id !== player.id || rolled || (auction ? true : false)} onClick={() => {
                             sendJsonMessage({ "action": "roll" })
                         }}>Roll</button>
                         {(goingPlayer?.id === player.id) && <button ref={buyBtn} className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable || player.money < currentSpace.cost} onClick={() => {
                             sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })
                         }}>Buy Property</button>
                         }
-                        <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled} onClick={endTurn}>End Turn</button>
+                        <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled || (auction ? true : false)} onClick={endTurn}>End Turn</button>
                         <button onClick={() => tradeDialog.current.showModal()} >
                             Trade
                         </button>
-                        <button className="start-auction" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable} onClick={() => {
+                        <button className="start-auction" ref={auctionBtn} disabled={!!currentSpace?.owner || !currentSpace?.purchaseable || (auction ? true : false)} onClick={() => {
                             sendJsonMessage({ "action": "start-auction", "spaceid": currentSpace.id })
                         }}>Auction</button>
                     </div>
