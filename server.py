@@ -13,7 +13,7 @@ from websockets.legacy.server import WebSocketServerProtocol
 
 
 from boardbuilder import buildFromFile
-from board import AUCTION_END, Board, Player, Space, status_t, statusreturn_t
+from board import AUCTION_END, Board, Player, Space, spacetype_t, status_t, statusreturn_t
 from client import Client, WSClient, TermClient
 ipConnections: dict[Any, Player] = {}
 
@@ -109,6 +109,27 @@ class Game:
         self.playerTurn = (self.playerTurn % len(self.players.values())) + 1
         self.curTurn = self.playerTurn - 1
 
+    def createAuction(self, forSpace: spacetype_t, end_time=10000, starting_bid=0):
+        self.activeAuction = {
+            "current_bid": starting_bid,
+            "bidder": None,
+            "end_time": end_time,
+            "space": forSpace,
+            "end_timestamp": (time.time() * 1000) + end_time
+        }        
+
+    def updateAuction(self, **kwargs):
+        if not self.activeAuction: return
+        for k, v in kwargs.items():
+            self.activeAuction[k] = v
+        self.activeAuction["end_timestamp"] = self.activeAuction["end_time"] + (time.time() * 1000)
+
+    async def endAuction(self):
+        if not self.activeAuction: return
+        self.players[self.activeAuction["bidder"]].takeOwnership(self.board.getSpaceById(self.activeAuction["space"]))
+        await self.broadcast([{"response": "auction-end"}, {"response": "board", "value": self.board.toJson()}])
+        self.activeAuction = None
+
     async def handleAction(self, action: dict[str, Any], player: Player):
         client: Client = player.client
         
@@ -194,14 +215,9 @@ class Game:
                 
             case "start-auction":
                 space = self.board.spaces[action["spaceid"]]
-                end_time = 10000 #milliseconds
-                self.activeAuction = {
-                    "current_bid": 0,
-                    "bidder": None,
-                    "end_time": end_time,
-                    "space": player.space.id,
-                    "end_timestamp": (time.time() * 1000) + end_time
-                }
+
+                self.createAuction(player.space.id, end_time=10000)
+
                 await self.broadcast({"response": "auction-status", "value": self.activeAuction})
                 asyncio.create_task(self.auctionTimer())                
 
@@ -210,9 +226,7 @@ class Game:
                 if not self.activeAuction or player.money < self.activeAuction['current_bid'] or bid < self.activeAuction["current_bid"]:
                     await client.write({"response": "notification", "value": "you can't do that stop cheating"})
                 if self.activeAuction:
-                    self.activeAuction["bidder"] = player.id
-                    self.activeAuction["current_bid"] = bid
-                    self.activeAuction["end_timestamp"] = self.activeAuction["end_time"] + (time.time() * 1000)
+                    self.updateAuction(bidder=player.id, current_bid=bid)
                     await self.broadcast({"response": "auction-status", "value": self.activeAuction})
 
             case "buy-house":
@@ -276,14 +290,10 @@ class Game:
             await asyncio.sleep(1)
 
         if self.activeAuction["bidder"]:
-            self.players[self.activeAuction["bidder"]].takeOwnership(self.board.getSpaceById(self.activeAuction["space"]))
-
-            await self.broadcast([{"response": "auction-end"}, {"response": "board", "value": self.board.toJson()}])
+            await self.endAuction()
         else:
             #no one bidded
             await self.broadcast({"response": "auction-end"})
-
-        self.activeAuction = None
 
 
 game = Game("main")
