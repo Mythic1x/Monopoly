@@ -404,8 +404,9 @@ class Space:
     def iterSpaces(self):
         #if we start on self, the last item in the list will be self,
         #which is the opposite of what we want
-        cur = self.prev
-        while (cur := next(cur)) is not self.prev:
+        cur = self
+        yield self
+        while (cur := next(cur)) is not self:
             yield cur
 
     def toJson(self):
@@ -523,6 +524,7 @@ class Board:
             yield from getattr(space, name)(player)
 
         for fn in (f"{name}_{space.name.replace(" ", "_").lower()}", name):
+            print(fn)
             if hasattr(self.eventHandlers.get(self.boardName), fn):
                 yield from getattr(self.eventHandlers[self.boardName], fn)(self, space, player)
                 return
@@ -540,9 +542,9 @@ class Board:
             curSpace = curSpace.next
             yield from self.runevent("onpass", curSpace, player)
 
-        yield from self.runevent("onland", curSpace, player)
-
         self.playerSpaces[player.id] = curSpace
+
+        yield from self.runevent("onland", curSpace, player)
 
     def toJson(self):
         dict =  {

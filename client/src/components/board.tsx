@@ -61,7 +61,7 @@ function GameBoard({ board, player, children }: Props) {
 
     for (let i = 0; i < colCount * rowCount; i++) {
         let col = i % colCount
-        if (i !== 0 && i % colCount === 0) {
+        if (i !== 0 && col === 0) {
             row++
         }
         if (row === 0) {

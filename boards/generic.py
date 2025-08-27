@@ -4,8 +4,8 @@ def onrent(board: Board, space: Space, player: Player):
     pass
 
 def onpass_passing_go(board: Board, space: Space, player: Player):
-    player.money += abs(space.cost)
-    yield PASS_GO(abs(space.cost))
+    player.money += space.cost
+    yield PASS_GO(space.cost)
 
 def onrent_utility(board: Board, space: Space, player: Player):
     if space.owner is None or space.owner.id == player.id:
@@ -44,11 +44,6 @@ def onland_go_to_jail(board: Board, space: Space, player: Player):
 
 def onland(board: Board, space: Space, player: Player):
     print(f"You landed on {space.name}")
-
-    if space.cost < 0:
-        player.money += abs(space.cost)
-        yield MONEY_GIVEN(abs(space.cost))
-        return
 
     print(space.purchaseable)
     if space.isUnowned() and space.purchaseable:
