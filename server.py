@@ -55,6 +55,7 @@ class Game:
     playerTurn: int
     clients: list[Client]
     activeAuction: dict[str, Any] | None
+    activePlayers = list[Player]
 
     def __init__(self, boardname: str, dSides: int = 6):
         boardFile = f"./boards/{boardname}.json"
@@ -72,14 +73,16 @@ class Game:
         self.playerTurn = 1
         self.clients = []
         self.activeAuction = None
+        self.activePlayers = []
 
     @property
     def curPlayer(self) -> Player:
-        values = list(self.players.values())
+        values = list(self.activePlayers)
         return values[self.curTurn]
 
     async def join(self, player: Player, onjoin: Callable[[], Any] | None = None):
         self.players[player.id] = player
+        self.activePlayers.append(player)
         self.board.addPlayer(player)
         self.clients.append(player.client)
         if onjoin:
@@ -107,7 +110,7 @@ class Game:
         self.advanceTurn()
 
     def advanceTurn(self):
-        self.playerTurn = (self.playerTurn % len(self.players.values())) + 1
+        self.playerTurn = (self.playerTurn % len(self.activePlayers)) + 1
         self.curTurn = self.playerTurn - 1
 
     def createAuction(self, forSpace: spacetype_t, end_time=10000, starting_bid=0):
@@ -208,6 +211,21 @@ class Game:
 
             case "request-space":
                 await client.write({"response": "current-space", "value": player.space.toJson()})
+            
+            case "bankrupt": 
+                await self.broadcast({"response": "bankrupt", "value": f"{player.name}"})
+                player.bankrupt = True
+                self.activePlayers.remove(player)
+                await client.write({"response": "player-info", "value": player.toJson()})
+                
+                for property in player.ownedSpaces:
+                    property.owner = None
+                    
+                await self.broadcast({"response": "board", "value": self.board.toJson()})
+                await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
+                
+                if len(self.activePlayers) < 2:
+                    await self.broadcast({"response": "game-end", "value": self.activePlayers[0].toJson()})
 
             case "set-money":
                 player.money = int(action["money"])

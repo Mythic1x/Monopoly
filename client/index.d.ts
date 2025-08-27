@@ -17,6 +17,8 @@ type _responses = {
     "auction-end": any
     "turn-ended": Player
     "roll-complete": null
+    "bankrupt": string
+    "game-end": Player
 }
 type ServerResponse = { response: infer A extends keyof _responses, value: _responses[A] } | { response: infer A extends keyof _responses, value: _responses[A] }[]
 
@@ -75,6 +77,7 @@ export interface Player {
     space: spaceid_t
     name: string
     sets: Color[]
+    bankrupt: boolean
 }
 
 export type Color =

@@ -7,8 +7,8 @@ export default function PlayerCard({ player }: Props) {
         <>
             <div className="player-card">
                 <div className="player-name">{player.name}</div>
-                <div className="player-money">Money: {player.money}</div>
-                <div className="owned-spaces-count">Owned Spaces: {player.ownedSpaces?.length ?? 0}</div>
+                <div className="player-money">{player.bankrupt ? "bankrupt" : `Money: ${player.money}`}</div>
+                <div className="owned-spaces-count">{player.bankrupt ? "bankrupt" : `Owned Spaces: ${player.ownedSpaces?.length ?? 0}`}</div>
             </div>
         </>
     )

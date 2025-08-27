@@ -112,6 +112,7 @@ class Player:
     space: "Space"
     piece: str
     lastRoll: int
+    bankrupt: bool
 
     inJail: bool
     jailDoublesRemaining: int
@@ -129,6 +130,7 @@ class Player:
         #this is PIECE
         self.piece = "PIECE"
         self.client = client
+        self.bankrupt = False
         self.sets = []
         self.lastRoll = 0
         self.inJail = False
