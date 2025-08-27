@@ -47,6 +47,8 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
             <div className="house-info">
                 <div className="house-count">{space.houses} 🏠</div>
                 <div className="hotel">{space.hotel ? 1 : 0} 🏨</div>
+                <span className="house-cost">{space.attrs.house_cost ?? ""}</span>
+                <span className="space-cost">{space.cost ?? ""}</span>
             </div>
             <div className="house-buttons-container">
                 <button className="buy-house" disabled={!canBuyHouse()} onClick={() => {

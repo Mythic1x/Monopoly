@@ -2,6 +2,7 @@ from collections.abc import Generator
 from dataclasses import dataclass
 from types import ModuleType
 from typing import Any, Callable, Self
+import time
 import random
 
 class status_t:
@@ -50,6 +51,12 @@ class MONEY_LOST(status_t):
 @dataclass
 class MONEY_GIVEN(status_t):
     amount: int
+    broadcast: bool = True
+    
+@dataclass 
+class AUCTION_END(status_t):
+    space: "Space"
+    auction_dict: dict
     broadcast: bool = True
 
 @dataclass
@@ -400,6 +407,33 @@ class Space:
 
     def onpass(self, player: Player) -> Generator[statusreturn_t]:
         yield NONE()
+    #auction_time is in milliseconds
+    def auction(self, auction_time: int, players: dict[str, Player]):
+        auction_time_s = auction_time / 1000
+        auction_dict = {
+            "current_bid": 0,
+            "bidder": None,
+            "end_time": auction_time,
+            "space": self.id,
+            "end_timestamp": time.time() + auction_time_s
+        }
+        
+        while True:
+            new_bid = yield auction_dict
+            if new_bid:
+                player, bid_amount = new_bid
+                if player == "END":
+                    break
+                auction_dict["bidder"] = player.id
+                auction_dict["current_bid"] = bid_amount
+                auction_dict["end_timestamp"] = time.time() + auction_time_s
+                
+        winner = players.get(auction_dict["bidder"])
+        if winner is not None:
+            winner.money -= auction_dict['current_bid']
+            self.owner = winner
+
+        return AUCTION_END(self, winner) 
 
     def iterSpaces(self):
         #if we start on self, the last item in the list will be self,
