@@ -287,6 +287,7 @@ class Game:
                 if otherPlayer:
                     #we do otherPlayer.trade(player) because otherPlayer is the player who initialized the trade in the first place
                     otherPlayer.trade(self.board, player, trade)
+                await self.sendUpdatedStateToClient(client, player)
 
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 
