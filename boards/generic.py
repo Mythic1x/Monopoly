@@ -59,7 +59,7 @@ def onrent_railroad(board: Board, space: Space, player: Player):
 
 def onland_chance(board: Board, space: Space, player: Player):
     card = board.drawChance(player)
-    board.executeChanceCard(player, card)
+    yield from board.executeChanceCard(player, card)
     yield DRAW_CHANCE(card.event, player)
 
 def onland_income_tax(board: Board, space: Space, player: Player):

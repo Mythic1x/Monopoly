@@ -1,5 +1,6 @@
 from collections.abc import Generator
 from dataclasses import dataclass
+import re
 from types import ModuleType
 from typing import Any, Callable, Self
 import time
@@ -96,8 +97,7 @@ class PAY_JAIL(status_t):
 class Chance:
     event: str
     type: str
-    gain: int | None = None
-    lose: int | None = None
+    data: Any
 
 type statusreturn_t = status_t
 
@@ -512,16 +512,23 @@ class Board:
     def drawChance(self, player: Player):
         if self.chanceCards:
             return random.choice(self.chanceCards)
-        return Chance("None", 0, 0, "gain")
+        return Chance("None", "gain", 0)
 
     def executeChanceCard(self, player: Player, card: Chance):
         match card.type:
             case "gain":
-                if card.gain:
-                    player.money += card.gain
+                player.money += int(card.data)
             case "lose":
-                if card.lose:
-                    player.money -= card.lose
+                player.money -= int(card.data)
+            case "teleport":
+                spaceName = card.data.lower().strip()
+                if match := re.match(r"n=(\d+)", spaceName):
+                    n = int(match.group(1))
+                    spaceName = spaceName.replace(match.group(0), "").strip()
+                else:
+                    n = 1
+                space = self.getSpaceByName(spaceName, n)
+                yield from self.moveTo(player, space)
 
     def addPlayer(self, player: Player):
         self.startSpace.put(player)
@@ -532,6 +539,16 @@ class Board:
             if space.id == id:
                 return space
         return None
+
+    def getSpaceByName(self, name: str, count: int = 1):
+        curSpace = self.startSpace
+        nth = 0
+        name = name.lower()
+        while nth < count:
+            if curSpace.name.lower():
+                nth += 1
+            curSpace = next(curSpace)
+        return curSpace.prev
 
     def findJail(self):
         for space in self.startSpace.iterSpaces():
