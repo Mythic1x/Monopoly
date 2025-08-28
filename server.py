@@ -55,7 +55,7 @@ class Game:
     playerTurn: int
     clients: list[Client]
     activeAuction: dict[str, Any] | None
-    activePlayers = list[Player]
+    activePlayers: list[Player]
 
     def __init__(self, boardname: str, dSides: int = 6):
         boardFile = f"./boards/{boardname}.json"
@@ -227,6 +227,9 @@ class Game:
                 
                 if len(self.activePlayers) < 2:
                     await self.broadcast({"response": "game-end", "value": self.activePlayers[0].toJson()})
+
+                if self.curTurn >= len(self.activePlayers):
+                    self.curTurn = 0
 
             case "set-money":
                 player.money = int(action["money"])
