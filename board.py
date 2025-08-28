@@ -174,6 +174,14 @@ class Player:
     def leaveJail(self):
         self.inJail = False
 
+    def payBail(self, jail: "Space"):
+        if jail.owner:
+            self.pay(jail.attrs["bailcost"], jail.owner)
+        else:
+            self.money -= jail.attrs["bailcost"]
+        self.leaveJail()
+
+
     def tryLeaveJailWithDice(self, jailOwned: bool, roll1: int, roll2: int):
         """
         returns Player.JAIL_DOUBLES_SUCCESS if the double succeeds
@@ -187,7 +195,6 @@ class Player:
                 return Player.JAIL_FAIL
 
         if roll1 == roll2:
-            self.jailDoublesRemaining = 0
             return Player.JAIL_ESCAPE
         self.jailDoublesRemaining -= 1
         if self.jailDoublesRemaining == 0:
@@ -298,7 +305,8 @@ class Player:
             "sets": self.sets,
             "name": self.name,
             "ownedSpaces": [space.toJsonForPlayer() for space in self.ownedSpaces],
-            "bankrupt": self.bankrupt
+            "bankrupt": self.bankrupt,
+            "injail": self.inJail,
         }
 
 type spacetype_t = int

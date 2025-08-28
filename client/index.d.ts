@@ -79,6 +79,7 @@ export interface Player {
     name: string
     sets: Color[]
     bankrupt: boolean
+    injail: boolean
 }
 
 export type Color =

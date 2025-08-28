@@ -180,6 +180,9 @@ function Monopoly({ playerDetails }: any) {
                             <button className="start-auction" ref={auctionBtn} disabled={!!currentSpace?.owner || !currentSpace?.purchaseable || (auction ? true : false) || player.bankrupt || goingPlayer?.id !== player.id} onClick={() => {
                                 sendJsonMessage({ "action": "start-auction", "spaceid": currentSpace.id })
                             }}>Auction</button>
+                            {player.money >= jail.attrs.bailcost && player.injail && !rolled && <button className="pay-bail" onClick={() => sendJsonMessage({"action": "pay-bail"})}>
+                            Pay bail
+                            </button>}
                             {jail?.owner === player.id &&
                                 <input type="number" title="bail cost" className="bail" onChange={(e) => {
                                     sendJsonMessage({ "action": "set-bail", spaceid: jail.id, amount: Number(e.target.value) })

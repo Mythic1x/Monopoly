@@ -164,6 +164,13 @@ class Game:
             case "send-player-info":
                 await client.write({"response": "player-info", "value": player.toJson()})
 
+            case "pay-bail":
+                if not player.inJail: return
+
+                player.payBail(player.space)
+                await self.broadcast({"response": "notification", "value": f"{player.name} paid bail"})
+                await self.sendUpdatedStateToClient(client, player)
+
             case "set-bail":
                 spaceid = action["spaceid"]
                 amount = action["amount"]
