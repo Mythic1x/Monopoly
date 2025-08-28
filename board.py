@@ -148,6 +148,7 @@ class Player:
                 continue
             other.ownedSpaces.append(space)
             self.ownedSpaces.remove(space)
+            space.owner = other
 
         if a := trade["give"].get("money"):
             other.money += a
@@ -159,6 +160,7 @@ class Player:
                 continue
             other.ownedSpaces.remove(space)
             self.ownedSpaces.append(space)
+            space.owner = self
 
         if a := trade["want"].get("money"):
             other.money -= a
