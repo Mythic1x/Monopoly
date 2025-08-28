@@ -227,7 +227,7 @@
         gap: 0.5em;
     }
 
-    .action-button-container {
+    .action-buttons {
         display: flex;
         flex-direction: row;
         gap: 0.5em;
