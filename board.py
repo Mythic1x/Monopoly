@@ -172,13 +172,20 @@ class Player:
     def leaveJail(self):
         self.inJail = False
 
-    def tryLeaveJailWithDice(self, roll1: int, roll2: int):
+    def tryLeaveJailWithDice(self, jailOwned: bool, roll1: int, roll2: int):
         """
         returns Player.JAIL_DOUBLES_SUCCESS if the double succeeds
         returns Player.JAIL_DOUBLES_FAIL if the double fails
         returns Player.JAIL_DOUBLES_FORCE_LEAVE if the player must leave jail
         """
+        if jailOwned:
+            if roll1 + roll2 >= 9:
+                return Player.JAIL_ESCAPE
+            else:
+                return Player.JAIL_FAIL
+
         if roll1 == roll2:
+            self.jailDoublesRemaining = 0
             return Player.JAIL_ESCAPE
         self.jailDoublesRemaining -= 1
         if self.jailDoublesRemaining == 0:

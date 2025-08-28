@@ -9,7 +9,7 @@ def onroll_jail(board: Board, space: Space, player: Player, amount: int, d1: int
         yield from onroll(board, space, player, amount, d1, d2)
         return
 
-    match player.tryLeaveJailWithDice(d1, d2):
+    match player.tryLeaveJailWithDice(True if space.owner else False, d1, d2):
         case Player.JAIL_FAIL:
             return
         case Player.JAIL_ESCAPE:
