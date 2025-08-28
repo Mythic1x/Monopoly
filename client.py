@@ -14,62 +14,62 @@ class Client(abc.ABC):
     @abc.abstractmethod
     async def __anext__(self) -> dict[str, Any]: ...
 
-    async def handleStatus(self, status: status_t, player: Player):
-        status = await getattr(self, status.__class__.__name__)(player, status)
+    def handleStatus(self, status: status_t, player: Player):
+        status = getattr(self, status.__class__.__name__)(player, status)
         return status
 
     def mknotif(self, text: str):
         return { "response": "notification", "value": text}
 
-    async def DRAW_CHANCE(self, player: Player, status: DRAW_CHANCE):
-        await self.write({"repsonse": "notification", "value": status.event})
+    def DRAW_CHANCE(self, player: Player, status: DRAW_CHANCE):
+        return {"repsonse": "notification", "value": status.event}
 
-    async def PROMPT_TO_BUY(self, player: Player, status: PROMPT_TO_BUY):
-        await self.write({"response": "notification", "value": f"{status.space.name} is available for purchase for the price of ${status.space.cost}"})
+    def PROMPT_TO_BUY(self, player: Player, status: PROMPT_TO_BUY):
+        return {"response": "notification", "value": f"{status.space.name} is available for purchase for the price of ${status.space.cost}"}
 
-    async def MONEY_LOST(self, player: Player, status: MONEY_LOST):
-        await self.write({"response": "notification", "value": f"{player.name} lost {status.amount}"})
+    def MONEY_LOST(self, player: Player, status: MONEY_LOST):
+        return {"response": "notification", "value": f"{player.name} lost {status.amount}"}
 
-    async def PAY_JAIL(self, player: Player, status: PAY_JAIL):
-        await self.write(self.mknotif(f"{player.name} paid ${status.cost} to get out of jail"))
+    def PAY_JAIL(self, player: Player, status: PAY_JAIL):
+        return self.mknotif(f"{player.name} paid ${status.cost} to get out of jail")
 
-    async def BUY_SUCCESS(self, player: Player, status: BUY_SUCCESS):
-        await self.write({"response": "notification", "value": f"{player.name} successfully bought {status.space.name}"})
+    def BUY_SUCCESS(self, player: Player, status: BUY_SUCCESS):
+        return {"response": "notification", "value": f"{player.name} successfully bought {status.space.name}"}
         
-    async def BUY_HOUSE_SUCCESS(self, player: Player, status: BUY_HOUSE_SUCCESS):
-        await self.write({"response": "notification", "value": f"{player.name} bought a house on {status.space.name}"})
+    def BUY_HOUSE_SUCCESS(self, player: Player, status: BUY_HOUSE_SUCCESS):
+        return {"response": "notification", "value": f"{player.name} bought a house on {status.space.name}"}
         
-    async def BUY_HOTEL_SUCCESS(self, player: Player, status: BUY_HOTEL_SUCCESS):
-        await self.write({"response": "notification", "value": f"{player.name} bought a hotel on {status.space.name}"})
+    def BUY_HOTEL_SUCCESS(self, player: Player, status: BUY_HOTEL_SUCCESS):
+        return {"response": "notification", "value": f"{player.name} bought a hotel on {status.space.name}"}
 
-    async def BUY_FAIL(self, player: Player, status: BUY_FAIL):
-        await self.write({"response": "notification", "value": f"{player.name} failed"})
+    def BUY_FAIL(self, player: Player, status: BUY_FAIL):
+        return {"response": "notification", "value": f"{player.name} failed"}
         
-    async def BUY_HOUSE_FAIL(self, player: Player, status: BUY_HOUSE_FAIL):
-        await self.write({"response": "notification", "value": f"{player.name} failed to purchase house on {status.space.name}"})
+    def BUY_HOUSE_FAIL(self, player: Player, status: BUY_HOUSE_FAIL):
+        return {"response": "notification", "value": f"{player.name} failed to purchase house on {status.space.name}"}
 
-    async def BUY_HOTEL_FAIL(self, player: Player, status: BUY_HOTEL_FAIL):
-        await self.write({"response": "notification", "value": f"{player.name} failed to purchase hotel on {status.space.name}"})
+    def BUY_HOTEL_FAIL(self, player: Player, status: BUY_HOTEL_FAIL):
+        return {"response": "notification", "value": f"{player.name} failed to purchase hotel on {status.space.name}"}
         
-    async def BUY_NEW_SET(self, player: Player, status: BUY_NEW_SET):
-        await self.write({"response": "notification", "value": f"{player.name} successfully bought {status.space.name} for a complete {status.space.color} set"})
+    def BUY_NEW_SET(self, player: Player, status: BUY_NEW_SET):
+        return {"response": "notification", "value": f"{player.name} successfully bought {status.space.name} for a complete {status.space.color} set"}
 
-    async def MONEY_GIVEN(self, player: Player, status: MONEY_GIVEN):
-        await self.write({"response": "notification", "value": f"{player.name} gained {status.amount}"})
+    def MONEY_GIVEN(self, player: Player, status: MONEY_GIVEN):
+        return {"response": "notification", "value": f"{player.name} gained {status.amount}"}
 
-    async def PAY_OTHER(self, player: Player, status: PAY_OTHER):
-        await self.write(self.mknotif(f"{player.name} paid {status.other.name} ${status.amount}"))
+    def PAY_OTHER(self, player: Player, status: PAY_OTHER):
+        return self.mknotif(f"{player.name} paid {status.other.name} ${status.amount}")
 
-    async def PAY_TAX(self, player: Player, status: PAY_TAX):
-        await self.write(self.mknotif(f"{player.name} paid {status.amount} in {status.taxname} taxes"))
+    def PAY_TAX(self, player: Player, status: PAY_TAX):
+        return self.mknotif(f"{player.name} paid {status.amount} in {status.taxname} taxes")
         
-    async def AUCTION_END(self, winner: Player, space: Space):
-        await self.write({"response": "notification", "value": f"{winner.name} won {space.name} in an auction!"})
+    def AUCTION_END(self, winner: Player, space: Space):
+        return {"response": "notification", "value": f"{winner.name} won {space.name} in an auction!"}
 
-    async def PASS_GO(self, player: Player, status: PASS_GO):
-        await self.write(self.mknotif(f"{player.name} passed go and got ${status.earned}"))
+    def PASS_GO(self, player: Player, status: PASS_GO):
+        return self.mknotif(f"{player.name} passed go and got ${status.earned}")
 
-    async def NONE(self, *data):
+    def NONE(self, *data):
         pass
 
     def __aiter__(self):

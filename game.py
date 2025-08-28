@@ -8,6 +8,8 @@ from board import Board, Player, spacetype_t, status_t
 from boardbuilder import buildFromFile
 from client import Client
 
+import actions as Actions
+
 def import_from_path(module_name, file_path):
     spec = importlib.util.spec_from_file_location(module_name, file_path)
     if not spec:
@@ -78,9 +80,6 @@ class Game:
              await self.broadcast({"response": "auction-status", "value": self.activeAuction})
         await self.run(player)
 
-    def endTurn(self):
-        self.advanceTurn()
-
     def advanceTurn(self):
         self.playerTurn = (self.playerTurn % len(self.activePlayers)) + 1
         self.curTurn = self.playerTurn - 1
@@ -110,6 +109,12 @@ class Game:
             await self.broadcast({"response": "auction-end"})
         self.activeAuction = None
 
+
+    def handleStatus(self, status: status_t):
+        if status.broadcast:
+            return True, 
+
+
     async def handleAction(self, action: dict[str, Any], player: Player):
         client: Client = player.client
         
@@ -117,156 +122,16 @@ class Game:
         #player-list is generally how the ui knows the information about all the players
         #player-info should only be used when the ui is connecting or calling send-player-info
 
-        async def handleStatus(status: status_t):
-            if status.broadcast:
-                await self.broadcastStatus(status, player)
-            else:
-                await client.handleStatus(status, player)
-
-        match action["action"]:
-            case "end-turn":
-                if not self.activeAuction:
-                    prevPlayer = self.curPlayer
-                    self.endTurn()
-                    await self.broadcast([
-                        {"response": "turn-ended", "value": prevPlayer.toJson()},
-                        {"response": "next-turn", "value": self.curPlayer.toJson()}
-                    ])
-
-            case "send-player-info":
-                await client.write({"response": "player-info", "value": player.toJson()})
-
-            case "pay-bail":
-                if not player.inJail: return
-
-                player.payBail(player.space)
-                await self.broadcast({"response": "notification", "value": f"{player.name} paid bail"})
-                await self.sendUpdatedStateToClient(client, player)
-
-            case "set-bail":
-                spaceid = action["spaceid"]
-                amount = action["amount"]
-                space = self.board.getSpaceById(spaceid)
-                if not space:
-                    await client.write({"response": "error", "value": f"space id {spaceid} does not exist"})
-                elif not isinstance(amount, int):
-                    await client.write({"response": "error", "value": f"{amount} is not an integer"})
-                else:
-                    space.attrs["bailcost"] = amount
-                    await self.sendUpdatedStateToClient(client, player)
-
-            case "connect":
-                await client.write({"response": "assignment", "value": player.id})
-                await self.broadcast({"response": "board", "value": self.board.toJson()})
-                await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
-                await client.write({"response": "current-space", "value": player.space.toJson()})
-                await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
-                if self.activeAuction is not None: 
-                    await self.broadcast({"response": "auction-status", "value": self.activeAuction})
-
-            case "teleport":
-                spaceId = action["spaceid"]
-                playerId = action["playerid"]
-
-                space = self.board.getSpaceById(spaceId)
-                if not space:
-                    await client.write(client.mknotif(f"invalid space id: {spaceId}"))
-                else:
-                    for status in self.board.moveTo(self.players[playerId], space):
-                        await handleStatus(status)
-                    await self.broadcast({"response": "board", "value": self.board.toJson()})
-                    await self.sendUpdatedStateToClient(client, player)
-
-            case "roll":
-                if not self.activeAuction:
-                    for status in self.board.rollPlayer(player, self.dSides):
-                        await handleStatus(status)
-                    await client.write({"response": "roll-complete", "value": None})
-                    await self.sendUpdatedStateToClient(client, player)
-
-            case "set-details":
-                details = action["details"]
-                player.name = details["name"]
-                player.piece = details["piece"]
-
-            case "request-space":
-                await client.write({"response": "current-space", "value": player.space.toJson()})
-            
-            case "bankrupt": 
-                await self.broadcast({"response": "bankrupt", "value": f"{player.name}"})
-                player.bankrupt = True
-                self.activePlayers.remove(player)
-                await client.write({"response": "player-info", "value": player.toJson()})
-                
-                for property in player.ownedSpaces:
-                    property.owner = None
-                    
-                
-                if len(self.activePlayers) < 2:
-                    await self.broadcast({"response": "game-end", "value": self.activePlayers[0].toJson()})
-
-                if self.curTurn >= len(self.activePlayers):
-                    self.curTurn = 0
-
-                await self.sendUpdatedStateToClient(client, player)
-
-            case "set-money":
-                player.money = int(action["money"])
-
-            case "buy":
-                property = self.board.spaces[action["spaceid"]]
-                result = player.buy(property)
-                await self.broadcastStatus(result, player)
-                await self.sendUpdatedStateToClient(client, player)
-                
-            case "start-auction":
-                space = self.board.spaces[action["spaceid"]]
-
-                self.createAuction(player.space.id, end_time=10000)
-
-                await self.broadcast({"response": "auction-status", "value": self.activeAuction})
-                asyncio.create_task(self.auctionTimer())                
-
-            case "bid":
-                bid = int(action['bid'])
-                if not self.activeAuction or player.money < self.activeAuction['current_bid'] or bid < self.activeAuction["current_bid"]:
-                    await client.write({"response": "notification", "value": "you can't do that stop cheating"})
-                if self.activeAuction:
-                    self.updateAuction(bidder=player.id, current_bid=bid)
-                    await self.broadcast({"response": "auction-status", "value": self.activeAuction})
-
-            case "buy-house":
-                property = self.board.spaces[action["spaceid"]]
-                result = player.buyHouse(property)
-                await self.broadcastStatus(result, player)
-                await self.sendUpdatedStateToClient(client, player)
-
-            case "buy-hotel":
-                property = self.board.spaces[action["spaceid"]]
-                result = player.buyHotel(property)
-                await self.broadcastStatus(result, player)
-                await self.sendUpdatedStateToClient(client, player)
-
-            #trade obj should look like
-            #{"want": {"properties": ["id 1", "id2", "id3"], "money": 432483}, "give": {"money": 3432}}
-            case "propose-trade":
-                trade = action["trade"]
-                to = action["playerid"]
-                fromPlayer = action["from"]
-                p = self.players.get(to)
-                if not p:
-                    await client.write({"response": "notification", "value": "invalid player id"})
-                else:
-                    await p.client.write({"response": "trade-proposal", "value": {"trade": trade, "with": player.id, "from": fromPlayer}})
-
-            case "accept-trade":
-                trade = action["trade"]
-                tradeWith = action["from"]
-                otherPlayer = self.players.get(tradeWith)
-                if otherPlayer:
-                    #we do otherPlayer.trade(player) because otherPlayer is the player who initialized the trade in the first place
-                    otherPlayer.trade(self.board, player, trade)
-                await self.sendUpdatedStateToClient(client, player)
+        actionFnName = "".join(k.title() if i > 0 else k for i, k in enumerate(action["action"].split("-")))
+        if hasattr(Actions, actionFnName):
+            if (fn := getattr(Actions, actionFnName)) and callable(fn):
+                for broadcast, value in fn(self, action, player):
+                    if broadcast is True:
+                        await self.broadcast(value)
+                    elif broadcast is False:
+                        await client.write(value)
+                    elif isinstance(broadcast, Client):
+                        await broadcast.write(value)
 
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 
@@ -278,17 +143,6 @@ class Game:
         for client in self.clients:
             await client.write(message)
 
-    async def broadcastStatus(self, status: status_t, player: Player):
-        for client in self.clients:
-            await client.handleStatus(status, player)
-
-    async def sendUpdatedStateToClient(self, client: Client, player: Player):
-            await self.broadcast([
-                {"response": "next-turn", "value": self.curPlayer.toJson()},
-                {"response": "board", "value": self.board.toJson()},
-                {"response": "player-list", "value": [player.toJson() for player in self.players.values()]}
-            ])
-            
     async def auctionTimer(self):
         while time.time() < self.activeAuction["end_timestamp"] / 1000:
             await asyncio.sleep(1)
