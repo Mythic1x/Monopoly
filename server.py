@@ -222,14 +222,14 @@ class Game:
                 for property in player.ownedSpaces:
                     property.owner = None
                     
-                await self.broadcast({"response": "board", "value": self.board.toJson()})
-                await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
                 
                 if len(self.activePlayers) < 2:
                     await self.broadcast({"response": "game-end", "value": self.activePlayers[0].toJson()})
 
                 if self.curTurn >= len(self.activePlayers):
                     self.curTurn = 0
+
+                await self.sendUpdatedStateToClient(client, player)
 
             case "set-money":
                 player.money = int(action["money"])

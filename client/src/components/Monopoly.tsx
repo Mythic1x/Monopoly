@@ -139,8 +139,10 @@ function Monopoly({ playerDetails }: any) {
                     break
                 case "bankrupt":
                     alert(`${message.value} went bankrupt!`)
+                    break
                 case "game-end":
                     alert(`${message.value.name} won!`)
+                    break
             }
         }
     }, [lastJsonMessage])
