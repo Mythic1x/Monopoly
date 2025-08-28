@@ -157,7 +157,7 @@ function Monopoly({ playerDetails }: any) {
             <div className="board-container">
                 <GameBoard board={board} player={player}>
                     {auction &&
-                        <AuctionMenu space={currentSpace} time={auction.end_time} auction={auction} sendJsonMessage={sendJsonMessage}></AuctionMenu>
+                        <AuctionMenu space={board.spaces.find(s => s.id === auction.space)} time={auction.end_time} auction={auction} sendJsonMessage={sendJsonMessage}></AuctionMenu>
                     }
                     <div id="alert-container">
                         {alertQ.map(v => <Alert alert={v} />)}
@@ -166,7 +166,7 @@ function Monopoly({ playerDetails }: any) {
                         <button ref={rollBtn} className="roll" disabled={goingPlayer?.id !== player.id || rolled || (auction ? true : false) || player.bankrupt} onClick={() => {
                             sendJsonMessage({ "action": "roll" })
                         }}>Roll</button>
-                        {(goingPlayer?.id === player.id) && <button ref={buyBtn} className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable || player.money < currentSpace.cost || player.bankrupt} onClick={() => {
+                        {(goingPlayer?.id === player.id) && <button ref={buyBtn} className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable || player.money < currentSpace.cost || player.bankrupt || !!auction} onClick={() => {
                             sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })
                         }}>Buy Property</button>
                         }
@@ -174,7 +174,7 @@ function Monopoly({ playerDetails }: any) {
                         <button onClick={() => tradeDialog.current.showModal()} >
                             Trade
                         </button>
-                        <button className="bankrupt" disabled={player.bankrupt} onClick={() => {
+                        <button className="bankrupt" disabled={player.bankrupt || !!auction} onClick={() => {
                             sendJsonMessage({ "action": "bankrupt" })
                         }}>Bankrupt</button>
                         <button className="start-auction" ref={auctionBtn} disabled={!!currentSpace?.owner || !currentSpace?.purchaseable || (auction ? true : false) || player.bankrupt} onClick={() => {

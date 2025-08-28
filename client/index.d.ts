@@ -41,6 +41,7 @@ export interface Auction {
     current_bid: number
     bidder: playerid_t
     end_time: number
+    space: string
 }
 
 export interface Board {
