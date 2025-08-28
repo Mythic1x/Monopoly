@@ -136,7 +136,8 @@ class Player:
         self.inJail = False
         self.jailDoublesRemaining = 3
 
-    def takeOwnership(self, space: "Space"):
+    def takeOwnership(self, space: "Space", cost = 0):
+        self.money -= cost
         self.ownedSpaces.append(space)
         space.owner = self
 
