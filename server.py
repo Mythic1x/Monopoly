@@ -132,7 +132,7 @@ class Game:
         if not self.activeAuction: return
         if self.activeAuction["bidder"]:
             space = self.board.getSpaceById(self.activeAuction["space"])
-            self.players[self.activeAuction["bidder"]].takeOwnership(space, self.activeAuction["bid"])
+            self.players[self.activeAuction["bidder"]].takeOwnership(space, self.activeAuction["current_bid"])
             await self.broadcast([{"response": "auction-end"}, {"response": "board", "value": self.board.toJson()}])
         else:
             await self.broadcast({"response": "auction-end"})
