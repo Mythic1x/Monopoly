@@ -58,6 +58,10 @@
     }
 }
 
+.bankrupt {
+    background-color: var(--red);
+}
+
 @layer components {
     #alert-container {
         display: flex;
@@ -211,13 +215,19 @@
     }
 
     .button-container {
+        flex-direction: column;
         position: absolute;
-        top: 58%;
+        top: 60%;
         left: 50%;
         transform: translate(-50%, -50%);
 
         z-index: 2;
 
+        display: flex;
+        gap: 0.5em;
+    }
+
+    .action-button-container {
         display: flex;
         flex-direction: row;
         gap: 0.5em;

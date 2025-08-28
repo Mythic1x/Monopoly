@@ -165,27 +165,29 @@ function Monopoly({ playerDetails }: any) {
                         {alertQ.map(v => <Alert alert={v} />)}
                     </div>
                     <div className="button-container">
-                        <button ref={rollBtn} className="roll" disabled={goingPlayer?.id !== player.id || rolled || (auction ? true : false) || player.bankrupt} onClick={() => {
-                            sendJsonMessage({ "action": "roll" })
-                        }}>Roll</button>
-                        {(goingPlayer?.id === player.id) && <button ref={buyBtn} className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable || player.money < currentSpace.cost || player.bankrupt || !!auction} onClick={() => {
-                            sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })
-                        }}>Buy Property</button>
-                        }
-                        <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled || (auction ? true : false) || player.bankrupt} onClick={endTurn}>End Turn</button>
-                        <button onClick={() => tradeDialog.current.showModal()} >
-                            Trade
-                        </button>
-                        <button className="bankrupt" disabled={player.bankrupt || !!auction} onClick={() => {
+                        <div className="action-buttons">
+                            <button ref={rollBtn} className="roll" disabled={goingPlayer?.id !== player.id || rolled || (auction ? true : false) || player.bankrupt} onClick={() => {
+                                sendJsonMessage({ "action": "roll" })
+                            }}>Roll</button>
+                            {(goingPlayer?.id === player.id) && <button ref={buyBtn} className="buy" disabled={!!currentSpace?.owner || !currentSpace?.purchaseable || player.money < currentSpace.cost || player.bankrupt || !!auction} onClick={() => {
+                                sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })
+                            }}>Buy Property</button>
+                            }
+                            <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled || (auction ? true : false) || player.bankrupt} onClick={endTurn}>End Turn</button>
+                            <button onClick={() => tradeDialog.current.showModal()} disabled={player.bankrupt} >
+                                Trade
+                            </button>
+                            <button className="start-auction" ref={auctionBtn} disabled={!!currentSpace?.owner || !currentSpace?.purchaseable || (auction ? true : false) || player.bankrupt || goingPlayer?.id !== player.id} onClick={() => {
+                                sendJsonMessage({ "action": "start-auction", "spaceid": currentSpace.id })
+                            }}>Auction</button>
+                            {jail?.owner === player.id &&
+                                <input type="number" title="bail cost" className="bail" onChange={(e) => {
+                                    sendJsonMessage({ "action": "set-bail", spaceid: jail.id, amount: Number(e.target.value) })
+                                }} placeholder="bail cost" />}
+                        </div>
+                        <button className="bankrupt" disabled={player.bankrupt || !!auction} style={{ background: "red" }} onClick={() => {
                             sendJsonMessage({ "action": "bankrupt" })
                         }}>Bankrupt</button>
-                        <button className="start-auction" ref={auctionBtn} disabled={!!currentSpace?.owner || !currentSpace?.purchaseable || (auction ? true : false) || player.bankrupt || goingPlayer?.id !== player.id} onClick={() => {
-                            sendJsonMessage({ "action": "start-auction", "spaceid": currentSpace.id })
-                        }}>Auction</button>
-                        {jail?.owner === player.id &&
-                            <input type="number" title="bail cost" className="bail" onChange={(e) => {
-                                sendJsonMessage({ "action": "set-bail", spaceid: jail.id, amount: Number(e.target.value) })
-                            }} placeholder="bail cost" />}
                     </div>
                 </GameBoard>
 
