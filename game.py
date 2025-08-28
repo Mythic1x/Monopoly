@@ -1,10 +1,12 @@
 import asyncio
 import importlib.util
+import json
+import os
 import sys
 import time
 from types import ModuleType
 from typing import Any, Callable
-from board import Board, Player, spacetype_t, status_t
+from board import Board, Chance, Player, spacetype_t, status_t
 from boardbuilder import buildFromFile
 from client import Client
 
@@ -40,7 +42,14 @@ class Game:
         except Exception as e:
             print(e)
         handlers["generic"] = generic_handlers
-        self.board = Board(boardname, handlers, buildFromFile(boardFile), [])
+
+        if os.path.isdir(f"./boards/{boardname}-chance.json"):
+            path = f"./boards/{boardname}-chance.json"
+        else:
+            path = f"./boards/generic-chance.json"
+        with open(path) as f:
+            cards = [Chance(**v) for v in json.load(f)]
+        self.board = Board(boardname, handlers, buildFromFile(boardFile), cards)
         self.players = {}
         self.curTurn = 0
         self.dSides = dSides
@@ -125,13 +134,16 @@ class Game:
         actionFnName = "".join(k.title() if i > 0 else k for i, k in enumerate(action["action"].split("-")))
         if hasattr(Actions, actionFnName):
             if (fn := getattr(Actions, actionFnName)) and callable(fn):
-                for broadcast, value in fn(self, action, player):
-                    if broadcast is True:
-                        await self.broadcast(value)
-                    elif broadcast is False:
-                        await client.write(value)
-                    elif isinstance(broadcast, Client):
-                        await broadcast.write(value)
+                try:
+                    for broadcast, value in fn(self, action, player):
+                        if broadcast is True:
+                            await self.broadcast(value)
+                        elif broadcast is False:
+                            await client.write(value)
+                        elif isinstance(broadcast, Client):
+                            await broadcast.write(value)
+                except TypeError as e:
+                    print(e)
 
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 

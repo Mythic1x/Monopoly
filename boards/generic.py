@@ -13,7 +13,6 @@ def onroll_jail(board: Board, space: Space, player: Player, amount: int, d1: int
         case Player.JAIL_FAIL:
             return
         case Player.JAIL_ESCAPE:
-            print("SUCCESS", d1, d2)
             player.leaveJail()
             yield NONE()
         case Player.JAIL_FORCE_LEAVE:
@@ -37,10 +36,6 @@ def onpass_passing_go(board: Board, space: Space, player: Player):
     player.money += space.cost
     yield PASS_GO(space.cost)
 
-def onland_chance(board: Board, space: Space, player: Player):
-    card = board.drawChance(player)
-    yield DRAW_CHANCE(card.event, player)
-
 def onrent_utility(board: Board, space: Space, player: Player):
     if space.owner is None or space.owner.id == player.id:
         return NONE()
@@ -62,6 +57,11 @@ def onrent_railroad(board: Board, space: Space, player: Player):
         player.pay(owed, space.owner)
         return PAY_OTHER(owed, player, space.owner)
 
+def onland_chance(board: Board, space: Space, player: Player):
+    card = board.drawChance(player)
+    board.executeChanceCard(player, card)
+    yield DRAW_CHANCE(card.event, player)
+
 def onland_income_tax(board: Board, space: Space, player: Player):
     player.money -= round(player.money * 0.10)
     yield PAY_TAX(round(player.money * 0.10), "income")
@@ -79,7 +79,6 @@ def onland_go_to_jail(board: Board, space: Space, player: Player):
 def onland(board: Board, space: Space, player: Player):
     print(f"You landed on {space.name}")
 
-    print(space.purchaseable)
     if space.isUnowned() and space.purchaseable:
         yield PROMPT_TO_BUY(space)
 

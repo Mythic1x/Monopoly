@@ -22,7 +22,7 @@ class Client(abc.ABC):
         return { "response": "notification", "value": text}
 
     def DRAW_CHANCE(self, player: Player, status: DRAW_CHANCE):
-        return {"repsonse": "notification", "value": status.event}
+        return {"response": "notification", "value": status.event}
 
     def PROMPT_TO_BUY(self, player: Player, status: PROMPT_TO_BUY):
         return {"response": "notification", "value": f"{status.space.name} is available for purchase for the price of ${status.space.cost}"}

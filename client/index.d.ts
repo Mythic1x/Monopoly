@@ -5,7 +5,7 @@ type _responses = {
     "next-turn": Player,
     "roll": Board,
     "current-space": Space,
-    "notification": string
+    "notification": string | null
     "new-set": any
     "player-info": Player
     "prompt": string

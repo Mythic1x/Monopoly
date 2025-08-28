@@ -95,9 +95,9 @@ class PAY_JAIL(status_t):
 @dataclass
 class Chance:
     event: str
-    gain: int | None
-    lose: int | None
     type: str
+    gain: int | None = None
+    lose: int | None = None
 
 type statusreturn_t = status_t
 
@@ -514,6 +514,15 @@ class Board:
             return random.choice(self.chanceCards)
         return Chance("None", 0, 0, "gain")
 
+    def executeChanceCard(self, player: Player, card: Chance):
+        match card.type:
+            case "gain":
+                if card.gain:
+                    player.money += card.gain
+            case "lose":
+                if card.lose:
+                    player.money -= card.lose
+
     def addPlayer(self, player: Player):
         self.startSpace.put(player)
         self.playerSpaces[player.id] = self.startSpace
@@ -556,7 +565,6 @@ class Board:
             yield from getattr(space, name)(player, *args)
 
         for fn in (f"{name}_{space.name.replace(" ", "_").lower()}", name):
-            print(fn)
             if hasattr(self.eventHandlers.get(self.boardName), fn):
                 yield from getattr(self.eventHandlers[self.boardName], fn)(self, space, player, *args)
                 return
