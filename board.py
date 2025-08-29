@@ -324,6 +324,22 @@ ST_INCOME_TAX: spacetype_t = 8
 ST_RAILROAD: spacetype_t = 9
 ST_VOID: spacetype_t = 10
 
+def str2spacetype(str: str):
+    return {
+        "property": ST_PROPERTY,
+        "utility": ST_UTILITY,
+        "community_chest": ST_COMMUNITY_CHEST,
+        "chance": ST_CHANCE,
+        "jail": ST_JAIL,
+        "free_parking": ST_FREE_PARKING,
+        "goto_jail": ST_GOTO_JAIL,
+        "go": ST_GO,
+        "luxury_tax": ST_LUXURY_TAX,
+        "income_tax": ST_INCOME_TAX,
+        "railroad": ST_RAILROAD,
+        "void": ST_VOID,
+    }[str.lower()]
+
 class SpaceAttr:
     name: str
     default_factory: Callable[[], Any]
@@ -522,6 +538,8 @@ class Board:
                 player.money -= int(card.data)
             case "teleport":
                 spaceName = card.data.lower().strip()
+                if not self.isValidSpaceName(spaceName):
+                    return
                 if match := re.match(r"n=(\d+)", spaceName):
                     n = int(match.group(1))
                     spaceName = spaceName.replace(match.group(0), "").strip()
@@ -529,6 +547,17 @@ class Board:
                     n = 1
                 space = self.getSpaceByName(spaceName, n)
                 yield from self.moveTo(player, space)
+            case "teleport-next-type":
+                ty = str2spacetype(card.data)
+                for space in player.space.next.iterSpaces():
+                    if space.spaceType == ty:
+                        yield from self.moveTo(player, space)
+                        break
+
+    def isValidSpaceName(self, name: str):
+        for space in self.startSpace.iterSpaces():
+            if space.name.lower() == name.lower():
+                return True
 
     def addPlayer(self, player: Player):
         self.startSpace.put(player)
