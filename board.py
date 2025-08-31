@@ -13,6 +13,22 @@ class status_t:
 class DRAW_CHANCE(status_t):
     event: str
     player: "Player"
+    
+@dataclass
+class FAIL(status_t):
+    player: "Player"
+    
+@dataclass 
+class MORTGAGE_SUCCESS(status_t):
+    player: "Player"
+    space: "Space"
+    broadcast: bool = True
+    
+@dataclass 
+class UNMORTGAGE_SUCCESS(status_t):
+    player: "Player"
+    space: "Space"
+    broadcast: bool = True
 
 @dataclass
 class BUY_FAIL(status_t):
@@ -239,8 +255,22 @@ class Player:
         if space.color not in self.sets and space.set_size and self.hasSet(space.color, space.set_size):
             self.sets.append(space.color)
             return BUY_NEW_SET(space)
-
         return BUY_SUCCESS(space)
+        
+    def mortgage(self, space: "Space"):
+        if self is not space.owner or space.owner is None:
+            return FAIL(self)
+        self.money += space.cost * 0.
+        space.mortgaged = True
+        return MORTGAGE_SUCCESS(self, space)
+        
+    def unmortgage(self, space: "Space"):
+        if self is not space.owner or space.owner is None:
+            return FAIL(self)
+        self.money -= space.cost * 0.10
+        space.mortgaged = False
+        return UNMORTGAGE_SUCCESS(self, space)
+
     def buyHouse(self, space: "Space"):
         if not self.canBuyHouse(space):
             return BUY_HOUSE_FAIL(space)
@@ -373,7 +403,7 @@ class Space:
     hotel: bool
     color = SpaceAttr(str)
     set_size = SpaceAttr(int)
-
+    mortgaged: bool
     def __init__(self, spaceType: spacetype_t, cost: int, name: str, purchaseable: bool, **kwargs):
         self.spaceType = spaceType
         self.players = []
@@ -399,7 +429,7 @@ class Space:
         return f"(${self.cost} {self.name} + {self.attrs})"
 
     def calculatePropertyRent(self, set: bool):
-        if self.spaceType != ST_PROPERTY:
+        if self.spaceType != ST_PROPERTY or self.mortgaged is True:
             return 0
         if not self.hotel:
             match self.houses:

@@ -3,5 +3,5 @@
         "type": "teleport-next-type",
         "data": "railroad",
         "event": "You like trains, advance to the next railroad"
-    },
+    }
 ]

@@ -40,6 +40,15 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
         }
         return true
     }
+
+    function handleMortgage(unmortgage: boolean) {
+        if (unmortgage) {
+            sendJsonMessage({ "action": "unmortgage", "spaceid": space.id })
+        } else {
+            sendJsonMessage({ "action": "mortgage", "spaceid": space.id })
+        }
+    }
+
     return (
         <div className="space-card" data-anchor-name={`--space-${space.id}`}>
             <div className="space-card-name">{space.name}</div>
@@ -49,7 +58,13 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
                 <div className="house-count">{space.houses} 🏠</div>
                 <div className="hotel">{space.hotel ? 1 : 0} 🏨</div>
             </div>
-            {space.attrs.house_cost &&
+            {space.owner === player.id &&
+                <button className="mortgage-button" onClick={() => {
+                    handleMortgage(space.mortgaged)
+                }}>{space.mortgaged ? "Unmortgage" : "Mortgage"}</button>
+            }
+            {
+                space.attrs.house_cost &&
                 <div className="house-buttons-container">
                     <div>
                         <span className="house-cost">{space.attrs.house_cost ?? ""}</span>
@@ -65,6 +80,6 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
                     </div>
                 </div>
             }
-        </div>
+        </div >
     )
 }

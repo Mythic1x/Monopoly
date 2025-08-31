@@ -2,7 +2,7 @@ import abc
 import json
 from typing import Any, Self, override
 
-from board import Player, Space, status_t, PROMPT_TO_BUY, MONEY_LOST, PAY_JAIL, BUY_SUCCESS, BUY_HOTEL_SUCCESS, BUY_HOUSE_SUCCESS, BUY_FAIL, BUY_HOUSE_FAIL, BUY_HOTEL_FAIL, BUY_NEW_SET, MONEY_GIVEN, PAY_OTHER, PAY_TAX, PASS_GO, NONE, DRAW_CHANCE
+from board import Player, Space, status_t, PROMPT_TO_BUY, MONEY_LOST, PAY_JAIL, BUY_SUCCESS, BUY_HOTEL_SUCCESS, BUY_HOUSE_SUCCESS, BUY_FAIL, BUY_HOUSE_FAIL, BUY_HOTEL_FAIL, BUY_NEW_SET, MONEY_GIVEN, PAY_OTHER, PAY_TAX, PASS_GO, NONE, DRAW_CHANCE, FAIL, MORTGAGE_SUCCESS, UNMORTGAGE_SUCCESS
     
 class Client(abc.ABC):
     @abc.abstractmethod
@@ -26,9 +26,18 @@ class Client(abc.ABC):
 
     def PROMPT_TO_BUY(self, player: Player, status: PROMPT_TO_BUY):
         return {"response": "notification", "value": f"{status.space.name} is available for purchase for the price of ${status.space.cost}"}
+    
+    def FAIL(self, player: Player, status: FAIL ):
+        return {"response": "notification", "value": f"{player.name} failed"}
 
     def MONEY_LOST(self, player: Player, status: MONEY_LOST):
         return {"response": "notification", "value": f"{player.name} lost {status.amount}"}
+    
+    def MORTGAGE_SUCCESS(self, player: Player, space: Space, status: MORTGAGE_SUCCESS):
+        return {"response": "notification", "value": f"{player.name} mortgaged {space.name}"}
+    
+    def UNMORTGAGE_SUCCESS(self, player: Player, space: Space, status: UNMORTGAGE_SUCCESS):
+        return {"response": "notification", "value": f"{player.name} unmortgaged {space.name}"}
 
     def PAY_JAIL(self, player: Player, status: PAY_JAIL):
         return self.mknotif(f"{player.name} paid ${status.cost} to get out of jail")

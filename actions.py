@@ -153,5 +153,13 @@ def acceptTrade(game, action, player: Player):
         #we do otherPlayer.trade(player) because otherPlayer is the player who initialized the trade in the first place
         otherPlayer.trade(game.board, player, trade)
     yield True, getUpdatedState(game)
+    
+def mortgage(game, action, player: Player):
+    space = game.board.getSpaceById(action["spaceid"])
+    yield True, player.client.handleStatus(player.mortgage(space), player)
+    
+def unmortgage(game, action, player: Player):
+    space = game.board.getSpaceById(action["spaceid"])
+    yield True, player.client.handleStatus(player.unmortgage(space), player)
 
 
