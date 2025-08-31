@@ -157,9 +157,11 @@ def acceptTrade(game, action, player: Player):
 def mortgage(game, action, player: Player):
     space = game.board.getSpaceById(action["spaceid"])
     yield True, player.client.handleStatus(player.mortgage(space), player)
+    yield True, getUpdatedState(game)
     
 def unmortgage(game, action, player: Player):
     space = game.board.getSpaceById(action["spaceid"])
     yield True, player.client.handleStatus(player.unmortgage(space), player)
+    yield True, getUpdatedState(game)
 
 

@@ -260,7 +260,7 @@ class Player:
     def mortgage(self, space: "Space"):
         if self is not space.owner or space.owner is None:
             return FAIL(self)
-        self.money += space.cost * 0.
+        self.money += space.cost * 0.50
         space.mortgaged = True
         return MORTGAGE_SUCCESS(self, space)
         
