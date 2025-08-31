@@ -33,11 +33,11 @@ class Client(abc.ABC):
     def MONEY_LOST(self, player: Player, status: MONEY_LOST):
         return {"response": "notification", "value": f"{player.name} lost {status.amount}"}
     
-    def MORTGAGE_SUCCESS(self, player: Player, space: Space, status: MORTGAGE_SUCCESS):
-        return {"response": "notification", "value": f"{player.name} mortgaged {space.name}"}
+    def MORTGAGE_SUCCESS(self, player: Player, status: MORTGAGE_SUCCESS):
+        return {"response": "notification", "value": f"{player.name} mortgaged {status.space.name}"}
     
-    def UNMORTGAGE_SUCCESS(self, player: Player, space: Space, status: UNMORTGAGE_SUCCESS):
-        return {"response": "notification", "value": f"{player.name} unmortgaged {space.name}"}
+    def UNMORTGAGE_SUCCESS(self, player: Player, status: UNMORTGAGE_SUCCESS):
+        return {"response": "notification", "value": f"{player.name} unmortgaged {status.space.name}"}
 
     def PAY_JAIL(self, player: Player, status: PAY_JAIL):
         return self.mknotif(f"{player.name} paid ${status.cost} to get out of jail")

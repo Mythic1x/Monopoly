@@ -22,13 +22,11 @@ class FAIL(status_t):
 class MORTGAGE_SUCCESS(status_t):
     player: "Player"
     space: "Space"
-    broadcast: bool = True
     
 @dataclass 
 class UNMORTGAGE_SUCCESS(status_t):
     player: "Player"
     space: "Space"
-    broadcast: bool = True
 
 @dataclass
 class BUY_FAIL(status_t):

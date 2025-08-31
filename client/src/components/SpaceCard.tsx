@@ -59,7 +59,7 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
                 <div className="hotel">{space.hotel ? 1 : 0} 🏨</div>
             </div>
             {space.owner === player.id &&
-                <button className="mortgage-button" onClick={() => {
+                <button className="mortgage-button" disabled={(space.mortgaged && player.money < space.cost * 0.10)} onClick={() => {
                     handleMortgage(space.mortgaged)
                 }}>{space.mortgaged ? "Unmortgage" : "Mortgage"}</button>
             }
