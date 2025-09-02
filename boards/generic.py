@@ -41,7 +41,7 @@ def onrent_utility(board: Board, space: Space, player: Player):
         return NONE()
     amount = len(player.getUtilities()) * player.lastRoll
     player.pay(amount, space.owner)
-    return PAY_OTHER(amount, player, space.owner)
+    return PAY_OTHER(amount, player.id, space.owner.id)
 
 def onrent_railroad(board: Board, space: Space, player: Player):
     if space.owner is None :
@@ -55,12 +55,12 @@ def onrent_railroad(board: Board, space: Space, player: Player):
     }[space.owner.getOwnedRailroads()]
     if owed:
         player.pay(owed, space.owner)
-        return PAY_OTHER(owed, player, space.owner)
+        return PAY_OTHER(owed, player.id, space.owner.id)
 
 def onland_chance(board: Board, space: Space, player: Player):
     card = board.drawChance(player)
     yield from board.executeChanceCard(player, card)
-    yield DRAW_CHANCE(card.event, player)
+    yield DRAW_CHANCE(card.event, player.id)
 
 def onland_income_tax(board: Board, space: Space, player: Player):
     player.money -= round(player.money * 0.10)
@@ -80,7 +80,7 @@ def onland(board: Board, space: Space, player: Player):
     print(f"You landed on {space.name}")
 
     if space.isUnowned() and space.purchaseable:
-        yield PROMPT_TO_BUY(space)
+        yield PROMPT_TO_BUY(space.id)
 
     if not player.owns(space) and space.owner:
         if space.spaceType == ST_UTILITY:

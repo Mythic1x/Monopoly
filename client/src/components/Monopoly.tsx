@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext } from "react"
-import { Board, Space, Player, ServerResponse, Trade, Auction } from "../../index"
+import { Board, Space, Player, ServerResponse, Trade, Auction, playerid_t, spaceid_t } from "../../index"
 import PlayerCard from "./PlayerCard"
 import useWebSocket, { ReadyState } from "react-use-websocket/dist"
 import usePlayer from "../hooks/useplayer"
@@ -25,6 +25,14 @@ function Monopoly({ playerDetails }: any) {
     const { board, player, players, setBoard, setPlayers, playerLoaded, setPlayer } = useContext(MonopolyContext)
     const activePlayers = players.filter(p => !p.bankrupt)
 
+    function playerById(id: playerid_t) {
+        return activePlayers.find(v => v.id === id)
+    }
+
+    function spaceById(id: spaceid_t) {
+        return board.spaces.find(v => v.id === id)
+    }
+
     const [rolled, setRolled] = useState<boolean>(false)
     const [loading, setLoading] = useState(true)
     const [currentSpace, setCurrentSpace] = useState<Space | null>(null)
@@ -32,6 +40,55 @@ function Monopoly({ playerDetails }: any) {
     const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket(socketAddr, {
         share: true
     })
+
+    function handleStatus(status: any) {
+        switch(status.status) {
+            case "due-loan":
+                return `${playerById(status.player).name} has a loan due: ${status.loan.id}`
+            case "bankrupt":
+                return `${playerById(status.player).name} has gone bankrupt`
+            case "draw-chance":
+                return status.event
+            case "fail":
+                return `${playerById(status.player).name} has failed`
+            case "mortgage-success":
+                return `${playerById(status.player).name} has mortgaged ${spaceById(status.space).name}`
+            case "unmortgage-success":
+                return `${playerById(status.player).name} has unmortgaged ${spaceById(status.space).name}`
+            case "buy-fail":
+                return `Failed to buy`
+            case "buy-house-fail":
+                return "Failed to buy communist 🏘️"
+            case "buy-hotel-fail":
+                return "you バカ, you could not buy a hotel"
+            case "buy-success":
+                return "(russian accent) bought 😏"
+            case "buy-house-success":
+                return "HOUSING"
+            case "buy-hotel-success":
+                return "HOTELING"
+            case "buy-new-set":
+                return `The ftc is watching as ${spaceById(status.space).attrs.color} has become a monopoly`
+            case "prompt-to-buy":
+                return `${spaceById(status.space).name} is available for purchase`
+            case "money-lost":
+                return `${status.amount} has been lost`
+            case "money-given":
+                return `${status.amount} was given`
+            case "auction-end":
+                return `${spaceById(status.space).name} has been auctioned`
+            case "none":
+                return ""
+            case "pay-other":
+                return `${playerById(status.player).name} is paying ${playerById(status.other).name} $${status.amount}`
+            case "pay-tax":
+                return `${status.amount} has been paid for ${status.taxname} tax`
+            case "pass-go":
+                return 'go has been passed, very nifty'
+            case 'pay-jail':
+                return `${status.cost} has been paid in bail`
+        }
+    }
 
     window["findSpaceByName"] = (name: string) => {
         for (let space of board.spaces) {
@@ -121,7 +178,9 @@ function Monopoly({ playerDetails }: any) {
                     alert(`${player} achieved the set for ${color}`)
                 }
                 case "notification":
-                    alert(message.value)
+                    let m = handleStatus(message.value)
+                    console.log(m, message)
+                    if(m) alert(m)
                     break
                 case "join-game":
                     sendJsonMessage({ 'action': "connect" })

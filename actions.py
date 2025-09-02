@@ -65,14 +65,14 @@ def teleport(game, action, player: Player):
         yield False, player.client.mknotif(f"invalid space id: {spaceId}")
     else:
         for status in game.board.moveTo(game.players[playerId], space):
-            yield status.broadcast, player.client.handleStatus(status, player)
+            yield status.broadcast, status
         yield True, {"response": "board", "value": game.board.toJson()}
         yield True, getUpdatedState(game)
 
 def roll(game, action, player: Player):
     if game.activeAuction: return
     for status in game.board.rollPlayer(player, game.dSides):
-        yield status.broadcast, player.client.handleStatus(status, player)
+        yield status.broadcast, status
     yield False, {"response": "roll-complete", "value": None}
     yield True, getUpdatedState(game)
 
@@ -107,7 +107,7 @@ def setMoney(game, action, player: Player):
 def buy(game, action, player: Player):
     property = game.board.spaces[action["spaceid"]]
     result = player.buy(property)
-    yield True, player.client.handleStatus(result, player)
+    yield True, result
     yield True, getUpdatedState(game)
 
 def startAuction(game, action, player: Player):
@@ -129,13 +129,13 @@ def bid(game, action, player: Player):
 def buyHouse(game, action, player: Player):
     property = game.board.spaces[action["spaceid"]]
     result = player.buyHouse(property)
-    yield True, player.client.handleStatus(result, player)
+    yield True, result
     yield True, getUpdatedState(game)
 
 def buyHotel(game, action, player: Player):
     property = game.board.spaces[action["spaceid"]]
     result = player.buyHotel(property)
-    yield True, player.client.handleStatus(result, player)
+    yield True, result
     yield True, getUpdatedState(game)
 
 #trade obj should look like
@@ -161,12 +161,12 @@ def acceptTrade(game, action, player: Player):
     
 def mortgage(game, action, player: Player):
     space = game.board.getSpaceById(action["spaceid"])
-    yield True, player.client.handleStatus(player.mortgage(space), player)
+    yield True, player.mortgage(space)
     yield True, getUpdatedState(game)
     
 def unmortgage(game, action, player: Player):
     space = game.board.getSpaceById(action["spaceid"])
-    yield True, player.client.handleStatus(player.unmortgage(space), player)
+    yield True, player.unmortgage(space)
     yield True, getUpdatedState(game)
 
 

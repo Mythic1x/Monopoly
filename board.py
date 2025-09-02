@@ -6,74 +6,79 @@ from types import ModuleType
 from typing import Any, Callable, Self
 import random
 
+type player_t = str
+type space_t = int
+type loan_t = float
+
 class status_t:
     broadcast: bool = False
 
 @dataclass
 class DUE_LOAN(status_t):
-    loan: "Loan"
-    player: "Player"
+    loan: loan_t
+    player: player_t
 
 @dataclass
 class BANKRUPT(status_t):
-    player: "Player"
+    player: player_t
 
 @dataclass
 class DRAW_CHANCE(status_t):
     event: str
-    player: "Player"
+    player: player_t
     
 @dataclass
 class FAIL(status_t):
-    player: "Player"
+    player: player_t
     
 @dataclass 
 class MORTGAGE_SUCCESS(status_t):
-    player: "Player"
-    space: "Space"
+    player: player_t
+    space: space_t
     
 @dataclass 
 class UNMORTGAGE_SUCCESS(status_t):
-    player: "Player"
-    space: "Space"
+    player: player_t
+    space: space_t
 
 @dataclass
 class BUY_FAIL(status_t):
-    space: "Space"
+    space: space_t
 
 @dataclass
 class BUY_HOUSE_FAIL(status_t):
-    space: "Space"
+    space: space_t
 
 @dataclass
 class BUY_HOTEL_FAIL(status_t):
-    space: "Space"
+    space: space_t
 
 @dataclass
 class BUY_SUCCESS(status_t):
-    space: "Space"
+    space: space_t
 
 @dataclass
 class BUY_HOUSE_SUCCESS(status_t):
-    space: "Space"
+    space: space_t
     broadcast: bool = True
 
 @dataclass
 class BUY_HOTEL_SUCCESS(status_t):
-    space: "Space"
+    space: space_t
     broadcast: bool = True
 
 @dataclass
 class BUY_NEW_SET(status_t):
-    space: "Space"
+    space: space_t
     broadcast: bool = True
 
 @dataclass
 class PROMPT_TO_BUY(status_t):
-    space: "Space"
+    space: space_t
 
 @dataclass
 class MONEY_LOST(status_t):
+    #FIXME this needs a player so that the ui can say which player lost money lmfao
     amount: int
     broadcast: bool = True
 
@@ -84,7 +89,7 @@ class MONEY_GIVEN(status_t):
     
 @dataclass 
 class AUCTION_END(status_t):
-    space: "Space"
+    space: space_t
     auction_dict: dict
     broadcast: bool = True
 
@@ -95,8 +100,8 @@ class NONE(status_t):
 @dataclass
 class PAY_OTHER(status_t):
     amount: int
-    payer: "Player"
-    other: "Player"
+    payer: player_t
+    other: player_t
     broadcast: bool = True
 
 @dataclass
@@ -246,7 +251,7 @@ class Player:
                 #while paying the first one, the other 2 will not get paid this turn.
                 if self.money < 0:
                     self.bankrupt = True
-                    yield BANKRUPT(self)
+                    yield BANKRUPT(self.id)
                     break
 
     def payLoan(self, loan: Loan, amount: int):
@@ -322,7 +327,7 @@ class Player:
     def payRent(self, other: Self, space: "Space") -> statusreturn_t:
         amount = space.calculatePropertyRent(self.hasSet(space.color, space.set_size))
         self.pay(amount, other)
-        return PAY_OTHER(amount, self, other)
+        return PAY_OTHER(amount, self.id, other.id)
 
     def getUtilities(self):
         return [space for space in self.ownedSpaces if space.spaceType == ST_UTILITY]
@@ -341,7 +346,7 @@ class Player:
 
     def buy(self, space: "Space"):
         if space.cost > self.money or not space.purchaseable or space.owner:
-            return BUY_FAIL(space)
+            return BUY_FAIL(space.id)
 
         self.money -= space.cost
         space.owner = self
@@ -349,38 +354,38 @@ class Player:
 
         if space.color not in self.sets and space.set_size and self.hasSet(space.color, space.set_size):
             self.sets.append(space.color)
-            return BUY_NEW_SET(space)
-        return BUY_SUCCESS(space)
+            return BUY_NEW_SET(space.id)
+        return BUY_SUCCESS(space.id)
         
     def mortgage(self, space: "Space"):
         if self is not space.owner or space.owner is None:
-            return FAIL(self)
+            return FAIL(self.id)
         self.money += space.cost * 0.50
         space.mortgaged = True
-        return MORTGAGE_SUCCESS(self, space)
+        return MORTGAGE_SUCCESS(self.id, space.id)
         
     def unmortgage(self, space: "Space"):
         if self is not space.owner or space.owner is None:
-            return FAIL(self)
+            return FAIL(self.id)
         self.money -= space.cost * 0.10
         space.mortgaged = False
-        return UNMORTGAGE_SUCCESS(self, space)
+        return UNMORTGAGE_SUCCESS(self.id, space.id)
 
     def buyHouse(self, space: "Space"):
         if not self.canBuyHouse(space):
-            return BUY_HOUSE_FAIL(space)
+            return BUY_HOUSE_FAIL(space.id)
         
         self.money -= space.house_cost
         space.houses += 1
-        return BUY_HOUSE_SUCCESS(space)
+        return BUY_HOUSE_SUCCESS(space.id)
     
     def buyHotel(self, space: "Space"):
         if not self.canBuyHotel(space):
-            return BUY_HOTEL_FAIL(space)
+            return BUY_HOTEL_FAIL(space.id)
         
         self.money -= space.house_cost
         space.hotel = True
-        return BUY_HOTEL_SUCCESS(space)
+        return BUY_HOTEL_SUCCESS(space.id)
         
     def canBuyHouse(self, space: "Space"):
         if space.color not in self.sets:
@@ -729,7 +734,7 @@ class Board:
 
         player.lastRoll = amount
         for dueLoan in player.incrementTurnsPassedOnLoans():
-            yield DUE_LOAN(dueLoan, player)
+            yield DUE_LOAN(dueLoan.id, player.id)
 
         yield from self.runevent("onroll", player.space, player, amount, d1, d2)
 

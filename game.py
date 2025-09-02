@@ -1,9 +1,11 @@
 import asyncio
+import dataclasses
 import importlib.util
 import json
 import os
 import sys
 import time
+import traceback
 from types import ModuleType
 from typing import Any, Callable
 from board import BANKRUPT, Board, Chance, Player, spacetype_t, status_t
@@ -119,10 +121,6 @@ class Game:
         self.activeAuction = None
 
 
-    def handleStatus(self, status: status_t):
-        if status.broadcast:
-            return True, 
-
 
     async def handleAction(self, action: dict[str, Any], player: Player):
         client: Client = player.client
@@ -136,6 +134,11 @@ class Game:
             if (fn := getattr(Actions, actionFnName)) and callable(fn):
                 try:
                     for broadcast, value in fn(self, action, player):
+                        if isinstance(value, status_t):
+                            name = value.__class__.__name__
+                            value = dataclasses.asdict(value)
+                            value["status"] = name.lower().replace("_", "-")
+                            value = {"response": "notification", "value": value}
                         if broadcast is True:
                             await self.broadcast(value)
                         elif broadcast is False:
@@ -143,7 +146,7 @@ class Game:
                         elif isinstance(broadcast, Client):
                             await broadcast.write(value)
                 except TypeError as e:
-                    print(e)
+                    print(traceback.format_exc())
 
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
 
