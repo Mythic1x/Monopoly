@@ -11,6 +11,11 @@ def getUpdatedState(game):
 
 def endTurn(game, action, player: Player):
     if game.activeAuction: return
+    if game.curPlayer.bankrupt:
+        yield False, {
+                "response": "notification", "value": "turn cannot be end while bankrupt"
+        }
+        return
     prevPlayer = game.curPlayer
     game.advanceTurn()
     yield True, [

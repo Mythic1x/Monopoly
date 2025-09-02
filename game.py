@@ -6,7 +6,7 @@ import sys
 import time
 from types import ModuleType
 from typing import Any, Callable
-from board import Board, Chance, Player, spacetype_t, status_t
+from board import BANKRUPT, Board, Chance, Player, spacetype_t, status_t
 from boardbuilder import buildFromFile
 from client import Client
 

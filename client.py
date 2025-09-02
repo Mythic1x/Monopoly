@@ -2,7 +2,7 @@ import abc
 import json
 from typing import Any, Self, override
 
-from board import Player, Space, status_t, PROMPT_TO_BUY, MONEY_LOST, PAY_JAIL, BUY_SUCCESS, BUY_HOTEL_SUCCESS, BUY_HOUSE_SUCCESS, BUY_FAIL, BUY_HOUSE_FAIL, BUY_HOTEL_FAIL, BUY_NEW_SET, MONEY_GIVEN, PAY_OTHER, PAY_TAX, PASS_GO, NONE, DRAW_CHANCE, FAIL, MORTGAGE_SUCCESS, UNMORTGAGE_SUCCESS
+from board import Player, Space, status_t, PROMPT_TO_BUY, MONEY_LOST, PAY_JAIL, BUY_SUCCESS, BUY_HOTEL_SUCCESS, BUY_HOUSE_SUCCESS, BUY_FAIL, BUY_HOUSE_FAIL, BUY_HOTEL_FAIL, BUY_NEW_SET, MONEY_GIVEN, PAY_OTHER, PAY_TAX, PASS_GO, NONE, DRAW_CHANCE, FAIL, MORTGAGE_SUCCESS, UNMORTGAGE_SUCCESS, BANKRUPT, DUE_LOAN
     
 class Client(abc.ABC):
     @abc.abstractmethod
@@ -20,6 +20,12 @@ class Client(abc.ABC):
 
     def mknotif(self, text: str):
         return { "response": "notification", "value": text}
+
+    def DUE_LOAN(self, player: Player, status: DUE_LOAN):
+        return {"response": "notification", "value": f"{status.player.name} owes {status.loan.totalOwed} in an overdue loan"}
+
+    def BANKRUPT(self, player: Player, status: BANKRUPT):
+        return {"response": "notification", "value": f"{status.player.name} has gone bankrupt"}
 
     def DRAW_CHANCE(self, player: Player, status: DRAW_CHANCE):
         return {"response": "notification", "value": status.event}

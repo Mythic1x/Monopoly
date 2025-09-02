@@ -1,13 +1,22 @@
 from collections.abc import Generator
 from dataclasses import dataclass
+import json
 import re
 from types import ModuleType
 from typing import Any, Callable, Self
-import time
 import random
 
 class status_t:
     broadcast: bool = False
+
+@dataclass
+class DUE_LOAN(status_t):
+    loan: "Loan"
+    player: "Player"
+
+@dataclass
+class BANKRUPT(status_t):
+    player: "Player"
 
 @dataclass
 class DRAW_CHANCE(status_t):
@@ -115,6 +124,72 @@ class Chance:
 
 type statusreturn_t = status_t
 
+class Loan:
+    id: float
+    type: str #deadline | per-turn
+    amountPerTurn: int
+    deadline: int
+    amount: int
+    interest: int
+    interestType: str #simple | compound
+
+    turnsPassed: int
+
+    totalOwed: int
+    loaner: "Player | None" #None means bank
+    loanee: "Player"
+
+    def __init__(self, loaner, loanee, type: str, amount: int, interest: int, interestType: str, *, amountPerTurn: int = 0, deadline: int = 0) -> None:
+        self.id = random.random()
+        self.type = type
+        self.amount = amount
+        self.interest = interest
+        self.interestType =interestType
+
+        self.amountPerTurn = amountPerTurn
+        self.deadline = deadline
+
+        self.turnsPassed = 0
+
+        self.loaner = loaner
+        self.loanee = loanee
+
+        self.totalOwed = amount
+        if self.type == 'simple':
+            self.totalOwed = round(self.totalOwed * (1 + (interest / 100)))
+
+    def compound(self):
+        if self.interestType == 'simple': return
+        self.totalOwed = round(self.totalOwed * (1 + (self.interest / 100)))
+
+    def payTurnAmount(self):
+        self.totalOwed -= self.amountPerTurn
+        if self.loaner:
+            self.loaner.money += self.amountPerTurn
+        self.loanee.money -= self.amountPerTurn
+        return self.amountPerTurn
+
+    def payAmount(self, amount: int):
+        if self.loaner:
+            self.loaner.money += amount
+        self.loanee.money -= amount
+        self.totalOwed -= amount
+
+    def toJson(self):
+        return {
+            "id": self.id,
+            "interest": self.interest,
+            "interest-type": self.interestType,
+            "amount": self.amount,
+            "loaner-id": "BANK" if not self.loaner else self.loaner.id,
+            "loanee-id": self.loanee.id,
+            "amount-per-turn": self.amountPerTurn,
+            "remaining-to-pay": self.totalOwed,
+            "deadline": self.deadline
+        }
+
+
+
 class Player:
     money: int
     id: str
@@ -130,6 +205,8 @@ class Player:
 
     inJail: bool
     jailDoublesRemaining: int
+
+    loans: list[Loan]
 
     JAIL_FAIL = 0
     JAIL_ESCAPE = 1
@@ -149,11 +226,31 @@ class Player:
         self.lastRoll = 0
         self.inJail = False
         self.jailDoublesRemaining = 3
+        self.loans = []
 
     def takeOwnership(self, space: "Space", cost = 0):
         self.money -= cost
         self.ownedSpaces.append(space)
         space.owner = self
+
+    def loanPlayer(self, other: Self, loan: Loan):
+        other.loans.append(loan)
+        self.money -= loan.amount
+        other.money += loan.amount
+
+    def payTurnLoans(self):
+        for loan in self.loans:
+            if loan.type == 'per-turn':
+                loan.payTurnAmount()
+                #FIXME: lets say the player has 3 loans, if the player goes bankrupt
+                #while paying the first one, the other 2 will not get paid this turn.
+                if self.money < 0:
+                    self.bankrupt = True
+                    yield BANKRUPT(self)
+                    break
+
+    def payLoan(self, loan: Loan, amount: int):
+        loan.payAmount(amount)
 
     def trade(self, board: "Board", other: Self, trade: dict[str, Any]):
         for id in trade["give"].get("properties", []):
@@ -322,6 +419,12 @@ class Player:
             if space.spaceType == ST_RAILROAD:
                 number += 1
         return number
+
+    def incrementTurnsPassedOnLoans(self):
+        for loan in self.loans:
+            loan.turnsPassed += 1
+            if loan.turnsPassed > loan.deadline:
+                yield loan
 
     def toJson(self):
         return {
@@ -625,6 +728,8 @@ class Board:
         amount = d1 + d2
 
         player.lastRoll = amount
+        for dueLoan in player.incrementTurnsPassedOnLoans():
+            yield DUE_LOAN(dueLoan, player)
 
         yield from self.runevent("onroll", player.space, player, amount, d1, d2)
 
