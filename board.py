@@ -641,7 +641,8 @@ class Board:
     #because the space will point to the next space and so on
     
     startSpace: Space
-    playerSpaces: dict[str, Space]
+    playerSpaces: dict[player_t, Space]
+    players: dict[player_t, Player]
     spaces: dict[int, Space]
 
     eventHandlers: dict[str, ModuleType]
@@ -653,6 +654,7 @@ class Board:
         self.startSpace = startSpace
 
         self.playerSpaces = {}
+        self.players = {}
         
         self.spaces = {space.id: space for space in startSpace.iterSpaces()}
 
@@ -668,8 +670,23 @@ class Board:
 
     def executeChanceCard(self, player: Player, card: Chance):
         match card.type:
+            case "move":
+                amount = int(card.data)
+                yield from self.move(player, amount)
+            case "steal-all":
+                amount = int(card.data)
+                for p in self.players.values():
+                    if p.id == player.id:
+                        continue
+                    p.pay(amount, player)
             case "gain":
                 player.money += int(card.data)
+            case "give-all":
+                amount = int(card.data)
+                for p in self.players.values():
+                    if p.id == player.id:
+                        continue
+                    player.pay(amount, p)
             case "lose":
                 player.money -= int(card.data)
             case "teleport":
@@ -702,6 +719,7 @@ class Board:
 
     def addPlayer(self, player: Player):
         self.startSpace.put(player)
+        self.players[player.id] = player
         self.playerSpaces[player.id] = self.startSpace
 
     def getSpaceById(self, id: int):
@@ -768,7 +786,10 @@ class Board:
 
         yield from self.runevent("onleave", curSpace, player)
         for i in range(amount):
-            curSpace = curSpace.next
+            if amount > 0:
+                curSpace = curSpace.next
+            else:
+                curSpace = curSpace.prev
             yield from self.runevent("onpass", curSpace, player)
 
         self.playerSpaces[player.id] = curSpace

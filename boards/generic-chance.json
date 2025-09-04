@@ -283,5 +283,135 @@
     "event": "ooo nice try the bullet bill got you",
     "type": "lose",
     "data": "20"
+  },
+  {
+    "event": "Advance to Boardwalk",
+    "type": "teleport",
+    "data": "Boardwalk"
+  },
+  {
+    "event": "Advance to Go (Collect $200)",
+    "type": "teleport",
+    "data": "Passing GO"
+  },
+  {
+    "event": "Advance to St. Charles Place. If you pass Go, collect $200",
+    "type": "teleport",
+    "data": "St. Charles Place"
+  },
+  {
+    "event": "Advance to Illinois Avenue. If you pass Go, collect $200",
+    "type": "teleport",
+    "data": "Illinois Avenue"
+  },
+  {
+    "event": "The Judge gave you a life sentence to prison, however after investigating more into your case while in prison they determined that you were innocent and let you free! ",
+    "type": "teleport",
+    "data": "Jail"
+  },
+  {
+    "event": "You were mistaken for Diddy, but they still sent you to jail",
+    "type": "teleport",
+    "data": "Go To Jail"
+  },
+  {
+    "event": "We gonna rock down to Electric Avenue ",
+    "type": "teleport",
+    "data": "Electric Company"
+  },
+  {
+    "event": "Tax the rich",
+    "type": "teleport",
+    "data": "Income Tax"
+  },
+  {
+    "event": "Tax the rich",
+    "type": "teleport",
+    "data": "Luxury Tax"
+  },
+  {
+    "event": "You started a Musical Band and had awesome success! You Earned $300!",
+    "type": "gain",
+    "data": "300"
+  },
+  {
+    "event": "You got circumcised",
+    "type": "lose",
+    "data": "256"
+  },
+  {
+    "event": "States rights to teleport you to States Avenue",
+    "type": "teleport",
+    "data": "States Avenue"
+  },
+  {
+    "event": "States rights to teleport you to States Avenue",
+    "type": "teleport",
+    "data": "States Avenue"
+  },
+  {
+    "event": "🇱🇹🇱🇹🇱🇹🇱🇹🇱🇹 Lithuania #1",
+    "type": "teleport",
+    "data": "Baltic Avenue"
+  },
+  {
+    "event": "Take a Trip to Latvia!",
+    "type": "teleport",
+    "data": "Baltic Avenue"
+  },
+  {
+    "event": "Take a Trip to Estonia!",
+    "type": "teleport",
+    "data": "Baltic Avenue"
+  },
+  {
+    "event": "The World ended but you were the only survivor",
+    "type": "lose",
+    "data": "500"
+  },
+  {
+    "event": "You did well on your math test, here's $2^8",
+    "type": "gain",
+    "data": "256"
+  },
+  {
+    "event": "Go Back 3 Spaces",
+    "type": "move",
+    "data": "-3"
+  },
+  {
+    "event": "Go Back 10 spaces!",
+    "type": "move",
+    "data": "-10"
+  },
+  {
+    "event": "Were you planning on going forward? Fuck you.",
+    "type": "move",
+    "data": "-11"
+  },
+  {
+    "event": "I would die for Bosnia",
+    "type": "move",
+    "data": "-7000"
+  },
+  {
+    "event": "You visited Israel and Palestine and gained money",
+    "type": "gain",
+    "data": "100"
+  },
+  {
+    "event": "You visited every country on earth! recieve $500",
+    "type": "gain",
+    "data": "500"
+  },
+  {
+    "event": "You accidentally visited North Korea, but barely escaped",
+    "type": "lose",
+    "data": "250"
+  },
+  {
+    "event": "fuck you go to jail fuck you go to jail fuck you",
+    "type": "teleport-next-type",
+    "data": "goto_jail"
   }
 ]
