@@ -59,7 +59,7 @@ export interface Space {
     name: string;
     owner: playerid_t | null;
     attrs: { [key: string]: any };
-    id: string
+    id: spaceid_t
     houseCost: number
     houses: number
     hotel: boolean

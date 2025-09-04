@@ -1,12 +1,13 @@
 import { Player, ServerResponse } from "../../index";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket/dist";
-import { socketAddr } from "../../socket";
+import ConnectionContext from "../../src/Contexts/ConnectionContext";
 
 export default function usePlayer() {
     const [player, setPlayer] = useState<Player | null>(null)
     const [playerLoaded, setPlayerLoaded] = useState(false)
-    const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket(socketAddr, {
+    const {ip} = useContext(ConnectionContext)
+    const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket(ip, {
         share: true
     })
     useEffect(() => {

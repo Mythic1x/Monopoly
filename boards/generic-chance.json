@@ -125,7 +125,7 @@
     "data": "120"
   },
   {
-    "event": "you played outer wilds and made euro very excitied 😁",
+    "event": "you played outer wilds and made euro very excitied :)",
     "type": "gain",
     "data": "350"
   },
@@ -138,11 +138,6 @@
     "event": "You're now an Philly Sports fan",
     "type": "teleport",
     "data": "Pennsylvania Avenue"
-  },
-  {
-    "event": "https://www.youtube.com/watch?v=bFtcLJVN8yg",
-    "type": "teleport",
-    "data": "Reading Railroad"
   },
   {
     "event": "You bought GTA 6",
@@ -253,11 +248,6 @@
     "event": "Cam won $2,000 from gambling and he gives you half of the winnings!",
     "type": "gain",
     "data": "1000"
-  },
-  {
-    "event": "You listened to https://www.youtube.com/watch?v=Ktc9Oh9TXdE",
-    "type": "gain",
-    "data": "500"
   },
   {
     "event": "you met Evil MrBeast and he takes away a huge amount of money from you",

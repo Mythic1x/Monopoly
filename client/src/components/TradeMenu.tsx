@@ -1,10 +1,10 @@
 import useWebSocket from "react-use-websocket/dist";
 import { Player, Space, Trade } from "../../index";
-import { socketAddr } from "../../socket";
 import PlayerCard from "./PlayerCard";
 import { useContext, useState } from "react";
 import { SendJsonMessage } from "react-use-websocket/dist/lib/types";
 import MonopolyContext from "../../src/Contexts/MonopolyContext";
+import ConnectionContext from "../../src/Contexts/ConnectionContext";
 
 interface Props {
     currentPlayer: Player
@@ -16,7 +16,8 @@ interface Props {
 
 export default function TradeMenu({ currentPlayer, players, tradeDialog, currentTrade, setCurrentTrade }: Props) {
     const [selectedPlayer, setSelectedPlayer] = useState<Player>(null)
-    const { sendJsonMessage } = useWebSocket(socketAddr, {
+    const {ip} = useContext(ConnectionContext)
+    const { sendJsonMessage } = useWebSocket(ip, {
         share: true
     })
 

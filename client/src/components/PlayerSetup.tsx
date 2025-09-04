@@ -1,12 +1,17 @@
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useContext } from "react";
+import MonopolyContext from "../../src/Contexts/MonopolyContext";
+import ConnectionContext from "../../src/Contexts/ConnectionContext";
 
 function PlayerSetup({ onSetupComplete }: any) {
     const [name, setName] = useState('');
     const [piece, setPiece] = useState('');
+    const { ip, setIp } = useContext(ConnectionContext)
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         if (!name || !piece) return;
+        setIp(`http://${ip}:8765`)
+        localStorage.setItem('cachedIp', ip);
         onSetupComplete({ name, piece });
     };
 
@@ -29,10 +34,10 @@ function PlayerSetup({ onSetupComplete }: any) {
                 value={piece}
                 onChange={(e) => setPiece(e.target.value)}
             />
+            <input type="text" className="ip-selection" placeholder="0.0.0.0" value={ip} onChange={(e) => setIp(e.target.value)} />
             <button type="submit">Join Game</button>
         </form>
-        </>
+    </>
     );
 }
-
 export default PlayerSetup

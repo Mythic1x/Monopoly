@@ -1,9 +1,11 @@
 import useWebSocket from "react-use-websocket/dist";
 import { Player, Space } from "../../index";
-import { socketAddr } from "../../socket";
+import { useContext } from "react";
+import ConnectionContext from "../../src/Contexts/ConnectionContext";
 
 export default function SpaceCard({ space, player }: { space: Space, player: Player }) {
-    const { sendJsonMessage } = useWebSocket(socketAddr, {
+    const {ip} = useContext(ConnectionContext)
+    const { sendJsonMessage } = useWebSocket(ip, {
         share: true
     })
 

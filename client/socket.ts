@@ -1,1 +1,0 @@
-export const socketAddr = "ws://localhost:8765"

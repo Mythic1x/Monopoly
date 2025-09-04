@@ -4,11 +4,11 @@ import PlayerCard from "./PlayerCard"
 import useWebSocket, { ReadyState } from "react-use-websocket/dist"
 import usePlayer from "../hooks/useplayer"
 import GameBoard from "./board"
-import { socketAddr } from "../../socket"
 import Alert from "./alert"
 import TradeMenu from "./TradeMenu"
 import MonopolyContext, { MonopolyProvider } from "../../src/Contexts/MonopolyContext"
 import AuctionMenu from "./Auction"
+import ConnectionContext from "../../src/Contexts/ConnectionContext"
 
 function Monopoly({ playerDetails }: any) {
     const [alertQ, setAQ] = useState<string[]>([])
@@ -22,6 +22,7 @@ function Monopoly({ playerDetails }: any) {
     const [currentTrade, setCurrentTrade] = useState<Trade | null>(null)
     const [auction, setAuction] = useState<Auction | null>(null)
 
+    const { ip } = useContext(ConnectionContext)
     const { board, player, players, setBoard, setPlayers, playerLoaded, setPlayer } = useContext(MonopolyContext)
     const activePlayers = players.filter(p => !p.bankrupt)
 
@@ -37,12 +38,12 @@ function Monopoly({ playerDetails }: any) {
     const [loading, setLoading] = useState(true)
     const [currentSpace, setCurrentSpace] = useState<Space | null>(null)
     const [goingPlayer, setGoingPlayer] = useState<Player | null>(null)
-    const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket(socketAddr, {
+    const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket(ip, {
         share: true
     })
 
     function handleStatus(status: any) {
-        switch(status.status) {
+        switch (status.status) {
             case "due-loan":
                 return `${playerById(status.player).name} has a loan due: ${status.loan.id}`
             case "bankrupt":
@@ -179,7 +180,7 @@ function Monopoly({ playerDetails }: any) {
                 }
                 case "notification":
                     let m = handleStatus(message.value)
-                    if(m) alert(m)
+                    if (m) alert(m)
                     break
                 case "join-game":
                     sendJsonMessage({ 'action': "connect" })
@@ -238,8 +239,8 @@ function Monopoly({ playerDetails }: any) {
                             <button className="start-auction" ref={auctionBtn} disabled={!!currentSpace?.owner || !currentSpace?.purchaseable || (auction ? true : false) || player.bankrupt || goingPlayer?.id !== player.id} onClick={() => {
                                 sendJsonMessage({ "action": "start-auction", "spaceid": currentSpace.id })
                             }}>Auction</button>
-                            {player.money >= jail.attrs.bailcost && player.injail && !rolled && <button className="pay-bail" onClick={() => sendJsonMessage({"action": "pay-bail"})}>
-                            Pay bail
+                            {player.money >= jail.attrs.bailcost && player.injail && !rolled && <button className="pay-bail" onClick={() => sendJsonMessage({ "action": "pay-bail" })}>
+                                Pay bail
                             </button>}
                             {jail?.owner === player.id &&
                                 <input type="number" title="bail cost" className="bail" onChange={(e) => {
