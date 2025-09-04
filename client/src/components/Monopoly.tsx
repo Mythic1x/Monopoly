@@ -179,7 +179,6 @@ function Monopoly({ playerDetails }: any) {
                 }
                 case "notification":
                     let m = handleStatus(message.value)
-                    console.log(m, message)
                     if(m) alert(m)
                     break
                 case "join-game":

@@ -674,14 +674,19 @@ class Board:
                 player.money -= int(card.data)
             case "teleport":
                 spaceName = card.data.lower().strip()
+                pickedSpace = False
                 if not self.isValidSpaceName(spaceName):
                     return
                 if match := re.match(r"n=(\d+)", spaceName):
                     n = int(match.group(1))
                     spaceName = spaceName.replace(match.group(0), "").strip()
+                elif spaceName == "_random":
+                    pickedSpace = True
+                    space = random.choice(list(self.spaces.values()))
                 else:
                     n = 1
-                space = self.getSpaceByName(spaceName, n)
+                if not pickedSpace:
+                    space = self.getSpaceByName(spaceName, n)
                 yield from self.moveTo(player, space)
             case "teleport-next-type":
                 ty = str2spacetype(card.data)
