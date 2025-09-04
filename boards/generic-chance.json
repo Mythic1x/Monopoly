@@ -413,5 +413,25 @@
     "event": "fuck you go to jail fuck you go to jail fuck you",
     "type": "teleport-next-type",
     "data": "goto_jail"
+  },
+  {
+    "event": "You robbed everyone in the game, Receive $300 from each player!",
+    "type": "steal-all",
+    "data": "300"
+  },
+  {
+    "event": "It's your birthday, collect $50 from all other players!",
+    "type": "steal-all",
+    "data": "50"
+  },
+  {
+    "event": "😔",
+    "type": "give-all",
+    "data": "100"
+  },
+  {
+    "event": "Gimme gimme more gimme more",
+    "type": "steal-all",
+    "data": "200"
   }
 ]

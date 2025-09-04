@@ -34,7 +34,7 @@ function PlayerSetup({ onSetupComplete }: any) {
                 value={piece}
                 onChange={(e) => setPiece(e.target.value)}
             />
-            <input type="text" className="ip-selection" placeholder="0.0.0.0" value={ip} onChange={(e) => setIp(e.target.value)} />
+            <input type="text" className="ip-selection" placeholder="0.0.0.0" value={ip ?? "0.0.0.0"} onChange={(e) => setIp(e.target.value)} />
             <button type="submit">Join Game</button>
         </form>
     </>
