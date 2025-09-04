@@ -1,4 +1,4 @@
-import { useState, FormEvent, useContext } from "react";
+import { useState, FormEvent, useContext, useRef } from "react";
 import MonopolyContext from "../../src/Contexts/MonopolyContext";
 import ConnectionContext from "../../src/Contexts/ConnectionContext";
 
@@ -7,8 +7,12 @@ function PlayerSetup({ onSetupComplete }: any) {
     const [piece, setPiece] = useState('');
     const { ip, setIp } = useContext(ConnectionContext)
 
+    setIp("0.0.0.0")
+    const ipIn = useRef<HTMLInputElement>(null)
+
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
+        setIp(ipIn.current.value)
         if (!name || !piece) return;
         setIp(`http://${ip}:8765`)
         localStorage.setItem('cachedIp', ip);
@@ -34,7 +38,7 @@ function PlayerSetup({ onSetupComplete }: any) {
                 value={piece}
                 onChange={(e) => setPiece(e.target.value)}
             />
-            <input type="text" className="ip-selection" placeholder="0.0.0.0" value={ip ?? "0.0.0.0"} onChange={(e) => setIp(e.target.value)} />
+            <input type="text" className="ip-selection" placeholder="0.0.0.0" ref={ipIn} />
             <button type="submit">Join Game</button>
         </form>
     </>

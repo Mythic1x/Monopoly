@@ -433,5 +433,30 @@
     "event": "Gimme gimme more gimme more",
     "type": "steal-all",
     "data": "200"
-  }
+  },
+  {
+    "event": "Nothing happened",
+    "type": "steal-all",
+    "data": "0"
+  },
+  {
+    "event": "Nothing happened",
+    "type": "give-all",
+    "data": "0"
+  },
+  {
+    "event": "Draw another chance card",
+    "type": "teleport-next-type",
+    "data": "chance"
+  },
+  {
+    "event": "You bribed everyone $150 to play Monopoly and they accepted",
+    "type": "give-all",
+    "data": "150"
+  },
+    {
+    "event": "You placed $100 on blackjack an got the blackjack bonus",
+    "type": "gain",
+    "data": "300"
+}
 ]
