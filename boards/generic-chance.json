@@ -235,11 +235,6 @@
     "data": "Marvin Gardens"
   },
   {
-    "event": "You and Ghostly play R.E.P.O together and reached Level 10, she gives you $550 for your co-operation",
-    "type": "gain",
-    "data": "550"
-  },
-  {
     "event": "money money money *mr krabs posh laughter*",
     "type": "teleport",
     "data": "Passing GO"
@@ -263,5 +258,40 @@
     "event": "You listened to https://www.youtube.com/watch?v=Ktc9Oh9TXdE",
     "type": "gain",
     "data": "500"
+  },
+  {
+    "event": "you met Evil MrBeast and he takes away a huge amount of money from you",
+    "type": "lose",
+    "data": "1000"
+  },
+  {
+    "event": "GRAND THEFT AUTO, you car jacked a car",
+    "type": "gain",
+    "data": "500"
+  },
+  {
+    "event": "it's your lucky day!, Advance to Income Tax",
+    "type": "teleport",
+    "data": "Income Tax"
+  },
+  {
+    "event": "1984 moment",
+    "type": "lose",
+    "data": "1984"
+  },
+  {
+    "event": "You successfully defeated Herbert and the EPF awards you $750 for being an awesome angent",
+    "type": "gain",
+    "data": "750"
+  },
+  {
+    "event": "you annoyed euro for a while and he takes away $250",
+    "type": "lose",
+    "data": "250"
+  },
+  {
+    "event": "ooo nice try the bullet bill got you",
+    "type": "lose",
+    "data": "20"
   }
 ]
