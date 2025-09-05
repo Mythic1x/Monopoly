@@ -454,9 +454,34 @@
     "type": "give-all",
     "data": "150"
   },
-    {
+  {
     "event": "You placed $100 on blackjack an got the blackjack bonus",
     "type": "gain",
     "data": "300"
-}
+  },
+  {
+    "event": "You take a Trip to Greece!",
+    "type": "teleport",
+    "data": "Mediterranean Avenue"
+  },
+  {
+    "event": "I love Kentucky Fried Chicken",
+    "type": "teleport",
+    "data": "Kentucky Avenue"
+  },
+  {
+    "event": "Go foward 5 spaces",
+    "type": "move",
+    "data": "5"
+  },
+  {
+    "event": "You landed on a Red Space but it's 10x the amount",
+    "type": "lose",
+    "data": "30"
+  },
+  {
+    "event": "You landed on a Blue Space but it's 10x the amount",
+    "type": "gain",
+    "data": "30"
+  }
 ]
