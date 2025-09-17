@@ -31,6 +31,7 @@ class Lobby:
         details = response['details']
         player.name = details['name']
         player.piece = details['piece']
+        player.gameid = game.id
         await player.client.write({"response": "join-game", "value": "join"})
         await game.join(player, onjoin)
 

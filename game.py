@@ -3,6 +3,7 @@ import dataclasses
 import importlib.util
 import json
 import os
+import random
 import sys
 import time
 import traceback
@@ -13,6 +14,8 @@ from boardbuilder import buildFromFile
 from client import Client
 
 import actions as Actions
+
+type gameid_t = float
 
 def import_from_path(module_name, file_path):
     spec = importlib.util.spec_from_file_location(module_name, file_path)
@@ -34,6 +37,7 @@ class Game:
     clients: list[Client]
     activeAuction: dict[str, Any] | None
     activePlayers: list[Player]
+    id: gameid_t
 
     def __init__(self, boardname: str, dSides: int = 6):
         boardFile = f"./boards/{boardname}.json"
@@ -51,7 +55,12 @@ class Game:
             path = f"./boards/generic-chance.json"
         with open(path) as f:
             cards = [Chance(**v) for v in json.load(f)]
-        self.board = Board(boardname, handlers, buildFromFile(boardFile), cards)
+
+        self.id = random.random()
+
+        registry[self.id] = self
+
+        self.board = Board(self.id, boardname, handlers, buildFromFile(self.id, boardFile), cards)
         self.players = {}
         self.curTurn = 0
         self.dSides = dSides
@@ -163,3 +172,8 @@ class Game:
             await asyncio.sleep(1)
 
         await self.endAuction()
+
+registry: dict[gameid_t, Game] = {}
+
+def getgame(id: gameid_t):
+    return registry.get(id)

@@ -3,7 +3,7 @@ import json
 
 import board
 
-def buildFromFile(path: str) -> board.Space:
+def buildFromFile(gameid: float, path: str) -> board.Space:
     with open(path) as f:
         data = json.load(f)
         spacesData = data["spaces"]
@@ -11,7 +11,7 @@ def buildFromFile(path: str) -> board.Space:
         for space in spacesData:
             s = spacesData[space]
             attrs = {k: v for k, v in s.items() if k not in ("cost", "not_purchaseable", "type")}
-            spaces[space] = board.Space(getattr(board, f"ST_{s["type"]}"), s.get("cost", 0), space, False if s.get("not_purchaseable") else True, **attrs)
+            spaces[space] = board.Space(gameid, getattr(board, f"ST_{s["type"]}"), s.get("cost", 0), space, False if s.get("not_purchaseable") else True, **attrs)
 
         sideNames = ("start", "left", "top", "right")
         firstSpace = None

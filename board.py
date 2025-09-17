@@ -213,6 +213,8 @@ class Player:
 
     loans: list[Loan]
 
+    gameid: float
+
     JAIL_FAIL = 0
     JAIL_ESCAPE = 1
     JAIL_FORCE_LEAVE = -1
@@ -232,6 +234,8 @@ class Player:
         self.inJail = False
         self.jailDoublesRemaining = 3
         self.loans = []
+
+        self.gameid = 0
 
     def takeOwnership(self, space: "Space", cost = 0):
         self.money -= cost
@@ -510,7 +514,10 @@ class Space:
     color = SpaceAttr(str)
     set_size = SpaceAttr(int)
     mortgaged: bool
-    def __init__(self, spaceType: spacetype_t, cost: int, name: str, purchaseable: bool, **kwargs):
+
+    gameId: float
+
+    def __init__(self, gameid: float, spaceType: spacetype_t, cost: int, name: str, purchaseable: bool, **kwargs):
         self.spaceType = spaceType
         self.players = []
         self.cost = cost
@@ -520,6 +527,8 @@ class Space:
         self.attrs = kwargs
         self.owner = None
         self.id = random.randint(1,10000)
+
+        self.gameId = gameid
 
         self.purchaseable = purchaseable
 
@@ -572,7 +581,7 @@ class Space:
         return False
 
     def copy(self, withId = False):
-        space = Space(self.spaceType, cost=self.cost, name=self.name, purchaseable=self.purchaseable, **self.attrs)
+        space = Space(self.gameId, self.spaceType, cost=self.cost, name=self.name, purchaseable=self.purchaseable, **self.attrs)
         if withId:
             space.id = self.id
         return space
@@ -650,11 +659,15 @@ class Board:
 
     chanceCards: list[Chance]
 
-    def __init__(self, name: str, eventHandlers: dict[str, ModuleType], startSpace: Space, chanceCards: list[Chance]):
+    gameId: float
+
+    def __init__(self, gameid: float, name: str, eventHandlers: dict[str, ModuleType], startSpace: Space, chanceCards: list[Chance]):
         self.startSpace = startSpace
 
         self.playerSpaces = {}
         self.players = {}
+
+        self.gameId = gameid
         
         self.spaces = {space.id: space for space in startSpace.iterSpaces()}
 
