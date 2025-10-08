@@ -5,7 +5,7 @@ import ConnectionContext from "../../src/Contexts/ConnectionContext";
 function PlayerSetup({ onSetupComplete }: any) {
     const [name, setName] = useState('');
     const [piece, setPiece] = useState('');
-    const { ip, setIp } = useContext(ConnectionContext)
+    const { setIp } = useContext(ConnectionContext)
 
     const ipIn = useRef<HTMLInputElement>(null)
 
