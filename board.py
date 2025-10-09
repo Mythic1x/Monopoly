@@ -207,7 +207,8 @@ class Player:
     piece: str
     lastRoll: int
     bankrupt: bool
-
+    inDebtTo: "Player"
+    
     inJail: bool
     jailDoublesRemaining: int
 
@@ -234,8 +235,24 @@ class Player:
         self.inJail = False
         self.jailDoublesRemaining = 3
         self.loans = []
-
+        self.inDebtTo = None
         self.gameid = 0
+
+    @property
+    def propertyWorth(self):
+        propertyWorth = 0
+        for space in self.ownedSpaces:
+            if not space.mortgaged:
+                propertyWorth += space.cost / 2
+            
+                if space.houses != 0:
+                    propertyWorth += (space.house_cost * space.houses / 2)
+                
+                if space.hotel:
+                    propertyWorth += space.hotel_cost / 2
+                
+        
+        return propertyWorth
 
     def takeOwnership(self, space: "Space", cost = 0):
         self.money -= cost
@@ -284,7 +301,7 @@ class Player:
 
         if a := trade["want"].get("money"):
             other.money -= a
-            self.money += a
+            self.gain(a)
 
     def gotoJail(self, jail: "Space"):
         self.jailDoublesRemaining = 3
@@ -323,6 +340,13 @@ class Player:
 
     def owns(self, space: "Space"):
         return False if not space.owner else space.owner.id == self.id
+    
+    def gain(self, amount):
+        self.money += amount
+        if self.inDebtTo != None:
+            self.inDebtTo.money += amount
+            if self.money >= 0:
+                self.inDebtTo = None
 
     def pay(self, amount: int, other: Self):
         self.money -= amount
@@ -331,7 +355,18 @@ class Player:
     def payRent(self, other: Self, space: "Space") -> statusreturn_t:
         amount = space.calculatePropertyRent(self.hasSet(space.color, space.set_size))
         self.pay(amount, other)
+        if self.money < 0:
+            self.inDebtTo = space.owner
         return PAY_OTHER(amount, self.id, other.id)
+    
+    def bankrupt(self):
+        self.bankrupt = True
+        if self.inDebtTo != None:
+            self.inDebtTo.money += self.propertyWorth
+            
+        for property in self.ownedSpaces:
+            property.owner = None
+        
 
     def getUtilities(self):
         return [space for space in self.ownedSpaces if space.spaceType == ST_UTILITY]
@@ -364,7 +399,7 @@ class Player:
     def mortgage(self, space: "Space"):
         if self is not space.owner or space.owner is None:
             return FAIL(self.id)
-        self.money += space.cost * 0.50
+        self.gain(space.cost * 0.50)
         space.mortgaged = True
         return MORTGAGE_SUCCESS(self.id, space.id)
         
@@ -407,6 +442,25 @@ class Player:
                 return False
             
         return True
+    
+    def sellHouse(self, space: "Space"):
+        canSellHouse = True
+        set_spaces = [s for s in self.ownedSpaces if s.color == space.color]
+        for player_space in set_spaces:
+            if space.houses < player_space.houses or (space.hotel and not player_space.hotel):
+                canSellHouse = False
+                
+        if not canSellHouse:
+            return False
+        
+        if space.hotel:
+            space.hotel = False
+            self.gain(space.hotel_cost / 2)
+        else:
+            space.houses -= 1
+            self.gain(space.house_cost / 2)
+            
+        
     def canBuyHotel(self, space: "Space"):
         if self.money < space.house_cost:
             return False
@@ -693,7 +747,7 @@ class Board:
                         continue
                     p.pay(amount, player)
             case "gain":
-                player.money += int(card.data)
+                player.gain(int(card.data))
             case "give-all":
                 amount = int(card.data)
                 for p in self.players.values():

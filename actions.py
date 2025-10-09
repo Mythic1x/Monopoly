@@ -86,13 +86,11 @@ def requestSpace(game, action, player: Player):
 
 def bankrupt(game, action, player: Player):
     yield True, {"response": "bankrupt", "value": f"{player.name}"}
-    player.bankrupt = True
+    player.bankrupt()
+    
     game.activePlayers.remove(player)
     yield False, {"response": "player-info", "value": player.toJson()}
-    
-    for property in player.ownedSpaces:
-        property.owner = None
-        
+
     if len(game.activePlayers) < 2:
         yield True, {"response": "game-end", "value": game.activePlayers[0].toJson()}
 
@@ -135,6 +133,12 @@ def buyHouse(game, action, player: Player):
 def buyHotel(game, action, player: Player):
     property = game.board.spaces[action["spaceid"]]
     result = player.buyHotel(property)
+    yield True, result
+    yield True, getUpdatedState(game)
+    
+def sellHouse(game, action, player: Player):
+    property = game.board.spaces[action["spaceid"]]
+    result = player.sellHouse(property)
     yield True, result
     yield True, getUpdatedState(game)
 

@@ -232,7 +232,7 @@ function Monopoly({ playerDetails }: any) {
                                 sendJsonMessage({ "action": "buy", "spaceid": currentSpace.id })
                             }}>Buy Property</button>
                             }
-                            <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled || (auction ? true : false) || player.bankrupt} onClick={endTurn}>End Turn</button>
+                            <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled || (auction ? true : false) || player.bankrupt || player.money < 0} onClick={endTurn}>End Turn</button>
                             <button onClick={() => tradeDialog.current.showModal()} disabled={player.bankrupt} >
                                 Trade
                             </button>

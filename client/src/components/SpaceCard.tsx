@@ -43,6 +43,16 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
         return true
     }
 
+    function canSellHouse() {
+        const set = player.ownedSpaces.filter((s: Space) => s.attrs.color === space.attrs.color)
+        for (const playerSpace of set) {
+            if (space.houses < playerSpace.houses || (space.hotel && !playerSpace.hotel)) {
+                return false
+            }
+        }
+        return true
+    }
+
     function handleMortgage(unmortgage: boolean) {
         if (unmortgage) {
             sendJsonMessage({ "action": "unmortgage", "spaceid": space.id })
@@ -79,6 +89,11 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
                         <button className="buy-hotel" disabled={!canBuyHotel()} onClick={() => {
                             sendJsonMessage({ "action": "buy-hotel", "spaceid": space.id })
                         }}>Buy Hotel</button>
+                    </div>
+                    <div>
+                        <button className="sell-house" disabled={!canSellHouse()} onClick={() => {
+                            sendJsonMessage({"action": "sell-house", "spaceid": space.id})
+                        }}>Sell House</button>
                     </div>
                 </div>
             }
