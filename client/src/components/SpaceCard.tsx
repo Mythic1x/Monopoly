@@ -2,9 +2,11 @@ import useWebSocket from "react-use-websocket/dist";
 import { Player, Space } from "../../index";
 import { useContext } from "react";
 import ConnectionContext from "../../src/Contexts/ConnectionContext";
+import MonopolyContext from "../../src/Contexts/MonopolyContext";
 
 export default function SpaceCard({ space, player }: { space: Space, player: Player }) {
     const {ip} = useContext(ConnectionContext)
+    const { players } = useContext(MonopolyContext)
     const { sendJsonMessage } = useWebSocket(ip, {
         share: true
     })
@@ -45,6 +47,7 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
 
     function canSellHouse() {
         const set = player.ownedSpaces.filter((s: Space) => s.attrs.color === space.attrs.color)
+        if(space.houses === 0) return false
         for (const playerSpace of set) {
             if (space.houses < playerSpace.houses || (space.hotel && !playerSpace.hotel)) {
                 return false
@@ -64,7 +67,7 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
     return (
         <div className="space-card" data-anchor-name={`--space-${space.id}`}>
             <div className="space-card-name">{space.name}</div>
-            <span className="owner">{space.owner ?? "Unowned"}</span>
+            <span className="owner">{players.find(p => p.id === space.owner)?.name ?? "Unowned"}</span>
             {space.name === "Jail" && <span className="bail-cost">Bail: ${space.attrs.bailcost}</span>}
             <div className="house-info">
                 <div className="house-count">{space.houses} 🏠</div>
@@ -76,7 +79,7 @@ export default function SpaceCard({ space, player }: { space: Space, player: Pla
                 }}>{space.mortgaged ? "Unmortgage" : "Mortgage"}</button>
             }
             {
-                space.attrs.house_cost &&
+                (space.attrs.house_cost && space.owner == player.id) &&
                 <div className="house-buttons-container">
                     <div>
                         <span className="house-cost">{space.attrs.house_cost ?? ""}</span>

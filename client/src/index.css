@@ -274,11 +274,14 @@
     .player-list {
         display: flex;
         flex-direction: column;
-        width: fit-content;
-        height: fit-content;
-        min-height: 100px;
-        min-width: 100px;
-        background-color: coral;
+        width: max-content;
+        min-width: 200px;
+        min-height: 120px;
+        padding: 1rem;
+        background-color: var(--main);
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        gap: 0.5rem;
     }
 
     #trade-dialog {

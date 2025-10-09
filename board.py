@@ -6,6 +6,7 @@ from types import ModuleType
 from typing import Any, Callable, Self
 import random
 
+
 type player_t = str
 type space_t = int
 type loan_t = float
@@ -342,11 +343,16 @@ class Player:
         return False if not space.owner else space.owner.id == self.id
     
     def gain(self, amount):
-        self.money += amount
+        
         if self.inDebtTo != None:
-            self.inDebtTo.money += amount
+            if self.money + amount > 0:
+                self.inDebtTo.money += (amount - abs(self.money))
+            else:
+                self.inDebtTo.money += amount
             if self.money >= 0:
                 self.inDebtTo = None
+                
+        self.money += amount
 
     def pay(self, amount: int, other: Self):
         self.money -= amount
@@ -359,7 +365,7 @@ class Player:
             self.inDebtTo = space.owner
         return PAY_OTHER(amount, self.id, other.id)
     
-    def bankrupt(self):
+    def goBankrupt(self):
         self.bankrupt = True
         if self.inDebtTo != None:
             self.inDebtTo.money += self.propertyWorth

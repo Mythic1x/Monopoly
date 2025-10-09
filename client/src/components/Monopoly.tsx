@@ -223,7 +223,7 @@ function Monopoly({ playerDetails }: any) {
                     <div id="alert-container">
                         {alertQ.map(v => <Alert alert={v} />)}
                     </div>
-                    <div className="button-container">
+                    {!player.bankrupt && <div className="button-container">
                         <div className="action-buttons">
                             <button ref={rollBtn} className="roll" disabled={goingPlayer?.id !== player.id || rolled || (auction ? true : false) || player.bankrupt} onClick={() => {
                                 sendJsonMessage({ "action": "roll" })
@@ -251,6 +251,7 @@ function Monopoly({ playerDetails }: any) {
                             sendJsonMessage({ "action": "bankrupt" })
                         }}>Bankrupt</button>
                     </div>
+                    }
                 </GameBoard>
 
             </div>

@@ -86,7 +86,7 @@ def requestSpace(game, action, player: Player):
 
 def bankrupt(game, action, player: Player):
     yield True, {"response": "bankrupt", "value": f"{player.name}"}
-    player.bankrupt()
+    player.goBankrupt()
     
     game.activePlayers.remove(player)
     yield False, {"response": "player-info", "value": player.toJson()}
