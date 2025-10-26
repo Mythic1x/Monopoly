@@ -289,7 +289,7 @@ class Player:
             space.owner = other
 
         if a := trade["give"].get("money"):
-            other.money += a
+            other.gain(a)
             self.money -= a
 
         for id in trade["want"].get("properties", []):

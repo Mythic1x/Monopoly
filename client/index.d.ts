@@ -94,6 +94,19 @@ export type Color =
     | "blue"
 
 
+export interface Loan {
+    type: "per-turn" | "deadline"
+    amountPerTurn?: number
+    deadline?: number
+    amount: number
+    //in decimal form
+    interest: number
+    interestType: "simple" | "compound"
+    loanee: Player
+    loaner: Player | null
+}
+
+
 declare global {
     interface Window {
         BOARD: Board

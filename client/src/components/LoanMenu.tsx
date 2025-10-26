@@ -1,0 +1,139 @@
+import { Loan, Player } from "../../index";
+import { useContext, useState } from "react";
+import PlayerCard from "./PlayerCard";
+import useWebSocket from "react-use-websocket/dist";
+import ConnectionContext from "../../src/Contexts/ConnectionContext";
+
+interface Props {
+    players: Player[]
+    currentPlayer: Player
+    setShowLoanMenu: React.Dispatch<React.SetStateAction<boolean>>
+    receive?: boolean
+}
+
+function validateNumber(num: string) {
+    return !isNaN(Number(num))
+}
+
+
+
+
+function LoanMenu({ currentPlayer, players, setShowLoanMenu, receive }: Props) {
+    const { ip } = useContext(ConnectionContext)
+    const { sendJsonMessage } = useWebSocket(ip, {
+        share: true
+    })
+    const [loanAmount, setLoanAmount] = useState(0)
+    const [selectedPlayer, setSelectedPlayer] = useState<Player>(null)
+    const [interestRate, setInterestRate] = useState(0.0)
+    const [interestType, setInterestType] = useState<"simple" | "compound" | null>(null)
+    const [loanType, setLoanType] = useState<"per-turn" | "deadline">("per-turn")
+    const [amountPerTurn, setAmountPerTurn] = useState<number | null>(null)
+    const [deadline, setDeadline] = useState<number | null>(null)
+    const [bank, setBank] = useState(false)
+
+    function handleSubmit() {
+
+        setShowLoanMenu(false)
+        const loan: Loan = {
+            loaner: bank ? null : currentPlayer,
+            amount: loanAmount,
+            loanee: bank ? currentPlayer : selectedPlayer,
+            interest: interestRate,
+            interestType: interestType,
+            type: loanType,
+            amountPerTurn: amountPerTurn,
+            deadline: deadline
+        }
+
+        sendJsonMessage({ "action": "loan", loan: loan })
+    }
+
+    function isFormInvalid() {
+        return !loanAmount || (!selectedPlayer && !bank) || !interestRate || !interestType || !loanType || ((!amountPerTurn && loanType === "per-turn") || (!deadline && loanType === "deadline"))
+    }
+
+    return (
+        <>
+            <div className="loan-menu-container">
+                <button className="delete-button" onClick={() => setShowLoanMenu(false)}>X</button>
+                {!bank && <><span className="selected-player">{selectedPlayer ? selectedPlayer.name : ""}</span>
+                    <div className="players">{players.map(player => (
+                        <button className="list-player" onClick={() => {
+                            if (player.id === selectedPlayer?.id) {
+                                setSelectedPlayer(null);
+                            } else {
+                                setSelectedPlayer(player);
+                            }
+                        }}>
+                            <PlayerCard player={player} />
+                        </button>
+
+                    ))}
+                    </div>
+                </>
+                }
+                <form onSubmit={handleSubmit}>
+                    <div className="loan-options">
+                        <div className="checkbox-group">
+                        <input type="checkbox" name="bank" id="bank" onChange={e => {
+                            setBank(e.target.checked)
+                            setSelectedPlayer(null)
+                        }} />
+                        <label htmlFor="bank">Get Loan From Bank</label>
+                        </div>
+                        <label htmlFor="amount">Loan Amount</label>
+                        <input type="text" placeholder="Loan Amount" id="amount" required value={loanAmount} onChange={e => {
+                            const num = Number(e.target.value)
+                            if (!isNaN(num)) {
+                                setLoanAmount(num)
+                            }
+                        }} />
+                        <label htmlFor="interest">Interest Rate</label>
+                        <input type="text" placeholder="Interest Rate" id="interest" required value={interestRate} onChange={e => {
+                            if (validateNumber(e.target.value)) {
+                                setInterestRate(Number(e.target.value))
+                            }
+                        }} />
+                        <span className="interest-type">Interest Type</span>
+                        <div className="checkbox-group">
+                            <input type="radio" name="itype" id="simple" required onChange={e => {
+                                if (e.target.checked) setInterestType("simple")
+                            }} />
+                            <label htmlFor="simple">Simple</label>
+                            <input type="radio" name="itype" id="compound" onChange={e => {
+                                if (e.target.checked) setInterestType("compound")
+                            }} />
+                            <label htmlFor="compound">Compound</label>
+                        </div>
+                        <select name="Loan Type" id="loan-type" className="loantype" required onChange={e => {
+                            switch (e.target.value) {
+                                case "per-turn":
+                                    setLoanType(e.target.value)
+                                    setDeadline(null)
+                                    break
+                                case "deadline":
+                                    setLoanType(e.target.value)
+                                    setAmountPerTurn(null)
+                                    break
+                            }
+                        }}>
+                            <option value="per-turn">Per Turn</option>
+                            <option value="deadline">Deadline</option>
+                        </select>
+
+                        {loanType === "per-turn" && <input type="text" value={amountPerTurn} placeholder="Amount Per Turn" required onChange={e => {
+                            if (validateNumber(e.target.value)) setAmountPerTurn(Number(e.target.value))
+                        }} />}
+                        {loanType === "deadline" && <input type="text" value={deadline} placeholder="Deadline" required onChange={e => {
+                            if (validateNumber(e.target.value)) setDeadline(Number(e.target.value))
+                        }} />}
+                        <button type="submit" disabled={isFormInvalid()} className="submit-button">Send Loan</button>
+                    </div>
+                </form>
+            </div>
+        </>
+    )
+}
+
+export default LoanMenu

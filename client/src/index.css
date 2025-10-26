@@ -4,8 +4,7 @@
     --main: rgb(33, 33, 46);
     --good: rgb(67, 150, 67);
     --fucking-blue: #3f88c5;
-    --red: #ff5757
-    --error: var(--red);
+    --red: #ff5757 --error: var(--red);
 
     --monopoly-clr: #c9e3cd;
 
@@ -310,11 +309,11 @@
             backdrop-filter: blur(2px);
         }
 
-        .trade-menu-players {
+        .players {
             border: grey;
             padding: 10px;
 
-            .trade-list-player {
+            .list-player {
                 text-align: center;
                 transform: scale(var(--scale));
                 transition: transform 100ms;
@@ -492,4 +491,171 @@
             color: #a0aec0;
         }
     }
+}
+
+/* Main container for the whole menu */
+.loan-menu-container {
+
+    width: 500px;
+    margin: 20px auto;
+    padding: 24px;
+    background-color: #2b2b2b;
+    color: #f0f0f0;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+        Arial, sans-serif;
+    position: absolute;
+    bottom: 38%;
+    right: 43%;
+    z-index: 30;
+}
+
+/* --- Player Selection --- */
+
+/* Shows "Player Name" when selected */
+.selected-player {
+    display: block;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #76c7ff;
+    /* A highlight blue */
+    margin-bottom: 12px;
+    min-height: 1.4rem;
+    /* Prevents layout jump when empty */
+}
+
+/* Horizontal scrolling container for players */
+.players {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #444;
+}
+
+/* Individual player button */
+.list-player {
+    background-color: #404040;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 0;
+    /* Assuming PlayerCard has its own padding */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.list-player:hover,
+.list-player:focus {
+    border-color: #76c7ff;
+    outline: none;
+}
+
+/* This class is added in the modified JSX */
+.list-player.selected {
+    border-color: #76c7ff;
+    box-shadow: 0 0 10px rgba(118, 199, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+/* --- Form & Inputs --- */
+
+.loan-options {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    /* Spaces out each form group */
+}
+
+/* A standard vertical form group */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* A horizontal form group for checkboxes/radios */
+.form-group-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    /* Allows wrapping on small screens */
+    gap: 8px;
+}
+
+/* Labels for text inputs/selects */
+.form-group>label {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-bottom: 6px;
+}
+
+/* Labels for radios/checkboxes */
+.form-group-row>label {
+    font-size: 1rem;
+    color: #f0f0f0;
+    cursor: pointer;
+}
+
+/* --- Input Styling --- */
+
+/* Style for all text inputs and the select dropdown */
+.loan-options input[type="text"],
+.loan-options .loantype {
+    width: 100%;
+    padding: 12px;
+    background-color: #1e1e1e;
+    color: #f0f0f0;
+    border: 1px solid #555;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    /* Important for padding and width */
+    transition: border-color 0.2s ease;
+}
+
+.loan-options input[type="text"]:focus,
+.loan-options .loantype:focus {
+    outline: none;
+    border-color: #76c7ff;
+}
+
+/* Style for radio buttons and checkboxes */
+.loan-options input[type="radio"],
+.loan-options input[type="checkbox"] {
+    cursor: pointer;
+    transform: scale(1.1);
+    margin-right: 2px;
+}
+
+/* --- Submit Button --- */
+
+.submit-button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+}
+
+.submit-button:hover {
+    background: #0056b3;
+}
+
+.submit-button:disabled {
+    background: #555;
+    color: #999;
+    cursor: not-allowed;
+}
+
+div.checkbox-group {
+    display: flex;
+    flex-direction: row;
+    gap: 0.2em;
 }

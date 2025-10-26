@@ -172,5 +172,14 @@ def unmortgage(game, action, player: Player):
     space = game.board.getSpaceById(action["spaceid"])
     yield True, player.unmortgage(space)
     yield True, getUpdatedState(game)
+    
+def loan(game, action, player: Player):
+    loaner = action["loan"]["loaner"]
+    if loaner is None:
+        #bank
+        pass
+    loaner = player
+    loanee = game.players.get(action["loan"]["loanee"])
+     
 
 

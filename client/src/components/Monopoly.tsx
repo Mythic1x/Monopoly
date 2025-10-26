@@ -9,6 +9,7 @@ import TradeMenu from "./TradeMenu"
 import MonopolyContext, { MonopolyProvider } from "../../src/Contexts/MonopolyContext"
 import AuctionMenu from "./Auction"
 import ConnectionContext from "../../src/Contexts/ConnectionContext"
+import LoanMenu from "./LoanMenu"
 
 function Monopoly({ playerDetails }: any) {
     const [alertQ, setAQ] = useState<string[]>([])
@@ -38,6 +39,7 @@ function Monopoly({ playerDetails }: any) {
     const [loading, setLoading] = useState(true)
     const [currentSpace, setCurrentSpace] = useState<Space | null>(null)
     const [goingPlayer, setGoingPlayer] = useState<Player | null>(null)
+    const [showLoanMenu, setShowLoanMenu] = useState(false)
     const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket(ip, {
         share: true
     })
@@ -214,6 +216,7 @@ function Monopoly({ playerDetails }: any) {
     let jail = board.spaces.find(v => v.name === "Jail")
     return <>
         <TradeMenu currentPlayer={player} players={activePlayers} tradeDialog={tradeDialog} currentTrade={currentTrade} setCurrentTrade={setCurrentTrade}></TradeMenu>
+        {showLoanMenu && <LoanMenu currentPlayer={player} players={players} setShowLoanMenu={setShowLoanMenu}></LoanMenu>}
         <div id="game">
             <div className="board-container">
                 <GameBoard board={board} player={player}>
@@ -233,6 +236,7 @@ function Monopoly({ playerDetails }: any) {
                             }}>Buy Property</button>
                             }
                             <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled || (auction ? true : false) || player.bankrupt || player.money < 0} onClick={endTurn}>End Turn</button>
+                            <button onClick={() => setShowLoanMenu(!showLoanMenu)} disabled={player.bankrupt}>Loan</button>
                             <button onClick={() => tradeDialog.current.showModal()} disabled={player.bankrupt} >
                                 Trade
                             </button>
