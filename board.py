@@ -138,7 +138,7 @@ class Loan:
     amount: int
     interest: int
     interestType: str #simple | compound
-
+    proposed: bool
     turnsPassed: int
 
     totalOwed: int
