@@ -81,6 +81,7 @@ export interface Player {
     sets: Color[]
     bankrupt: boolean
     injail: boolean
+    loan: Loan
 }
 
 export type Color =
@@ -96,10 +97,9 @@ export type Color =
 
 export interface Loan {
     type: "per-turn" | "deadline"
-    amountPerTurn?: number
-    deadline?: number
+    amountPerTurn: number | null
+    deadline: number | null
     amount: number
-    //in decimal form
     interest: number
     interestType: "simple" | "compound"
     loanee: Player

@@ -7,8 +7,9 @@ import ConnectionContext from "../../src/Contexts/ConnectionContext";
 interface Props {
     players: Player[]
     currentPlayer: Player
-    setShowLoanMenu: React.Dispatch<React.SetStateAction<boolean>>
+    loanMenuClose: () => void
     receive?: boolean
+    loan?: Loan
 }
 
 function validateNumber(num: string) {
@@ -18,7 +19,7 @@ function validateNumber(num: string) {
 
 
 
-function LoanMenu({ currentPlayer, players, setShowLoanMenu, receive }: Props) {
+function LoanMenu({ currentPlayer, players, loanMenuClose, receive, loan }: Props) {
     const { ip } = useContext(ConnectionContext)
     const { sendJsonMessage } = useWebSocket(ip, {
         share: true
@@ -33,8 +34,7 @@ function LoanMenu({ currentPlayer, players, setShowLoanMenu, receive }: Props) {
     const [bank, setBank] = useState(false)
 
     function handleSubmit() {
-
-        setShowLoanMenu(false)
+       loanMenuClose()
         const loan: Loan = {
             loaner: bank ? null : currentPlayer,
             amount: loanAmount,
@@ -53,10 +53,40 @@ function LoanMenu({ currentPlayer, players, setShowLoanMenu, receive }: Props) {
         return !loanAmount || (!selectedPlayer && !bank) || !interestRate || !interestType || !loanType || ((!amountPerTurn && loanType === "per-turn") || (!deadline && loanType === "deadline"))
     }
 
+    if (receive && loan) {
+        return (
+            <div className="loan-menu-container">
+                <span className="player-name">{loan.loaner.name}</span>
+                <span className="amount">${loan.amount}</span>
+                <div className="loan-grid-container">
+                    <span className="interest">Interest</span>
+                    <span className="interest-type">Interest Type</span>
+                    <span className="loan-type">Loan type</span>
+                    <span className="condition">Condition</span>
+
+                    <span className="interest">{loan.interest * 100}%</span>
+                    <span className="interest-type">{loan.interestType}</span>
+                    <span className="loan-type">{loan.type}</span>
+                    <span className="condition">{deadline ? `Deadline: ${loan.deadline}` : `Amount per turn: ${loan.amountPerTurn}`}</span>
+                </div>
+                <div className="action-buttons">
+                    <button className="accept-button" onClick={() => {
+                        loanMenuClose()
+                        //handle logic
+                    }}>Accept Loan</button>
+                    <button className="decline-button" onClick={() => {
+                       loanMenuClose()
+                        //handle logic
+                    }}>Decline Loan</button>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <>
             <div className="loan-menu-container">
-                <button className="delete-button" onClick={() => setShowLoanMenu(false)}>X</button>
+                <button className="delete-button" onClick={() => loanMenuClose()}>X</button>
                 {!bank && <><span className="selected-player">{selectedPlayer ? selectedPlayer.name : ""}</span>
                     <div className="players">{players.map(player => (
                         <button className="list-player" onClick={() => {
@@ -76,11 +106,11 @@ function LoanMenu({ currentPlayer, players, setShowLoanMenu, receive }: Props) {
                 <form onSubmit={handleSubmit}>
                     <div className="loan-options">
                         <div className="checkbox-group">
-                        <input type="checkbox" name="bank" id="bank" onChange={e => {
-                            setBank(e.target.checked)
-                            setSelectedPlayer(null)
-                        }} />
-                        <label htmlFor="bank">Get Loan From Bank</label>
+                            <input type="checkbox" name="bank" id="bank" onChange={e => {
+                                setBank(e.target.checked)
+                                setSelectedPlayer(null)
+                            }} />
+                            <label htmlFor="bank">Get Loan From Bank</label>
                         </div>
                         <label htmlFor="amount">Loan Amount</label>
                         <input type="text" placeholder="Loan Amount" id="amount" required value={loanAmount} onChange={e => {

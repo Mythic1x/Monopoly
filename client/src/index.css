@@ -57,6 +57,7 @@
     }
 }
 
+
 .bankrupt {
     background-color: var(--red);
 }
@@ -496,7 +497,7 @@
 /* Main container for the whole menu */
 .loan-menu-container {
 
-    width: 500px;
+    max-width: 500px;
     margin: 20px auto;
     padding: 24px;
     background-color: #2b2b2b;
@@ -658,4 +659,11 @@ div.checkbox-group {
     display: flex;
     flex-direction: row;
     gap: 0.2em;
+}
+
+.loan-grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr; 
+  gap: 0.2 empx;
+  text-align: center;
 }

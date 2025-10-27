@@ -40,6 +40,9 @@ function Monopoly({ playerDetails }: any) {
     const [currentSpace, setCurrentSpace] = useState<Space | null>(null)
     const [goingPlayer, setGoingPlayer] = useState<Player | null>(null)
     const [showLoanMenu, setShowLoanMenu] = useState(false)
+    const [loan, setLoan] = useState(null)
+    const [receive, setReceive] = useState(false)
+
     const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket(ip, {
         share: true
     })
@@ -104,6 +107,12 @@ function Monopoly({ playerDetails }: any) {
 
     function alert(text: string) {
         setAQ(alertQ.concat([text]))
+    }
+
+    function loanMenuClose() {
+        setShowLoanMenu(false)
+        setLoan(null)
+        setReceive(false)
     }
 
     useEffect(() => {
@@ -216,7 +225,7 @@ function Monopoly({ playerDetails }: any) {
     let jail = board.spaces.find(v => v.name === "Jail")
     return <>
         <TradeMenu currentPlayer={player} players={activePlayers} tradeDialog={tradeDialog} currentTrade={currentTrade} setCurrentTrade={setCurrentTrade}></TradeMenu>
-        {showLoanMenu && <LoanMenu currentPlayer={player} players={players} setShowLoanMenu={setShowLoanMenu}></LoanMenu>}
+        {showLoanMenu && <LoanMenu currentPlayer={player} players={players} loanMenuClose={loanMenuClose} receive={receive} loan={loan}></LoanMenu>}
         <div id="game">
             <div className="board-container">
                 <GameBoard board={board} player={player}>
