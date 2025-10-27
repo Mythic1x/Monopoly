@@ -55,7 +55,6 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, receive, loan }: Prop
     }
 
     if (receive && loan) {
-console.log(loan)
         return (
             <div className="loan-menu-container">
                 <span className="player-name">{loan.loaner?.name ?? "Null"}</span>

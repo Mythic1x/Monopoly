@@ -184,7 +184,7 @@ def loan(game, action, player: Player):
     loaner = player
     loanee: Player = game.players.get(action["loan"]["loanee"]["id"])
     print(loan)
-    yield loanee.client, ({"response": "loan-proposal", "value": {"loan": action["loan"]}})
+    yield loanee.client, ({"response": "loan-proposal", "value": action["loan"]})
     
 def acceptLoan(game, action, player: Player):
     loan = action["loan"]
