@@ -102,6 +102,7 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, receive, loan }: Prop
 
                     ))}
                     </div>
+                    <hr />
                 </>
                 }
                 <form onSubmit={handleSubmit}>

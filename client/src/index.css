@@ -2,12 +2,14 @@
 
 :root {
     --main: rgb(33, 33, 46);
+    --secondary: #303043;
     --good: rgb(67, 150, 67);
     --text-color: white;
     --fucking-blue: #3f88c5;
     --fucking-middle-blue: #76c7ff;
     --fucking-darker-blue: #0056b3;
-    --red: #ff5757 --error: var(--red);
+    --red: #ff5757;
+    --error: var(--red);
 
     --monopoly-clr: #c9e3cd;
 
@@ -509,7 +511,6 @@
 
 /* Main container for the whole menu */
 .loan-menu-container {
-    max-width: 500px;
     padding: 1em;
     background-color: var(--main);
     color: var(--text-color);
@@ -533,54 +534,40 @@
     .delete-button {
         align-self: start;
     }
-}
 
-/* --- Player Selection --- */
+    .selected-player {
+        margin: 0 0 1ex 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--fucking-middle-blue);
+    }
 
-/* Shows "Player Name" when selected */
-.selected-player {
-    display: block;
-    text-align: center;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #76c7ff;
-    /* A highlight blue */
-    margin-bottom: 12px;
-    min-height: 1.4rem;
-    /* Prevents layout jump when empty */
-}
+    .players {
+        display: flex;
+        justify-content: center;
+        overflow: auto;
+        gap: 10px;
 
-/* Horizontal scrolling container for players */
-.players {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-    padding-bottom: 20px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #444;
-}
+        width: 100%;
+        padding-bottom: 20px;
+    }
 
-/* Individual player button */
-.list-player {
-    background-color: #404040;
-    border: 2px solid transparent;
-    border-radius: 8px;
-    padding: 0;
-    /* Assuming PlayerCard has its own padding */
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-}
+    .list-player {
+        background-color: var(--secondary);
+        border-radius: 8px;
+        transition: all 0.2s ease-in-out;
+    }
 
-.list-player:hover,
-.list-player:focus {
-    border-color: #76c7ff;
-    outline: none;
+    hr {
+        width: 100%;
+    }
+
 }
 
 /* This class is added in the modified JSX */
 .list-player.selected {
-    border-color: #76c7ff;
-    box-shadow: 0 0 10px rgba(118, 199, 255, 0.5);
+    border-color: var(--fucking-middle-blue);
+    box-shadow: 0 0 10px rgb(from var(--fucking-middle-blue) / 0.5);
     transform: translateY(-2px);
 }
 
@@ -684,8 +671,8 @@ div.checkbox-group {
 }
 
 .loan-grid-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr; 
-  gap: 0.2 empx;
-  text-align: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0.2 empx;
+    text-align: center;
 }
