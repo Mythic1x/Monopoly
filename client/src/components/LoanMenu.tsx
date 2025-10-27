@@ -57,18 +57,18 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, receive, loan }: Prop
     if (receive && loan) {
         return (
             <div className="loan-menu-container">
-                <span className="player-name">{loan.loaner?.name ?? "Null"}</span>
-                <span className="amount">${loan.amount}</span>
+                <span className="player-name">{`${loan.loaner?.name ?? "Null"} wants a loan from you`}</span>
+                <span className="amount">{`Amount: $${loan.amount}`}</span>
                 <div className="loan-grid-container">
                     <span className="interest">Interest</span>
                     <span className="interest-type">Interest Type</span>
                     <span className="loan-type">Loan type</span>
-                    <span className="condition">Condition</span>
+                    <span className="condition">{loan.deadline ? "Deadline" : "Amount per turn"}</span>
 
-                    <span className="interest">{loan.interest * 100}%</span>
+                    <span className="interest">{loan.interest}%</span>
                     <span className="interest-type">{loan.interestType}</span>
                     <span className="loan-type">{loan.type}</span>
-                    <span className="condition">{deadline ? `Deadline: ${loan.deadline}` : `Amount per turn: ${loan.amountPerTurn}`}</span>
+                    <span className="condition">{loan.deadline ? `$${loan.deadline}` : `$${loan.amountPerTurn}`}</span>
                 </div>
                 {receive && <div className="action-buttons">
                     <button className="accept-button" onClick={() => {
@@ -120,7 +120,7 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, receive, loan }: Prop
                                 setLoanAmount(num)
                             }
                         }} />
-                        <label htmlFor="interest">Interest Rate</label>
+                        <label htmlFor="interest">Interest Rate%</label>
                         <input type="text" placeholder="Interest Rate" id="interest" required value={interestRate} onChange={e => {
                             if (validateNumber(e.target.value)) {
                                 setInterestRate(Number(e.target.value))

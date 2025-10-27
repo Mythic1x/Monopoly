@@ -52,7 +52,7 @@ function Monopoly({ playerDetails }: any) {
             case "due-loan":
                 return `${playerById(status.player).name} has a loan due: ${status.loan.id}`
             case "accepted-loan":
-                return `${playerById(status.loanee.id).name} has been given a loan from ${playerById(status.loaner.id)?.name ?? "the bank" }`
+                return `${playerById(status.loanee.id).name} has been given a loan from ${playerById(status.loaner.id)?.name ?? "the bank"}`
             case "bankrupt":
                 return `${playerById(status.player).name} has gone bankrupt`
             case "draw-chance":
@@ -113,13 +113,15 @@ function Monopoly({ playerDetails }: any) {
 
     function loanMenuClose() {
         setShowLoanMenu(false)
-        setLoan(null)
-        setReceive(false)
+        if (loan) setLoan(null)
+        if (receive) setReceive(false)
     }
 
     useEffect(() => {
         const id = setInterval(() => {
-            setAQ(q => q.slice(1))
+            if (alertQ.length > 0) {
+                setAQ(q => q.slice(1))
+            }
         }, 2500)
         return () => clearInterval(id)
     }, [])
