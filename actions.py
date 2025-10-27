@@ -1,6 +1,6 @@
 import asyncio
 import json
-from board import Player
+from board import Player, Loan
 
 def getUpdatedState(game):
     return [
@@ -175,11 +175,22 @@ def unmortgage(game, action, player: Player):
     
 def loan(game, action, player: Player):
     loaner = action["loan"]["loaner"]
+    loan = action["loan"]
     if loaner is None:
-        #bank
-        pass
+        player.loans.append(Loan(None, player, loan["type"], loan["amount"], loan["interest"], loan["interestType"], loan["amountPerTurn"], loan["deadline"]))
+        yield True, {"response": "accepted-loan", "value": loan}
+        print(loan)
+        
     loaner = player
-    loanee = game.players.get(action["loan"]["loanee"])
+    loanee: Player = game.players.get(action["loan"]["loanee"]["id"])
+    print(loan)
+    yield loanee.client, ({"response": "loan-proposal", "value": {"loan": action["loan"]}})
+    
+def acceptLoan(game, action, player: Player):
+    loan = action["loan"]
+    player.loans.append(Loan(game.players.get(loan["loaner"]["id"]), player, loan["type"], loan["amount"], loan["interest"], loan["interestType"], loan["amountPerTurn"], loan["deadline"]))
+    yield True, {"response": "accepted-loan", "value": loan}
+    
      
 
 

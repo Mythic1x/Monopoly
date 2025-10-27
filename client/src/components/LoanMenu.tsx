@@ -1,5 +1,5 @@
 import { Loan, Player } from "../../index";
-import { useContext, useState } from "react";
+import { FormEvent, useContext, useState } from "react";
 import PlayerCard from "./PlayerCard";
 import useWebSocket from "react-use-websocket/dist";
 import ConnectionContext from "../../src/Contexts/ConnectionContext";
@@ -33,8 +33,9 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, receive, loan }: Prop
     const [deadline, setDeadline] = useState<number | null>(null)
     const [bank, setBank] = useState(false)
 
-    function handleSubmit() {
-       loanMenuClose()
+    function handleSubmit(e: FormEvent) {
+        e.preventDefault()
+        loanMenuClose()
         const loan: Loan = {
             loaner: bank ? null : currentPlayer,
             amount: loanAmount,
@@ -54,9 +55,10 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, receive, loan }: Prop
     }
 
     if (receive && loan) {
+console.log(loan)
         return (
             <div className="loan-menu-container">
-                <span className="player-name">{loan.loaner.name}</span>
+                <span className="player-name">{loan.loaner?.name ?? "Null"}</span>
                 <span className="amount">${loan.amount}</span>
                 <div className="loan-grid-container">
                     <span className="interest">Interest</span>
@@ -69,16 +71,16 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, receive, loan }: Prop
                     <span className="loan-type">{loan.type}</span>
                     <span className="condition">{deadline ? `Deadline: ${loan.deadline}` : `Amount per turn: ${loan.amountPerTurn}`}</span>
                 </div>
-                <div className="action-buttons">
+                {receive && <div className="action-buttons">
                     <button className="accept-button" onClick={() => {
                         loanMenuClose()
-                        //handle logic
+                        sendJsonMessage({ "action": "accept-loan", "loan": loan })
                     }}>Accept Loan</button>
                     <button className="decline-button" onClick={() => {
-                       loanMenuClose()
-                        //handle logic
+                        loanMenuClose()
                     }}>Decline Loan</button>
                 </div>
+                }
             </div>
         )
     }
@@ -152,10 +154,10 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, receive, loan }: Prop
                             <option value="deadline">Deadline</option>
                         </select>
 
-                        {loanType === "per-turn" && <input type="text" value={amountPerTurn} placeholder="Amount Per Turn" required onChange={e => {
+                        {loanType === "per-turn" && <input type="text" value={amountPerTurn ?? ""} placeholder="Amount Per Turn" required onChange={e => {
                             if (validateNumber(e.target.value)) setAmountPerTurn(Number(e.target.value))
                         }} />}
-                        {loanType === "deadline" && <input type="text" value={deadline} placeholder="Deadline" required onChange={e => {
+                        {loanType === "deadline" && <input type="text" value={deadline ?? ""} placeholder="Deadline" required onChange={e => {
                             if (validateNumber(e.target.value)) setDeadline(Number(e.target.value))
                         }} />}
                         <button type="submit" disabled={isFormInvalid()} className="submit-button">Send Loan</button>

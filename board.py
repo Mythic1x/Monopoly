@@ -145,7 +145,7 @@ class Loan:
     loaner: "Player | None" #None means bank
     loanee: "Player"
 
-    def __init__(self, loaner, loanee, type: str, amount: int, interest: int, interestType: str, *, amountPerTurn: int = 0, deadline: int = 0) -> None:
+    def __init__(self, loaner, loanee, type: str, amount: int, interest: int, interestType: str, amountPerTurn: int = 0, deadline: int = 0) -> None:
         self.id = random.random()
         self.type = type
         self.amount = amount

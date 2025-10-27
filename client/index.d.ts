@@ -19,6 +19,7 @@ type _responses = {
     "roll-complete": null
     "bankrupt": string
     "game-end": Player
+    "loan-proposal": Loan
 }
 type ServerResponse = { response: infer A extends keyof _responses, value: _responses[A] } | { response: infer A extends keyof _responses, value: _responses[A] }[]
 

@@ -51,6 +51,8 @@ function Monopoly({ playerDetails }: any) {
         switch (status.status) {
             case "due-loan":
                 return `${playerById(status.player).name} has a loan due: ${status.loan.id}`
+            case "accepted-loan":
+                return `${playerById(status.loanee.id).name} has been given a loan from ${playerById(status.loaner.id)?.name ?? "the bank" }`
             case "bankrupt":
                 return `${playerById(status.player).name} has gone bankrupt`
             case "draw-chance":
@@ -200,6 +202,11 @@ function Monopoly({ playerDetails }: any) {
                 case "trade-proposal":
                     setCurrentTrade(message.value)
                     tradeDialog.current.showModal()
+                    break
+                case "loan-proposal":
+                    setLoan(message.value)
+                    setShowLoanMenu(true)
+                    setReceive(true)
                     break
                 case "auction-status":
                     setAuction(message.value)

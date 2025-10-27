@@ -39,7 +39,7 @@ export default function AuctionMenu({ space, time, auction, sendJsonMessage }: {
             <div className="time-bar" data-timer-width={`${timerWidth > 0 ? timerWidth : 0}%`}></div>
             <div className="auction-status">
                 <span className="bidder">{bidder?.name ?? "No bidder"}: </span>
-                <span className="bid">${auction.current_bid.toString()}</span>
+                <span className="bid">${auction.current_bid?.toString()}</span>
             </div>
             <div className="space-auctioned" data-space-color={space.attrs.color}>
                 <span className="space-name">{space.name}</span>
