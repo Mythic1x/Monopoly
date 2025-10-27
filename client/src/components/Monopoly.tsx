@@ -254,7 +254,7 @@ function Monopoly({ playerDetails }: any) {
                             }}>Buy Property</button>
                             }
                             <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled || (auction ? true : false) || player.bankrupt || player.money < 0} onClick={endTurn}>End Turn</button>
-                            <button onClick={() => setShowLoanMenu(!showLoanMenu)} disabled={player.bankrupt}>Loan</button>
+                            <button onClick={() => setShowLoanMenu(!showLoanMenu)} disabled={player.bankrupt} id="loan-button">Loan</button>
                             <button onClick={() => tradeDialog.current.showModal()} disabled={player.bankrupt} >
                                 Trade
                             </button>
