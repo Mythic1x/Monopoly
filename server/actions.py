@@ -201,7 +201,12 @@ def proposeTrade(game, action, player: Player):
     if not p:
         yield False, {"response": "notification", "value": "invalid player id"}
     else:
-        yield p.client, { "response": "trade-proposal", "value": trade.toJson()}
+        yield p.client, (
+            {
+                "response": "trade-proposal",
+                "value": trade.toJson(),
+            }
+        )
         yield True, getUpdatedState(game)
 
 

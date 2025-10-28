@@ -157,19 +157,19 @@ class Game:
             if (fn := getattr(Actions, actionFnName)) and callable(fn):
                 try:
                     i = fn(self, action, player)
-                    assert i, f"{actionFnName} did not return any statuses"
-                    for broadcast, value in i:
-                        if isinstance(value, status_t):
-                            name = value.__class__.__name__
-                            value = dataclasses.asdict(value)
-                            value["status"] = name.lower().replace("_", "-")
-                            value = {"response": "notification", "value": value}
-                        if broadcast is True:
-                            await self.broadcast(value)
-                        elif broadcast is False:
-                            await client.write(value)
-                        elif isinstance(broadcast, Client):
-                            await broadcast.write(value)
+                    if i:
+                        for broadcast, value in i:
+                            if isinstance(value, status_t):
+                                name = value.__class__.__name__
+                                value = dataclasses.asdict(value)
+                                value["status"] = name.lower().replace("_", "-")
+                                value = {"response": "notification", "value": value}
+                            if broadcast is True:
+                                await self.broadcast(value)
+                            elif broadcast is False:
+                                await client.write(value)
+                            elif isinstance(broadcast, Client):
+                                await broadcast.write(value)
                 except TypeError as e:
                     print(traceback.format_exc())
 
