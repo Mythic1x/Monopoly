@@ -95,9 +95,9 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
             <dialog className="loan-menu-container m-0">
                 <button className="close" onClick={() => loanMenuClose()}>X</button>
                 {!bank && <><span className="selected-player">{selectedPlayer ? selectedPlayer.name : ""}</span>
-                    <div className="players">{players.map(function(player) {
+                    <div className="players">{players.filter(p => p.id !== currentPlayer.id).map(player => {
                         return (
-                            <button className={`list-player ${player.id === selectedPlayer?.id && "selected"}`} key={player.id} onClick={function(e) {
+                            <button className={`list-player ${player.id === selectedPlayer?.id && "selected"}`} key={player.id} onClick={function (e) {
                                 if (player.id === selectedPlayer?.id) {
                                     setSelectedPlayer(null);
                                 } else {
@@ -130,7 +130,7 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
                         }} />
                         <label htmlFor="interest">Interest Rate%</label>
                         <input type="number" placeholder="Interest Rate" id="interest" required value={interestRate} onChange={e => {
-                                setInterestRate(Number(e.target.value))
+                            setInterestRate(Number(e.target.value))
                         }} />
                         <span className="interest-type">Interest Type</span>
                         <div className="checkbox-group">

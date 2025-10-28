@@ -10,7 +10,7 @@ class Trade:
     id: float
     status: str #declined | accepted | proposed
 
-    def __init__(self, trade: "Trade", sender: player_t, recipient: player_t, status: str):
+    def __init__(self, trade: Any, sender: player_t, recipient: player_t, status: str):
         self.trade = trade
         self.sender = sender
         self.recipient = recipient
