@@ -270,15 +270,15 @@ def loan(game, action, player: Player):
         loan["amountPerTurn"],
         loan["deadline"],
     )
+    action["loan"]["id"] = loan.id
     game.loans.append(loan)
-    print(loan)
     yield loanee.client, ({"response": "loan-proposal", "value": action["loan"]})
     yield True, getUpdatedState(game)
 
 
 def acceptLoan(game, action, player: Player):
     action_loan = action["loan"]
-    loan = next(loan for loan in game.loans if loan.id == action_loan["id"])
+    loan = next(loan for loan in game.loans if loan.id == action_loan)
     loan.status = "accepted"
     player.loans.append(loan)
     yield True, {"response": "accepted-loan", "value": loan.toJson()}
@@ -287,6 +287,6 @@ def acceptLoan(game, action, player: Player):
 
 def declineLoan(game, action, player: Player):
     action_loan = action["loan"]
-    loan = next(loan for loan in game.loans if loan.id == action_loan["id"])
+    loan = next(loan for loan in game.loans if loan.id == action_loan)
     loan.status = "declined"
     yield True, getUpdatedState(game)

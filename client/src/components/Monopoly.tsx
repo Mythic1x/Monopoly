@@ -115,7 +115,6 @@ function Monopoly({ playerDetails }: any) {
     function loanMenuClose() {
         setShowLoanMenu(false)
         if (loan) setLoan(null)
-      
     }
 
     useEffect(() => {
