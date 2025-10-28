@@ -674,5 +674,32 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .trades-column {
+        border-right: 2px solid var(--secondary);
+    }
+}
+
+.loan-list-item,
+.trade-list-item {
+    display: flex;
+    justify-content: center;
+    background-color: var(--secondary);
+    width: 100px;
+    height: 50px;
+    cursor: pointer;
+    transition: transform 100ms;
+    border-radius: 5px;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+    &.toyou {
+        border-style: solid;
+        border-width: 2px;
+        border-color: gold
     }
 }

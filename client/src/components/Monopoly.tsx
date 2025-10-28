@@ -11,6 +11,12 @@ import AuctionMenu from "./Auction"
 import ConnectionContext from "../../src/Contexts/ConnectionContext"
 import LoanMenu from "./LoanMenu"
 
+const tradeStatuses = {
+    declined: "❌",
+    accepted: "✅",
+    proposed: "🕕"
+}
+
 function Monopoly({ playerDetails }: any) {
     const [alertQ, setAQ] = useState<string[]>([])
 
@@ -291,10 +297,11 @@ function Monopoly({ playerDetails }: any) {
                 <div className="trades-column">
                     <h3>Trades</h3>
                     {trades?.map(trade => (
-                        <div className="trade-list-item" onClick={() => {
+                        <div className={`trade-list-item ${(trade.recipient === player.id && trade.status === "proposed") && "toyou"}`} onClick={() => {
                             setCurrentTrade(trade)
                             tradeDialog?.current.showModal()
                         }}>
+                            <span className="status">{tradeStatuses[trade.status]}</span>
                             <span className="sender">{`${playerById(trade.sender).name} -> `}</span>
                             <span className="recipient">{playerById(trade.recipient).name}</span>
                         </div>
@@ -304,10 +311,11 @@ function Monopoly({ playerDetails }: any) {
                 <div className="loans-column">
                     <h3>Loans</h3>
                     {loans?.map(loan => (
-                        <div className="loan-list-item" onClick={() => {
+                        <div className={`loan-list-item ${(loan.loanee === player.id && loan.status === "proposed") && "toyou"}`} onClick={() => {
                             setLoan(loan)
                             setShowLoanMenu(true)
                         }}>
+                            <span className="status">{tradeStatuses[loan.status]}</span>
                             <span className="sender">{`${playerById(loan.loaner).name} -> `} </span>
                             <span className="recipient">{playerById(loan.loanee).name}</span>
                         </div>
