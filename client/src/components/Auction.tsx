@@ -47,7 +47,6 @@ export default function AuctionMenu({ space, time, auction, sendJsonMessage }: {
                 <span className="house-cost">House Cost: ${space.attrs.house_cost}</span>
             </div>
             <input type="number" placeholder="BID" value={bidAmount || 0} onChange={(e) => {
-                console.log(e.target)
                 setBidAmount(e.target.value)
             }} />
             <button className="send-bid" disabled={!checkValidBid()} onClick={() => {

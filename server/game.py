@@ -140,6 +140,7 @@ class Game:
             await self.broadcast([{"response": "auction-end"}, {"response": "board", "value": self.board.toJson()}])
         else:
             await self.broadcast({"response": "auction-end"})
+            await self.broadcast(Actions.getUpdatedState(self))
         self.activeAuction = None
 
 

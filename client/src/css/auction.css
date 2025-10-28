@@ -7,7 +7,6 @@
         color: #e0e0e0;
         padding: 24px;
         border: 1px solid var(--fucking-blue);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 
         animation: fadeIn 0.5s ease-out;
 
