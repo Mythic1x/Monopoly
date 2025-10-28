@@ -11,6 +11,8 @@ type _responses = {
     "prompt": string
     "join-game": string
     "player-list": Player[]
+    "loan-list": Loan[]
+    "trade-list": Trade[]
     "reconnect": { "name": string, "piece": string }
     "trade-proposal": Trade
     "auction-status": Auction
@@ -34,8 +36,11 @@ type Trade = {
             money: number
         }
     }
-    from: string
-    with: string
+    sender: string
+    recipient: string
+    status: "declined" | "accepted" | "proposed"
+    id?: number
+
 }
 
 export interface Auction {
@@ -82,7 +87,7 @@ export interface Player {
     sets: Color[]
     bankrupt: boolean
     injail: boolean
-    loan: Loan
+    loans: Loan[]
 }
 
 export type Color =
@@ -103,8 +108,9 @@ export interface Loan {
     amount: number
     interest: number
     interestType: "simple" | "compound"
-    loanee: Player
-    loaner: Player | null
+    loanee: str
+    loaner: str | null
+    status: "declined" | "accepted" | "proposed"
 }
 
 

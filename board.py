@@ -128,6 +128,30 @@ class Chance:
     type: str
     data: Any
 
+
+class Trade:
+    trade: Any
+    sender: str
+    recipient: str
+    id: int
+    status: str #declined | accepted | proposed
+    
+    def __init__(self, trade, sender, recipient, status):
+        self.trade = trade
+        self.sender = sender
+        self.recipient = recipient
+        self.status = status
+        self.id = random.random()
+        
+    def toJson(self):
+        return {
+            "trade": self.trade,
+            "sender": self.sender,
+            "recipient": self.recipient,
+            "status": self.status,
+        }
+    
+    
 type statusreturn_t = status_t
 
 class Loan:
@@ -138,14 +162,14 @@ class Loan:
     amount: int
     interest: int
     interestType: str #simple | compound
-    proposed: bool
+    status: str #declined | accepted | proposed
     turnsPassed: int
 
     totalOwed: int
     loaner: "Player | None" #None means bank
     loanee: "Player"
 
-    def __init__(self, loaner, loanee, type: str, amount: int, interest: int, interestType: str, amountPerTurn: int = 0, deadline: int = 0) -> None:
+    def __init__(self, loaner, loanee, type: str, amount: int, interest: int, interestType: str, status: str, amountPerTurn: int = 0, deadline: int = 0, ) -> None:
         self.id = random.random()
         self.type = type
         self.amount = amount
@@ -183,13 +207,12 @@ class Loan:
 
     def toJson(self):
         return {
-            "id": self.id,
             "interest": self.interest,
-            "interest-type": self.interestType,
+            "interestType": self.interestType,
             "amount": self.amount,
-            "loaner-id": "BANK" if not self.loaner else self.loaner.id,
-            "loanee-id": self.loanee.id,
-            "amount-per-turn": self.amountPerTurn,
+            "loaner": "BANK" if not self.loaner else self.loaner.id,
+            "loanee": self.loanee.id,
+            "amountPerTurn": self.amountPerTurn,
             "remaining-to-pay": self.totalOwed,
             "deadline": self.deadline
         }
@@ -507,6 +530,7 @@ class Player:
             "ownedSpaces": [space.toJsonForPlayer() for space in self.ownedSpaces],
             "bankrupt": self.bankrupt,
             "injail": self.inJail,
+            "loans": [loan.toJson() for loan in self.loans]
         }
 
 type spacetype_t = int

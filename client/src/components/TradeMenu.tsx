@@ -16,7 +16,7 @@ interface Props {
 
 export default function TradeMenu({ currentPlayer, players, tradeDialog, currentTrade, setCurrentTrade }: Props) {
     const [selectedPlayer, setSelectedPlayer] = useState<Player>(null)
-    const {ip} = useContext(ConnectionContext)
+    const { ip } = useContext(ConnectionContext)
     const { sendJsonMessage } = useWebSocket(ip, {
         share: true
     })
@@ -24,20 +24,22 @@ export default function TradeMenu({ currentPlayer, players, tradeDialog, current
     function acceptTrade(trade: Trade) {
         sendJsonMessage({
             action: "accept-trade",
+            id: trade.id,
             trade: trade.trade,
-            with: trade.with,
-            from: trade.from
+            recipient: trade.recipient,
+            sender: trade.sender
         })
         setCurrentTrade(null)
     }
 
-    function declineTrade() {
+    function declineTrade(trade: Trade) {
+        sendJsonMessage({ action: "decline-trade", id: trade.id })
         setCurrentTrade(null)
     }
 
     if (currentTrade) {
         return (
-            <dialog ref={tradeDialog} id="trade-dialog"><TradeProposal trade={currentTrade} proposingPlayer={players.find(p => p.id === currentTrade.with)} acceptTrade={acceptTrade} declineTrade={declineTrade}></TradeProposal></dialog>
+            <dialog ref={tradeDialog} id="trade-dialog"><TradeProposal trade={currentTrade} proposingPlayer={players.find(p => p.id === currentTrade.recipient)} acceptTrade={acceptTrade} declineTrade={declineTrade}></TradeProposal></dialog>
         )
     }
 
@@ -47,7 +49,7 @@ export default function TradeMenu({ currentPlayer, players, tradeDialog, current
             <div className="players">
                 <center><h3 className="trade-header">Trade</h3></center>
                 {players.filter(p => p.id !== currentPlayer.id).map((player) => (
-                    <button className="list-player" data-enable-shadow onClick={() => {
+                    <button className="list-player" key={player.id} data-enable-shadow onClick={() => {
                         if (selectedPlayer === player) {
                             setSelectedPlayer(null)
                         } else {
@@ -72,7 +74,7 @@ function TradeSelection({ player, otherPlayer, sendJsonMessage, setSelectedPlaye
     const canReceive = otherPlayer.ownedSpaces.filter((p: Space) => !receieve.some((r) => r.id === p.id))
 
     function sendTrade(trade: Trade) {
-        sendJsonMessage({ action: "propose-trade", trade: trade.trade, playerid: trade.with, from: player.id })
+        sendJsonMessage({ action: "propose-trade", trade: trade.trade, playerid: trade.recipient, sender: player.id })
         setSelectedPlayer(null)
     }
 
@@ -81,7 +83,7 @@ function TradeSelection({ player, otherPlayer, sendJsonMessage, setSelectedPlaye
             <div className="give-options">
                 <h3 className="trade-selection-text">Properties</h3>
                 {canGive.map((property) => (
-                    <button className="space-give" onClick={() => {
+                    <button className="space-give" key={property.id} onClick={() => {
                         setGive([...give, property])
                     }}>{property.name}</button>
                 ))}
@@ -91,7 +93,7 @@ function TradeSelection({ player, otherPlayer, sendJsonMessage, setSelectedPlaye
                 <h3 className="trade-selection-text">Give</h3>
                 <input type="text" className="give-money" placeholder="$0" onChange={(e) => setGiveMoney(Number(e.target.value))} />
                 {give.map((property) => (
-                    <button className="space-give" onClick={() => {
+                    <button className="space-give" key={property.id} onClick={() => {
                         const i = give.filter(prop => prop.id !== property.id)
                         setGive(i)
                     }}>{property.name}</button>
@@ -102,7 +104,7 @@ function TradeSelection({ player, otherPlayer, sendJsonMessage, setSelectedPlaye
                 <h3 className="trade-selection-text">Get</h3>
                 <input type="text" className="receieve-money" placeholder="$0" onChange={(e) => setReceieveMoney(Number(e.target.value))} />
                 {receieve.map((property) => (
-                    <button className="receive" onClick={() => {
+                    <button className="receive" key={property.id} onClick={() => {
                         const i = receieve.filter(prop => prop.id !== property.id)
                         setReceieve(i)
                     }}>{property.name}</button>
@@ -112,7 +114,7 @@ function TradeSelection({ player, otherPlayer, sendJsonMessage, setSelectedPlaye
             <div className="receieve-options">
                 <h3 className="trade-selection-text">{`${otherPlayer.name}'s Properties`}</h3>
                 {canReceive.map((property) => (
-                    <button className="receive" onClick={() => {
+                    <button className="receive" key={property.id} onClick={() => {
                         setReceieve([...receieve, property])
                     }}>{property.name}</button>
                 ))}
@@ -130,8 +132,9 @@ function TradeSelection({ player, otherPlayer, sendJsonMessage, setSelectedPlaye
                             money: giveMoney
                         },
                     },
-                    with: otherPlayer.id,
-                    from: player.id,
+                    recipient: otherPlayer.id,
+                    sender: player.id,
+                    status: "proposed"
                 }
                 sendTrade(trade)
             }}>Send Trade</button>
@@ -148,10 +151,10 @@ function TradeProposal({
     trade: Trade
     proposingPlayer: Player
     acceptTrade: (trade: Trade) => void;
-    declineTrade: () => void;
+    declineTrade: (trade: Trade) => void;
 }) {
 
-    const { board } = useContext(MonopolyContext)
+    const { board, player } = useContext(MonopolyContext)
 
     const propertiesToReceive = board.spaces.filter(space =>
         trade.trade.give.properties?.includes(Number(space.id))
@@ -193,14 +196,14 @@ function TradeProposal({
                 ))}
             </div>
 
-            <div className="trade-proposal-actions">
+            {(player.id === trade.recipient && trade.status === "proposed") && <div className="trade-proposal-actions">
                 <button className="accept-trade" data-enable-shadow onClick={() => acceptTrade(trade)}>
                     Accept
                 </button>
-                <button className="decline-trade" data-enable-shadow onClick={declineTrade}>
+                <button className="decline-trade" data-enable-shadow onClick={() => declineTrade(trade)}>
                     Decline
                 </button>
-            </div>
+            </div>}
         </div>
     );
 }

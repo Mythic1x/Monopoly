@@ -9,7 +9,7 @@ import time
 import traceback
 from types import ModuleType
 from typing import Any, Callable
-from board import BANKRUPT, Board, Chance, Player, spacetype_t, status_t
+from board import BANKRUPT, Board, Chance, Player, spacetype_t, status_t, Loan, Trade
 from boardbuilder import buildFromFile
 from client import Client
 
@@ -38,6 +38,8 @@ class Game:
     activeAuction: dict[str, Any] | None
     activePlayers: list[Player]
     id: gameid_t
+    loans: list[Loan]
+    trades: list[Trade]
 
     def __init__(self, boardname: str, dSides: int = 6):
         boardFile = f"./boards/{boardname}.json"
@@ -68,6 +70,8 @@ class Game:
         self.clients = []
         self.activeAuction = None
         self.activePlayers = []
+        self.loans = []
+        self.trades = []
 
     @property
     def curPlayer(self) -> Player:

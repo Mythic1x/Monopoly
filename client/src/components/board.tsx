@@ -78,7 +78,7 @@ function GameBoard({ board, player, children }: Props) {
             spaceNo++
         } else if (col === colCount - 1) {
             const space = board.spaces[spaceNo - row]
-            spaces.push(<BoardSpace space={space} player={player} pieces={space.players.map((player) => (
+            spaces.push(<BoardSpace space={space} player={player} key={space.id} pieces={space.players.map((player) => (
                 player.piece
             ))} />)
             spaceNo++

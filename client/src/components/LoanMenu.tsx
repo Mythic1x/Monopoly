@@ -8,7 +8,6 @@ interface Props {
     players: Player[]
     currentPlayer: Player
     loanMenuClose: () => void
-    receive?: boolean
     loan?: Loan
 }
 
@@ -19,7 +18,7 @@ function validateNumber(num: string) {
 
 
 
-function LoanMenu({ currentPlayer, players, loanMenuClose, receive, loan }: Props) {
+function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
     const { ip } = useContext(ConnectionContext)
     const { sendJsonMessage } = useWebSocket(ip, {
         share: true
@@ -44,7 +43,8 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, receive, loan }: Prop
             interestType: interestType,
             type: loanType,
             amountPerTurn: amountPerTurn,
-            deadline: deadline
+            deadline: deadline,
+            status: "proposed"
         }
 
         sendJsonMessage({ "action": "loan", loan: loan })
@@ -54,10 +54,10 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, receive, loan }: Prop
         return !loanAmount || (!selectedPlayer && !bank) || !interestRate || !interestType || !loanType || ((!amountPerTurn && loanType === "per-turn") || (!deadline && loanType === "deadline"))
     }
 
-    if (receive && loan) {
+    if (loan) {
         return (
             <div className="loan-menu-container">
-                <span className="player-name">{`${loan.loaner?.name ?? "Null"} wants a loan from you`}</span>
+                <span className="player-name">{`${players.find(p => p.id === loan.loaner).name ?? "Null"} wants a loan from you`}</span>
                 <span className="amount">{`Amount: $${loan.amount}`}</span>
                 <div className="loan-grid-container">
                     <span className="interest">Interest</span>
@@ -70,7 +70,7 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, receive, loan }: Prop
                     <span className="loan-type">{loan.type}</span>
                     <span className="condition">{loan.deadline ? `$${loan.deadline}` : `$${loan.amountPerTurn}`}</span>
                 </div>
-                {receive && <div className="action-buttons">
+                {(loan.loaner === currentPlayer.id && loan.status === "proposed") && <div className="action-buttons">
                     <button className="accept-button" onClick={() => {
                         loanMenuClose()
                         sendJsonMessage({ "action": "accept-loan", "loan": loan })
@@ -90,7 +90,7 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, receive, loan }: Prop
                 <button className="delete-button" onClick={() => loanMenuClose()}>X</button>
                 {!bank && <><span className="selected-player">{selectedPlayer ? selectedPlayer.name : ""}</span>
                     <div className="players">{players.map(player => (
-                        <button className="list-player" onClick={() => {
+                        <button className="list-player" key={player.id} onClick={() => {
                             if (player.id === selectedPlayer?.id) {
                                 setSelectedPlayer(null);
                             } else {

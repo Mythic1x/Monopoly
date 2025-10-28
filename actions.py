@@ -1,6 +1,8 @@
 import asyncio
 import json
-from board import Player, Loan
+import random
+from board import Player, Loan, Trade
+
 
 
 def getUpdatedState(game):
@@ -11,6 +13,8 @@ def getUpdatedState(game):
             "response": "player-list",
             "value": [player.toJson() for player in game.players.values()],
         },
+        {"response": "trade-list", "value": [trade.toJson() for trade in game.trades]},
+        {"response": "loan-list", "value": [loan.toJson() for loan in game.loans]},
     ]
 
 
@@ -184,28 +188,38 @@ def sellHouse(game, action, player: Player):
 # trade obj should look like
 # {"want": {"properties": ["id 1", "id2", "id3"], "money": 432483}, "give": {"money": 3432}}
 def proposeTrade(game, action, player: Player):
-    trade = action["trade"]
-    to = action["playerid"]
-    fromPlayer = action["from"]
-    p = game.players.get(to)
+    trade = Trade(action["trade"], player, action["playerid"], "proposed")
+    p = game.players.get(trade.recipient)
+    game.trades.append(trade)
     if not p:
         yield False, {"response": "notification", "value": "invalid player id"}
     else:
         yield p.client, (
             {
                 "response": "trade-proposal",
-                "value": {"trade": trade, "with": player.id, "from": fromPlayer},
+                "value": {
+                    "trade": trade,
+                    "recipient": trade.recipient,
+                    "sender": trade.sender,
+                },
             }
         )
+        yield True, getUpdatedState(game)
 
 
 def acceptTrade(game, action, player: Player):
-    trade = action["trade"]
-    tradeWith = action["from"]
-    otherPlayer = game.players.get(tradeWith)
+    trade = next(trade for trade in game.trades if trade.id == action["id"])
+    trade.status = "accepted"
+    otherPlayer = game.players.get(trade.sender)
     if otherPlayer:
         # we do otherPlayer.trade(player) because otherPlayer is the player who initialized the trade in the first place
         otherPlayer.trade(game.board, player, trade)
+    yield True, getUpdatedState(game)
+
+
+def declineTrade(game, action):
+    trade = next(trade for trade in game.trades if trade.id == action["id"])
+    trade.status = "declined"
     yield True, getUpdatedState(game)
 
 
@@ -225,39 +239,50 @@ def loan(game, action, player: Player):
     loaner = action["loan"]["loaner"]
     loan = action["loan"]
     if loaner is None:
-        player.loans.append(
-            Loan(
-                None,
-                player,
-                loan["type"],
-                loan["amount"],
-                loan["interest"],
-                loan["interestType"],
-                loan["amountPerTurn"],
-                loan["deadline"],
-            )
-        )
-        yield True, {"response": "accepted-loan", "value": loan}
-        print(loan)
-
-    loaner = player
-    loanee: Player = game.players.get(action["loan"]["loanee"]["id"])
-    print(loan)
-    yield loanee.client, ({"response": "loan-proposal", "value": action["loan"]})
-    
-
-def acceptLoan(game, action, player: Player):
-    loan = action["loan"]
-    player.loans.append(
-        Loan(
-            game.players.get(loan["loaner"]["id"]),
+        loan = Loan(
+            None,
             player,
             loan["type"],
             loan["amount"],
             loan["interest"],
             loan["interestType"],
+            "accepted",
             loan["amountPerTurn"],
             loan["deadline"],
         )
+        game.loans.append(loan)
+        player.loans.append(loan)
+        yield True, {"response": "accepted-loan", "value": loan}
+        yield True, getUpdatedState(game)
+        print(loan)
+
+    loanee: Player = game.players.get(action["loan"]["loanee"]["id"])
+    loan = Loan(
+        player,
+        loanee,
+        loan["type"],
+        loan["amount"],
+        loan["interest"],
+        loan["interestType"],
+        loan["status"],
+        loan["amountPerTurn"],
+        loan["deadline"],
     )
-    yield True, {"response": "accepted-loan", "value": loan}
+    game.loans.append(loan)
+    print(loan)
+    yield loanee.client, ({"response": "loan-proposal", "value": action["loan"]})
+    yield True, getUpdatedState(game)
+
+
+def acceptLoan(game, action, player: Player):
+    loan = next(loan for loan in game.loans if loan.id == action["loan.id"])
+    loan.status = "accepted"
+    player.loans.append(loan)
+    yield True, {"response": "accepted-loan", "value": loan.toJson()}
+    yield True, getUpdatedState(game)
+
+
+def declineLoan(game, action, player: Player):
+    loan = next(loan for loan in game.loans if loan.id == action["loan.id"])
+    loan.status = "declined"
+    yield True, getUpdatedState(game)

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext } from "react"
-import { Board, Space, Player, ServerResponse, Trade, Auction, playerid_t, spaceid_t } from "../../index"
+import { Board, Space, Player, ServerResponse, Trade, Auction, playerid_t, spaceid_t, Loan } from "../../index"
 import PlayerCard from "./PlayerCard"
 import useWebSocket, { ReadyState } from "react-use-websocket/dist"
 import usePlayer from "../hooks/useplayer"
@@ -40,8 +40,10 @@ function Monopoly({ playerDetails }: any) {
     const [currentSpace, setCurrentSpace] = useState<Space | null>(null)
     const [goingPlayer, setGoingPlayer] = useState<Player | null>(null)
     const [showLoanMenu, setShowLoanMenu] = useState(false)
+    const [trades, setTrades] = useState<Trade[]>([])
+    const [loans, setLoans] = useState<Loan[]>([])
     const [loan, setLoan] = useState(null)
-    const [receive, setReceive] = useState(false)
+    
 
     const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket(ip, {
         share: true
@@ -114,7 +116,7 @@ function Monopoly({ playerDetails }: any) {
     function loanMenuClose() {
         setShowLoanMenu(false)
         if (loan) setLoan(null)
-        if (receive) setReceive(false)
+      
     }
 
     useEffect(() => {
@@ -177,6 +179,12 @@ function Monopoly({ playerDetails }: any) {
                     setBoard(message.value)
                     setLoading(false)
                     break
+                case "trade-list":
+                    setTrades(message.value)
+                    break
+                case "loan-list":
+                    setLoans(message.value)
+                    break
                 case 'current-space':
                     setCurrentSpace(message.value)
                     break
@@ -208,7 +216,6 @@ function Monopoly({ playerDetails }: any) {
                 case "loan-proposal":
                     setLoan(message.value)
                     setShowLoanMenu(true)
-                    setReceive(true)
                     break
                 case "auction-status":
                     setAuction(message.value)
@@ -234,7 +241,7 @@ function Monopoly({ playerDetails }: any) {
     let jail = board.spaces.find(v => v.name === "Jail")
     return <>
         <TradeMenu currentPlayer={player} players={activePlayers} tradeDialog={tradeDialog} currentTrade={currentTrade} setCurrentTrade={setCurrentTrade}></TradeMenu>
-        {showLoanMenu && <LoanMenu currentPlayer={player} players={players} loanMenuClose={loanMenuClose} receive={receive} loan={loan}></LoanMenu>}
+        {showLoanMenu && <LoanMenu currentPlayer={player} players={players} loanMenuClose={loanMenuClose} loan={loan}></LoanMenu>}
         <div id="game">
             <div className="board-container">
                 <GameBoard board={board} player={player}>
@@ -280,8 +287,35 @@ function Monopoly({ playerDetails }: any) {
             <div className="player-list">
                 <h3>Players</h3>
                 {players?.map((player) => (
-                    <PlayerCard player={player}></PlayerCard>
+                    <PlayerCard player={player} key={player.id}></PlayerCard>
                 ))}
+            </div>
+            <div className="trade-loan-grid">
+                <div className="trades-column">
+                <h3>Trades</h3>
+                {trades?.map(trade => (
+                    <div className="trade-list-item" onClick={() => {
+                        setCurrentTrade(trade)
+                        tradeDialog?.current.showModal()
+                    }}>
+                        <span className="sender">{playerById(trade.sender).name}</span>
+                        <span className="recipient">{playerById(trade.recipient).name}</span>
+                    </div>
+                ))}
+                </div>
+
+                <div className="loans-column">
+                <h3>Loans</h3>
+                {loans?.map(loan => (
+                    <div className="loan-list-item" onClick={() => {
+                        setLoan(loan)
+                        setShowLoanMenu(true)
+                    }}>
+                        <span className="sender">{playerById(loan.loaner).name}</span>
+                        <span className="recipient">{playerById(loan.loanee).name}</span>
+                    </div>
+                ))}
+                </div>
             </div>
         </div>
     </>

@@ -689,3 +689,17 @@ div.checkbox-group {
   gap: 0.2 empx;
   text-align: center;
 }
+
+.trade-loan-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; 
+  gap: 20px; 
+}
+
+
+.trades-column,
+.loans-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
