@@ -9,7 +9,8 @@ import time
 import traceback
 from types import ModuleType
 from typing import Any, Callable
-from board import BANKRUPT, Board, Chance, Player, player_t, spacetype_t, status_t, Loan, Trade
+from board import BANKRUPT, Board, Chance, Player, player_t, spacetype_t, status_t, Loan
+from trade import Trade
 from boardbuilder import buildFromFile
 from client import Client
 

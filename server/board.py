@@ -11,30 +11,6 @@ from monopolytypes import *
 from status import *
 
 
-class Trade:
-    trade: Any
-    sender: str
-    recipient: str
-    id: float
-    status: str #declined | accepted | proposed
-    
-    def __init__(self, trade, sender, recipient, status):
-        self.trade = trade
-        self.sender = sender
-        self.recipient = recipient
-        self.status = status
-        self.id = random.random()
-        
-    def toJson(self):
-        return {
-            "id": self.id,
-            "trade": self.trade,
-            "sender": self.sender,
-            "recipient": self.recipient,
-            "status": self.status,
-        }
-    
-    
 type statusreturn_t = status_t
 
 class Loan:

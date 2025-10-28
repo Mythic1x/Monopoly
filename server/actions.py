@@ -1,7 +1,8 @@
 import asyncio
 import json
 import random
-from board import Player, Loan, Trade
+from board import Player, Loan
+from trade import Trade
 
 
 
