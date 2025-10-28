@@ -95,7 +95,7 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
             <dialog className="loan-menu-container m-0">
                 <button className="close" onClick={() => loanMenuClose()}>X</button>
                 {!bank && <><span className="selected-player">{selectedPlayer ? selectedPlayer.name : ""}</span>
-                    <div className="players">{players.filter(p => p.id !== currentPlayer.id).map(player => {
+                    <div className="players">{players.map(player => {
                         return (
                             <button className={`list-player ${player.id === selectedPlayer?.id && "selected"}`} key={player.id} onClick={function (e) {
                                 if (player.id === selectedPlayer?.id) {
