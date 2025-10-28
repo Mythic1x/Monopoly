@@ -530,7 +530,7 @@ class Player:
                 number += 1
         return number
 
-    def incrementTurnsPassedOnLoans(self):
+    def incLoanDeadline(self):
         for loan in self.loans:
             if not loan.deadline:
                 continue
@@ -873,7 +873,7 @@ class Board:
         amount = d1 + d2
 
         player.lastRoll = amount
-        for dueLoan in player.incrementTurnsPassedOnLoans():
+        for dueLoan in player.incLoanDeadline():
             yield DUE_LOAN(dueLoan.id, player.id)
 
         yield from self.runevent("onroll", player.space, player, amount, d1, d2)
