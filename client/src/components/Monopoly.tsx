@@ -81,7 +81,7 @@ function Monopoly({ playerDetails }: any) {
             case "buy-hotel-fail":
                 return "you バカ, you could not buy a hotel"
             case "buy-success":
-                return "(russian accent) bought 😏"
+                return `(russian accent) bought 😏 ${spaceById(status.space).name}`
             case "buy-house-success":
                 return "HOUSING"
             case "buy-hotel-success":
