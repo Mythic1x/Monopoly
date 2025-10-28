@@ -36,9 +36,9 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
         e.preventDefault()
         loanMenuClose()
         const loan: Loan = {
-            loaner: bank ? null : currentPlayer,
+            loaner: bank ? null : currentPlayer.id,
             amount: loanAmount,
-            loanee: bank ? currentPlayer : selectedPlayer,
+            loanee: bank ? currentPlayer : selectedPlayer.id,
             interest: interestRate,
             interestType: interestType,
             type: loanType,

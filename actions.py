@@ -241,7 +241,7 @@ def loan(game, action, player: Player):
     if loaner is None:
         loan = Loan(
             None,
-            player,
+            player.id,
             loan["type"],
             loan["amount"],
             loan["interest"],
@@ -252,14 +252,14 @@ def loan(game, action, player: Player):
         )
         game.loans.append(loan)
         player.loans.append(loan)
-        yield True, {"response": "accepted-loan", "value": loan}
+        yield True, {"response": "accepted-loan", "value": loan.toJson()}
         yield True, getUpdatedState(game)
         print(loan)
 
-    loanee: Player = game.players.get(action["loan"]["loanee"]["id"])
+    loanee: Player = game.players.get(action["loan"]["loanee"])
     loan = Loan(
-        player,
-        loanee,
+        player.id,
+        loanee.id,
         loan["type"],
         loan["amount"],
         loan["interest"],
