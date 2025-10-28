@@ -3,6 +3,7 @@ import { FormEvent, useContext, useState } from "react";
 import PlayerCard from "./PlayerCard";
 import useWebSocket from "react-use-websocket/dist";
 import ConnectionContext from "../../src/Contexts/ConnectionContext";
+import SimplePlayerCard from "./SimplePlayerCard";
 
 interface Props {
     players: Player[]
@@ -102,7 +103,7 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
                                     setSelectedPlayer(player);
                                 }
                             }}>
-                                <PlayerCard player={player} />
+                                <SimplePlayerCard player={player} />
                             </button>
                         )
                     })}

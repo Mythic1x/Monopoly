@@ -66,6 +66,29 @@
         text-align: center;
         color: var(--text-color);
     }
+
+    [type="submit"] {
+        background: var(--fucking-darker-blue);
+        color: var(--text-color);
+        border: none;
+        padding: 14px 20px;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 10px;
+
+        &:hover {
+            background: var(--fucking-blue);
+        }
+
+        &:disabled {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
+        }
+    }
 }
 
 
@@ -97,6 +120,11 @@
         justify-content: center;
     }
 
+    .trade-loan-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
 
     .board {
         anchor-name: --board;
@@ -280,11 +308,6 @@
 
             cursor: text;
         }
-
-        button {
-            background: var(--fucking-blue);
-            cursor: pointer;
-        }
     }
 
     .player-list {
@@ -336,7 +359,7 @@
                 transition: transform 100ms;
 
                 &:hover:not(:active) {
-                    scale: 1.05;
+                    background-color: var
                 }
             }
         }
@@ -556,11 +579,11 @@
     .players {
         display: flex;
         justify-content: center;
-        overflow: auto;
+        overflow-x: auto;
+        overflow-y: clip;
         gap: 10px;
 
         width: 100%;
-        padding-bottom: 20px;
     }
 
     .list-player {
@@ -580,117 +603,51 @@
         gap: 2ex;
     }
 
+    .loan-grid-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 0.2 empx;
+        text-align: center;
+    }
+
     hr {
         width: 100%;
     }
-
 }
 
-/* --- Form & Inputs --- */
+.loan-options {
+    .checkbox-group {
+        display: flex;
+        flex-direction: row;
+        gap: 0.2em;
+    }
 
-/* A standard vertical form group */
-.form-group {
-    display: flex;
-    flex-direction: column;
+    input[type="text"],
+    .loantype {
+        width: 100%;
+        padding: 12px;
+        background-color: #1e1e1e;
+        color: #f0f0f0;
+        border: 1px solid #555;
+        border-radius: 6px;
+        font-size: 1rem;
+        box-sizing: border-box;
+        /* Important for padding and width */
+        transition: border-color 0.2s ease;
+
+        &:focus {
+            outline: none;
+            border-color: var(--fucking-middle-blue);
+        }
+    }
+
+    input:where([type="radio"], [type="checkbox"]) {
+        cursor: pointer;
+        transform: scale(1.1);
+        margin-right: 2px;
+    }
+
 }
-
-/* A horizontal form group for checkboxes/radios */
-.form-group-row {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    /* Allows wrapping on small screens */
-    gap: 8px;
-}
-
-/* Labels for text inputs/selects */
-.form-group>label {
-    font-size: 0.9rem;
-    color: #aaa;
-    margin-bottom: 6px;
-}
-
-/* Labels for radios/checkboxes */
-.form-group-row>label {
-    font-size: 1rem;
-    color: #f0f0f0;
-    cursor: pointer;
-}
-
-/* --- Input Styling --- */
-
-/* Style for all text inputs and the select dropdown */
-.loan-options input[type="text"],
-.loan-options .loantype {
-    width: 100%;
-    padding: 12px;
-    background-color: #1e1e1e;
-    color: #f0f0f0;
-    border: 1px solid #555;
-    border-radius: 6px;
-    font-size: 1rem;
-    box-sizing: border-box;
-    /* Important for padding and width */
-    transition: border-color 0.2s ease;
-}
-
-.loan-options input[type="text"]:focus,
-.loan-options .loantype:focus {
-    outline: none;
-    border-color: var(--fucking-middle-blue);
-}
-
-/* Style for radio buttons and checkboxes */
-.loan-options input:where([type="radio"], [type="checkbox"]) {
-    cursor: pointer;
-    transform: scale(1.1);
-    margin-right: 2px;
-}
-
-/* --- Submit Button --- */
-
-.submit-button {
-    background: var(--fucking-blue);
-    color: var(--text-color);
-    border: none;
-    padding: 14px 20px;
-    border-radius: 6px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 10px;
-}
-
-.submit-button:hover {
-    background: var(--fucking-darker-blue);
-}
-
-.submit-button:disabled {
-    background: #555;
-    color: #999;
-    cursor: not-allowed;
-}
-
-div.checkbox-group {
-    display: flex;
-    flex-direction: row;
-    gap: 0.2em;
-}
-
-.loan-grid-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 0.2 empx;
-    text-align: center;
-}
-
-.trade-loan-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
 
 .trades-column,
 .loans-column {
