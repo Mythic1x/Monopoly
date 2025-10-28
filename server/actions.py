@@ -195,7 +195,7 @@ def sellHouse(game, action, player: Player):
 # trade obj should look like
 # {"want": {"properties": ["id 1", "id2", "id3"], "money": 432483}, "give": {"money": 3432}}
 def proposeTrade(game, action, player: Player):
-    trade = Trade(action["trade"], player, action["playerid"], "proposed")
+    trade = Trade(action["trade"], player.id, action["playerid"], "proposed")
     p = game.players.get(trade.recipient)
     game.trades.append(trade)
     if not p:
@@ -205,7 +205,7 @@ def proposeTrade(game, action, player: Player):
             {
                 "response": "trade-proposal",
                 "value": {
-                    "trade": trade,
+                    "trade": trade.toJson(),
                     "recipient": trade.recipient,
                     "sender": trade.sender,
                 },
