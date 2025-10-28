@@ -128,7 +128,7 @@ class Player:
         self.loans = []
         self.inDebtTo = None
         self.gameid = 0
-        self.color = f"#{random.randint(0, 255):x}{random.randint(0, 255):x}{random.randint(0, 255):x}"
+        self.color = f"#{random.randint(180, 255):x}{random.randint(180, 255):x}{random.randint(180, 255):x}"
 
     @property
     def propertyWorth(self):
