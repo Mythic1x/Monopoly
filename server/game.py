@@ -28,7 +28,7 @@ def import_from_path(module_name, file_path):
 
 
 class Game:
-    boards_path = "../boards"
+    boards_path = "./boards"
 
     board: Board
     #id: Player

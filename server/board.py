@@ -1,6 +1,4 @@
 from collections.abc import Generator
-from dataclasses import dataclass
-import json
 import re
 from types import ModuleType
 from typing import Any, Callable, Self
@@ -9,7 +7,6 @@ import random
 from gameregistry import gameid_t, getgame
 from monopolytypes import *
 from status import *
-
 
 type statusreturn_t = status_t
 
