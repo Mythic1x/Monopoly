@@ -261,7 +261,7 @@ def loan(game, action, player: Player):
         player.loans.append(loan)
         yield True, {"response": "accepted-loan", "value": loan.toJson()}
         yield True, getUpdatedState(game)
-        
+        return
 
     loanee: Player = game.players.get(action["loan"]["loanee"])
     loan = Loan(
