@@ -13,10 +13,6 @@ interface Props {
 }
 
 
-
-
-
-
 function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
     const { ip } = useContext(ConnectionContext)
     const { sendJsonMessage } = useWebSocket(ip, {
