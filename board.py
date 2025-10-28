@@ -147,6 +147,7 @@ class Trade:
         
     def toJson(self):
         return {
+            "id": self.id,
             "trade": self.trade,
             "sender": self.sender,
             "recipient": self.recipient,
@@ -214,6 +215,7 @@ class Loan:
 
     def toJson(self):
         return {
+            "id": self.id,
             "interest": self.interest,
             "interestType": self.interestType,
             "amount": self.amount,

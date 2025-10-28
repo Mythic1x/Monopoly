@@ -297,7 +297,7 @@ function Monopoly({ playerDetails }: any) {
                         setCurrentTrade(trade)
                         tradeDialog?.current.showModal()
                     }}>
-                        <span className="sender">{playerById(trade.sender).name}</span>
+                        <span className="sender">{`${playerById(trade.sender).name} -> `}</span>
                         <span className="recipient">{playerById(trade.recipient).name}</span>
                     </div>
                 ))}
@@ -310,7 +310,7 @@ function Monopoly({ playerDetails }: any) {
                         setLoan(loan)
                         setShowLoanMenu(true)
                     }}>
-                        <span className="sender">{playerById(loan.loaner).name}</span>
+                        <span className="sender">{`${playerById(loan.loaner).name} -> `} </span>
                         <span className="recipient">{playerById(loan.loanee).name}</span>
                     </div>
                 ))}
