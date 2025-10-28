@@ -2,6 +2,7 @@ import asyncio
 import json
 import random
 from board import Player, Loan
+from status import BANKRUPT
 from trade import Trade
 
 
@@ -115,7 +116,7 @@ def requestSpace(game, action, player: Player):
 
 
 def bankrupt(game, action, player: Player):
-    yield True, {"response": "bankrupt", "value": f"{player.name}"}
+    yield True, BANKRUPT(player.id)
     player.goBankrupt()
 
     game.activePlayers.remove(player)

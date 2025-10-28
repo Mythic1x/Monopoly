@@ -99,7 +99,7 @@ class Player:
     bankrupt: bool
     inDebtTo: "Player | None"
     color: str
-    
+
     inJail: bool
     jailDoublesRemaining: int
 
@@ -136,22 +136,24 @@ class Player:
         for space in self.ownedSpaces:
             if not space.mortgaged:
                 propertyWorth += space.cost // 2
-            
+
                 if space.houses != 0:
                     propertyWorth += int(space.house_cost * space.houses / 2)
-                
+
                 if space.hotel:
                     propertyWorth += int(space.hotel_cost / 2)
-                
-        
+
+
         return propertyWorth
 
     def takeOwnership(self, space: "Space", cost: int = 0):
+        assert cost >= self.money, f"Cannot buy {space.name} because Player@{self.name} only has ${self.money}"
         self.money -= cost
         self.ownedSpaces.append(space)
         space.owner = self
 
     def loanPlayer(self, other: Self, loan: Loan):
+        assert self.money >= loan.amount, f"Cannot loan {loan.amount} because Player@{self.name} only has ${self.money}"
         other.loans.append(loan)
         self.money -= loan.amount
         other.money += loan.amount
@@ -163,15 +165,13 @@ class Player:
                 #FIXME: lets say the player has 3 loans, if the player goes bankrupt
                 #while paying the first one, the other 2 will not get paid this turn.
                 if self.money < 0:
-                    self.bankrupt = True
-                    yield BANKRUPT(self.id)
+                    self.inDebtTo = loan.loaner
                     break
 
     def payLoan(self, loan: Loan, amount: int):
         loan.payAmount(amount)
         if self.money < 0:
-            self.bankrupt = True
-            yield BANKRUPT(self.id)
+            self.inDebtTo = loan.loaner
 
     def trade(self, board: "Board", other: Self, trade: dict[str, Any]):
         for id in trade["give"].get("properties", []):
@@ -241,9 +241,9 @@ class Player:
 
     def owns(self, space: "Space"):
         return False if not space.owner else space.owner.id == self.id
-    
+
     def gain(self, amount):
-        
+
         if self.inDebtTo != None:
             if self.money + amount > 0:
                 self.inDebtTo.money += (amount - abs(self.money))
@@ -251,7 +251,7 @@ class Player:
                 self.inDebtTo.money += amount
             if self.money >= 0:
                 self.inDebtTo = None
-                
+
         self.money += amount
 
     def pay(self, amount: int, other: "Player"):
@@ -264,15 +264,15 @@ class Player:
         if self.money < 0:
             self.inDebtTo = space.owner
         return PAY_OTHER(amount, self.id, other.id)
-    
+
     def goBankrupt(self):
         self.bankrupt = True
         if self.inDebtTo != None:
             self.inDebtTo.money += self.propertyWorth
-            
+
         for property in self.ownedSpaces:
             property.owner = None
-        
+
 
     def getUtilities(self):
         return [space for space in self.ownedSpaces if space.spaceType == ST_UTILITY]
@@ -301,14 +301,14 @@ class Player:
             self.sets.append(space.color)
             return BUY_NEW_SET(space.id)
         return BUY_SUCCESS(space.id)
-        
+
     def mortgage(self, space: "Space"):
         if self is not space.owner or space.owner is None:
             return FAIL(self.id)
         self.gain(space.cost * 0.50)
         space.mortgaged = True
         return MORTGAGE_SUCCESS(self.id, space.id)
-        
+
     def unmortgage(self, space: "Space"):
         if self is not space.owner or space.owner is None:
             return FAIL(self.id)
@@ -319,66 +319,66 @@ class Player:
     def buyHouse(self, space: "Space"):
         if not self.canBuyHouse(space):
             return BUY_HOUSE_FAIL(space.id)
-        
+
         self.money -= space.house_cost
         space.houses += 1
         return BUY_HOUSE_SUCCESS(space.id)
-    
+
     def buyHotel(self, space: "Space"):
         if not self.canBuyHotel(space):
             return BUY_HOTEL_FAIL(space.id)
-        
+
         self.money -= space.house_cost
         space.hotel = True
         return BUY_HOTEL_SUCCESS(space.id)
-        
+
     def canBuyHouse(self, space: "Space"):
         if space.color not in self.sets:
             return False
-      
+
         if self.money < space.house_cost:
             return False
-       
+
         if space.houses == 4:
             return False
-        
+
         set_spaces = [s for s in self.ownedSpaces if s.color == space.color]
         for player_space in set_spaces:
             if space.houses > player_space.houses:
                 return False
-            
+
         return True
-    
+
     def sellHouse(self, space: "Space"):
         canSellHouse = True
         set_spaces = [s for s in self.ownedSpaces if s.color == space.color]
         for player_space in set_spaces:
             if space.houses < player_space.houses or (space.hotel and not player_space.hotel):
                 canSellHouse = False
-                
+
         if not canSellHouse:
             return False
-        
+
         if space.hotel:
             space.hotel = False
             self.gain(space.hotel_cost / 2)
         else:
             space.houses -= 1
             self.gain(space.house_cost / 2)
-            
-        
+
+
     def canBuyHotel(self, space: "Space"):
         if self.money < space.house_cost:
             return False
-        
+
         if space.houses < 4:
             return False
-        
+
         set_spaces = [s for s in self.ownedSpaces if s.color == space.color]
         for player_space in set_spaces:
             if player_space.houses < 4:
                 return False
-            
+
         return True
 
 
@@ -396,13 +396,13 @@ class Player:
             loan.turnsPassed += 1
             if loan.turnsPassed > loan.deadline:
                 yield loan
-                
+
     def compoundLoans(self):
         for loan in self.loans:
             if loan.interestType != "compound":
                 continue
             loan.compound()
-    
+
 
     def toJson(self):
         return {
@@ -619,7 +619,7 @@ class Space:
 class Board:
     #the board keeps track of only the starting space
     #because the space will point to the next space and so on
-    
+
     startSpace: Space
     playerSpaces: dict[player_t, Space]
     players: dict[player_t, Player]
@@ -639,7 +639,7 @@ class Board:
         self.players = {}
 
         self.gameId = gameid
-        
+
         self.spaces = {space.id: space for space in startSpace.iterSpaces()}
 
         self.eventHandlers = eventHandlers
@@ -741,7 +741,7 @@ class Board:
         amount = d1 + d2
 
         player.lastRoll = amount
-        
+
         player.compoundLoans()
         for dueLoan in player.incLoanDeadline():
             player.payLoan(dueLoan, dueLoan.totalOwed)
