@@ -75,7 +75,7 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
                     <span className="loan-type">{loan.type}</span>
                     <span className="condition">{loan.deadline ? `$${loan.deadline}` : `$${loan.amountPerTurn}`}</span>
                 </div>
-                {(loan.loanee === currentPlayer.id && loan.status === "proposed") && <div className="action-buttons">
+                {(loan.loaner === currentPlayer.id && loan.status === "proposed") && <div className="action-buttons">
                     <button className="accept-button" onClick={() => {
                         sendJsonMessage({ "action": "accept-loan", "loan": loan.id })
                         loanMenuClose()
