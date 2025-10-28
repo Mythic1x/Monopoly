@@ -246,6 +246,7 @@
         display: flex;
         flex-direction: row;
         gap: 0.5em;
+
     }
 
     .selection-box {
@@ -514,6 +515,7 @@
     padding: 1em;
     background-color: var(--main);
     color: var(--text-color);
+    border: 2px solid transparent;
     border-radius: 12px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
@@ -530,6 +532,15 @@
     flex-direction: column;
     align-items: center;
     gap: 0.2em;
+
+    .accept-button {
+        background: var(--monopoly-clr);
+        color: var(--main);
+    }
+
+    .decline-button {
+        background: var(--red);
+    }
 
     .delete-button {
         align-self: start;
@@ -556,6 +567,17 @@
         background-color: var(--secondary);
         border-radius: 8px;
         transition: all 0.2s ease-in-out;
+
+        &.selected {
+            background-color: var(--fucking-middle-blue);
+            color: var(--main);
+        }
+    }
+
+    .loan-options {
+        display: flex;
+        flex-direction: column;
+        gap: 2ex;
     }
 
     hr {
@@ -564,21 +586,7 @@
 
 }
 
-/* This class is added in the modified JSX */
-.list-player.selected {
-    border-color: var(--fucking-middle-blue);
-    box-shadow: 0 0 10px rgb(from var(--fucking-middle-blue) / 0.5);
-    transform: translateY(-2px);
-}
-
 /* --- Form & Inputs --- */
-
-.loan-options {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    /* Spaces out each form group */
-}
 
 /* A standard vertical form group */
 .form-group {
@@ -678,15 +686,15 @@ div.checkbox-group {
 }
 
 .trade-loan-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr; 
-  gap: 20px; 
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
 
 
 .trades-column,
 .loans-column {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }

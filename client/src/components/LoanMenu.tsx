@@ -89,18 +89,19 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
             <div className="loan-menu-container">
                 <button className="delete-button" onClick={() => loanMenuClose()}>X</button>
                 {!bank && <><span className="selected-player">{selectedPlayer ? selectedPlayer.name : ""}</span>
-                    <div className="players">{players.map(player => (
-                        <button className="list-player" key={player.id} onClick={() => {
-                            if (player.id === selectedPlayer?.id) {
-                                setSelectedPlayer(null);
-                            } else {
-                                setSelectedPlayer(player);
-                            }
-                        }}>
-                            <PlayerCard player={player} />
-                        </button>
-
-                    ))}
+                    <div className="players">{players.map(function(player) {
+                        return (
+                            <button className={`list-player ${player.id === selectedPlayer?.id && "selected"}`} key={player.id} onClick={function(e) {
+                                if (player.id === selectedPlayer?.id) {
+                                    setSelectedPlayer(null);
+                                } else {
+                                    setSelectedPlayer(player);
+                                }
+                            }}>
+                                <PlayerCard player={player} />
+                            </button>
+                        )
+                    })}
                     </div>
                     <hr />
                 </>
