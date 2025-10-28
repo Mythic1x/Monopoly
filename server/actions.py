@@ -244,7 +244,7 @@ def unmortgage(game, action, player: Player):
 def loan(game, action, player: Player):
     loaner = action["loan"]["loaner"]
     loan = action["loan"]
-    if loaner is None:
+    if loaner is None: #bank loan
         loan = Loan(
             player.gameid,
             None,

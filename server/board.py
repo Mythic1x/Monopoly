@@ -28,7 +28,6 @@ class Loan:
 
     def __init__(self, gameid: gameid_t, loaner: player_t | None, loanee: player_t, type: str, amount: int, interest: int, interestType: str, status: str, amountPerTurn: int = 0, deadline: int = 0, ) -> None:
         self.id = random.random()
-        print("GAME ID", gameid)
         self.gameid = gameid
         self.type = type
         self.amount = amount
@@ -70,7 +69,6 @@ class Loan:
         self.totalOwed -= amount
 
     def toJson(self):
-        print(self.id)
         return {
             "id": self.id,
             "interest": self.interest,
@@ -525,7 +523,6 @@ class Space:
         return self.attrs["hotel"]
 
     def print(self, stopat=None):
-        print(self)
         if self.next is stopat or not self.next:
             return
         self.next.print(self) 

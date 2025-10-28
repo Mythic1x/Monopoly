@@ -146,7 +146,7 @@ class Game:
 
     async def handleAction(self, action: dict[str, Any], player: Player):
         client: Client = player.client
-        
+
         #player-info is for the ui to know who the player is
         #player-list is generally how the ui knows the information about all the players
         #player-info should only be used when the ui is connecting or calling send-player-info
@@ -155,7 +155,10 @@ class Game:
         if hasattr(Actions, actionFnName):
             if (fn := getattr(Actions, actionFnName)) and callable(fn):
                 try:
-                    for broadcast, value in fn(self, action, player):
+                    i = fn(self, action, player)
+                    if not hasattr(i, "__iter__"):
+                        raise TypeError(f"{actionFnName} is not a generator")
+                    for broadcast, value in i:
                         if isinstance(value, status_t):
                             name = value.__class__.__name__
                             value = dataclasses.asdict(value)
@@ -176,11 +179,13 @@ class Game:
         async for message in player.client:
             await self.handleAction(message, player)
 
-    async def broadcast(self, message: dict | list[dict]):
+    async def broadcast(self, message: dict[Any, Any] | list[dict[Any, Any]]):
         for client in self.clients:
             await client.write(message)
 
     async def auctionTimer(self):
+        assert self.activeAuction, "There is no auction running for auctionTimer to act on"
+
         while time.time() < self.activeAuction["end_timestamp"] / 1000:
             await asyncio.sleep(1)
 
