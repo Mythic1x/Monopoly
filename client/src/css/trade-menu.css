@@ -1,0 +1,67 @@
+@layer components {
+    #trade-dialog {
+        z-index: 10;
+        position: absolute;
+        top: 0%;
+        left: -12%;
+        min-height: 700px;
+        width: fit-content;
+        min-width: 30vw;
+        border: none;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        background-color: var(--main);
+        color: var(--text-color);
+
+
+        .close-button {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+        }
+
+        &::backdrop {
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(2px);
+        }
+
+        .players {
+            border: grey;
+            padding: 10px;
+
+            .list-player {
+                text-align: center;
+                transform: scale(var(--scale));
+                transition: transform 100ms;
+
+                &:hover:not(:active) {
+                    background-color: var
+                }
+            }
+        }
+
+        .trade-selection-menu,
+        .trade-proposal-menu {
+            display: flex;
+            flex-direction: row;
+            grid-template-columns: repeat(4, 1fr);
+            column-rule: 1px solid coral;
+            height: fit-content;
+            width: fit-content;
+            padding: 10px;
+            gap: 2em;
+
+            .trade-selection-text {
+                text-align: center;
+            }
+
+            .send-trade {
+                background: var(--good);
+            }
+
+            >div {
+                display: flex;
+                flex-direction: column;
+            }
+        }
+    }
+}

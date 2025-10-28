@@ -12,7 +12,7 @@ interface Props {
 function LoanList({ player, loanPMenuOpen, setShowLoanListMenu }: Props) {
     const {players} = useContext(MonopolyContext)
     return (
-        <div className="loans-list">
+        <dialog className="loans-list m-0">
             <button className="close" onClick={() => {
                 setShowLoanListMenu(false)
             }}>X</button>
@@ -24,7 +24,7 @@ function LoanList({ player, loanPMenuOpen, setShowLoanListMenu }: Props) {
                     <span className="amount">${loan.amount}</span>
                 </button>
             ))}
-        </div>
+        </dialog>
     )
 }
 

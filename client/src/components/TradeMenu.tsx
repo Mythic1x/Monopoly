@@ -45,7 +45,7 @@ export default function TradeMenu({ currentPlayer, players, tradeDialog, current
 
     return (
         <dialog ref={tradeDialog} id="trade-dialog">
-            <button className="delete-button" onClick={() => tradeDialog.current.close()}>X</button>
+            <button className="close" onClick={() => tradeDialog.current.close()}>X</button>
             <div className="players">
                 <center><h3 className="trade-header">Trade</h3></center>
                 {players.filter(p => p.id !== currentPlayer.id).map((player) => (

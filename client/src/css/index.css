@@ -1,0 +1,132 @@
+@layer general, utility, components;
+
+:root {
+    --main: rgb(33, 33, 46);
+    --secondary: #303043;
+    --good: rgb(67, 150, 67);
+    --text-color: white;
+    --fucking-blue: #3f88c5;
+    --fucking-middle-blue: #76c7ff;
+    --fucking-darker-blue: #0056b3;
+    --red: #ff5757;
+    --error: var(--red);
+
+    --monopoly-clr: #c9e3cd;
+
+}
+
+@-tool-use-variables {
+    use-variables-tool: "start using variables NOW";
+}
+
+@-tool-its-time-to-get-better;
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@layer general {
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+            Arial, sans-serif;
+        margin: 0;
+        background-color: var(--main);
+        color: var(--text-color);
+
+        scrollbar-color: var(--monopoly-clr) var(--main);
+    }
+
+    button {
+        --scale: 1;
+
+        padding: 10px;
+        border-radius: 15px;
+        border: none;
+        background-color: var(--main);
+        color: var(--text-color);
+        cursor: pointer;
+
+        font: inherit;
+
+        transform: scale(var(--scale));
+        transition: transform 100ms;
+
+        &:hover:not(:active):not([disabled]) {
+            --scale: 1.1;
+        }
+
+        &[data-enable-shadow] {
+            box-shadow: 2px 2px hsl(from var(--main) h s calc(l * 0.8) / 0.7);
+        }
+
+        &[disabled] {
+            cursor: not-allowed;
+            background-color: hsl(from var(--main) h s 40%);
+        }
+    }
+
+    input {
+        font: inherit;
+        background-color: var(--main);
+        border-radius: 15px;
+        text-align: center;
+        color: var(--text-color);
+    }
+
+    [type="submit"] {
+        background: var(--fucking-darker-blue);
+        color: var(--text-color);
+        border: none;
+        padding: 14px 20px;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 10px;
+
+        &:hover {
+            background: var(--fucking-blue);
+        }
+
+        &:disabled {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
+        }
+    }
+
+    dialog {
+        background-color: var(--main);
+        color: var(--text-color);
+        border: none;
+        border-radius: 5px;
+
+        .close {
+            position: absolute;
+            top: 0.2em;
+            right: 0.2em;
+        }
+    }
+}
+
+
+@layer utility {
+    .action-buttons {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5em;
+    }
+
+    .m-0 {
+        margin: 0;
+    }
+}

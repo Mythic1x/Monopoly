@@ -1,0 +1,24 @@
+@layer components {
+    dialog.loan-payment-menu {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 3em;
+        position-anchor: --board;
+        top: anchor(center);
+        left: anchor(center);
+        transform: translate(-50%, -50%);
+        z-index: 50;
+        align-items: center;
+
+        .loan-info-container {
+            display: flex;
+            flex-direction: row;
+
+            .loan-info {
+                display: flex;
+                flex-direction: column;
+            }
+        }
+    }
+}

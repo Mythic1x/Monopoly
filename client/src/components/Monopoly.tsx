@@ -262,7 +262,6 @@ function Monopoly({ playerDetails }: any) {
     return <>
         <TradeMenu currentPlayer={player} players={activePlayers} tradeDialog={tradeDialog} currentTrade={currentTrade} setCurrentTrade={setCurrentTrade}></TradeMenu>
         {showLoanMenu && <LoanMenu currentPlayer={player} players={players} loanMenuClose={loanMenuClose} loan={loan}></LoanMenu>}
-        {showLoanListMenu && <LoanList player={player} loanPMenuOpen={loanPMenuOpen} setShowLoanListMenu={setShowLoanListMenu}></LoanList>}
         {showLoanPaymentMenu && <LoanPaymentMenu loan={loan} loanPMenuClose={loanPMenuClose} ></LoanPaymentMenu>}
         <div id="alert-container">
             {alertQ.map(v => <Alert alert={v} />)}
@@ -275,6 +274,8 @@ function Monopoly({ playerDetails }: any) {
                     }
                     {!player.bankrupt && <div className="button-container">
                         <div className="action-buttons">
+                            {showLoanListMenu && <LoanList player={player} loanPMenuOpen={loanPMenuOpen} setShowLoanListMenu={setShowLoanListMenu}></LoanList>}
+
                             <button ref={rollBtn} className="roll" disabled={goingPlayer?.id !== player.id || rolled || (auction ? true : false) || player.bankrupt} onClick={() => {
                                 sendJsonMessage({ "action": "roll" })
                             }}>Roll</button>
@@ -284,7 +285,7 @@ function Monopoly({ playerDetails }: any) {
                             }
                             <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled || (auction ? true : false) || player.bankrupt || player.money < 0} onClick={endTurn}>End Turn</button>
                             <button onClick={() => { setLoan(null); setShowLoanMenu(!showLoanMenu) }} disabled={player.bankrupt} id="loan-button">Loan</button>
-                            <button onClick={() => setShowLoanListMenu(true)}>Show Loans</button>
+                            <button onClick={() => setShowLoanListMenu(true)} id="show-loans">Show Loans</button>
                             <button onClick={() => tradeDialog.current.showModal()} disabled={player.bankrupt} >
                                 Trade
                             </button>

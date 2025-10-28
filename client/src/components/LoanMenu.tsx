@@ -58,7 +58,7 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
         console.log(loan.status)
         console.log(currentPlayer.id)
         return (
-            <div className="loan-menu-container">
+            <dialog className="loan-menu-container m-0">
                 <button className="delete" onClick={() => {
                     loanMenuClose()
                 }}>X</button>
@@ -86,14 +86,14 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
                     }}>Decline Loan</button>
                 </div>
                 }
-            </div>
+            </dialog>
         )
     }
 
     return (
         <>
-            <div className="loan-menu-container">
-                <button className="delete-button" onClick={() => loanMenuClose()}>X</button>
+            <dialog className="loan-menu-container m-0">
+                <button className="close" onClick={() => loanMenuClose()}>X</button>
                 {!bank && <><span className="selected-player">{selectedPlayer ? selectedPlayer.name : ""}</span>
                     <div className="players">{players.map(function(player) {
                         return (
@@ -168,7 +168,7 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
                         <button type="submit" disabled={isFormInvalid()} className="submit-button">Send Loan</button>
                     </div>
                 </form>
-            </div>
+            </dialog>
         </>
     )
 }

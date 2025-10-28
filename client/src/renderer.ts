@@ -26,8 +26,18 @@
  * ```
  */
 
-import './index.css';
+import './css/index.css';
+import './css/alert.css';
+import './css/game.css';
+import './css/player.css';
+import './css/trade-menu.css';
+import './css/trade-loan-grid.css';
+import './css/auction.css';
+import './css/loans.css';
+import './css/loan-payments.css';
+import './css/loan-list.css';
 
-console.log('👋 This message is being logged by "renderer.js", included via webpack');
+
+console.log('RENDER INCLUDED ❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥 AI COMMENCING OH YEAH BABY');
 
 import './app.tsx';

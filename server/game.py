@@ -156,8 +156,6 @@ class Game:
             if (fn := getattr(Actions, actionFnName)) and callable(fn):
                 try:
                     i = fn(self, action, player)
-                    if not hasattr(i, "__iter__"):
-                        raise TypeError(f"{actionFnName} is not a generator")
                     for broadcast, value in i:
                         if isinstance(value, status_t):
                             name = value.__class__.__name__

@@ -1,0 +1,27 @@
+@layer components {
+    dialog.loans-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(10ch, 1fr));
+        align-items: center;
+        justify-items: center;
+
+        position-anchor: --show-loans-btn;
+        bottom: calc(anchor(top) + 10%);
+        left: anchor(center);
+        transform: translateX(-50%);
+        z-index: 10;
+
+        min-height: 100px;
+        min-width: 200px;
+        overflow: auto;
+    }
+
+    .loan-card {
+        display: flex;
+        flex-direction: column;
+
+        width: 10ch;
+
+        background-color: var(--secondary);
+    }
+}

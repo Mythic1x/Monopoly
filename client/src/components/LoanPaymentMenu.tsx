@@ -24,7 +24,7 @@ function LoanPaymentMenu({ loan, loanPMenuClose }: Props) {
     }
 
     return (
-        <div className="loan-payment-menu">
+        <dialog className="loan-payment-menu m-0">
             <button className="close" onClick={() => {
                 loanPMenuClose()
             }}>X</button>
@@ -57,7 +57,7 @@ function LoanPaymentMenu({ loan, loanPMenuClose }: Props) {
                     <button className="pay-loan" onClick={payLoan}>Pay Amount</button>
                 </>
             )}
-        </div>
+        </dialog>
     )
 }
 

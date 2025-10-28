@@ -1,0 +1,112 @@
+@layer components {
+    .loan-menu-container {
+        padding: 1em;
+        background-color: var(--main);
+        color: var(--text-color);
+        border: 2px solid transparent;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+            Arial, sans-serif;
+
+        position-anchor: --board;
+        position: absolute;
+        left: anchor(center);
+        bottom: anchor(center);
+        translate: -50% 50%;
+        z-index: 30;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.2em;
+
+        .accept-button {
+            background: var(--monopoly-clr);
+            color: var(--main);
+        }
+
+        .decline-button {
+            background: var(--red);
+        }
+
+        .selected-player {
+            margin: 0 0 1ex 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--fucking-middle-blue);
+        }
+
+        .players {
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+            overflow-y: clip;
+            gap: 10px;
+
+            width: 100%;
+        }
+
+        .list-player {
+            background-color: var(--secondary);
+            border-radius: 8px;
+            transition: all 0.2s ease-in-out;
+
+            &.selected {
+                background-color: var(--fucking-middle-blue);
+                color: var(--main);
+            }
+        }
+
+        .loan-options {
+            display: flex;
+            flex-direction: column;
+            gap: 2ex;
+        }
+
+        .loan-grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 0.2 empx;
+            text-align: center;
+        }
+
+        hr {
+            width: 100%;
+        }
+    }
+
+    .loan-options {
+        .checkbox-group {
+            display: flex;
+            flex-direction: row;
+            gap: 0.2em;
+        }
+
+        input[type="text"],
+        .loantype {
+            width: 100%;
+            padding: 12px;
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+            border: 1px solid #555;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            /* Important for padding and width */
+            transition: border-color 0.2s ease;
+
+            &:focus {
+                outline: none;
+                border-color: var(--fucking-middle-blue);
+            }
+        }
+
+        input:where([type="radio"], [type="checkbox"]) {
+            cursor: pointer;
+            transform: scale(1.1);
+            margin-right: 2px;
+        }
+
+    }
+}
