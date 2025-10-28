@@ -28,7 +28,7 @@
                     transform: scale(1.1);
                 }
 
-                &.toyou {
+                &.toyou { /* とよう！！！*/
                     border-style: solid;
                     border-width: 2px;
                     border-color: gold

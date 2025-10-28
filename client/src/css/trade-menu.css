@@ -12,12 +12,6 @@
         color: var(--text-color);
 
 
-        .close-button {
-            position: absolute;
-            right: 5px;
-            top: 5px;
-        }
-
         &::backdrop {
             background-color: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(2px);
@@ -33,7 +27,7 @@
                 transition: transform 100ms;
 
                 &:hover:not(:active) {
-                    background-color: var
+                    background-color: var(--fucking-blue);
                 }
             }
         }

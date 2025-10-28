@@ -46,7 +46,6 @@ function BoardSpace({ space, pieces, player }: { space: Space, pieces: string[],
             <span className="pieces">{pieces.map(piece => (
                 <span className="piece">{piece}</span>
             ))}</span>
-            <span className="owner">{players.find(p => p.id === space.owner)?.name}</span>
         </div>
     </>
 }
