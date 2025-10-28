@@ -240,15 +240,15 @@ function Monopoly({ playerDetails }: any) {
     return <>
         <TradeMenu currentPlayer={player} players={activePlayers} tradeDialog={tradeDialog} currentTrade={currentTrade} setCurrentTrade={setCurrentTrade}></TradeMenu>
         {showLoanMenu && <LoanMenu currentPlayer={player} players={players} loanMenuClose={loanMenuClose} loan={loan}></LoanMenu>}
+        <div id="alert-container">
+            {alertQ.map(v => <Alert alert={v} />)}
+        </div>
         <div id="game">
             <div className="board-container">
                 <GameBoard board={board} player={player}>
                     {auction &&
                         <AuctionMenu space={board.spaces.find(s => s.id === auction.space)} time={auction.end_time} auction={auction} sendJsonMessage={sendJsonMessage}></AuctionMenu>
                     }
-                    <div id="alert-container">
-                        {alertQ.map(v => <Alert alert={v} />)}
-                    </div>
                     {!player.bankrupt && <div className="button-container">
                         <div className="action-buttons">
                             <button ref={rollBtn} className="roll" disabled={goingPlayer?.id !== player.id || rolled || (auction ? true : false) || player.bankrupt} onClick={() => {

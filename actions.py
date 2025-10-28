@@ -133,6 +133,10 @@ def setMoney(game, action, player: Player):
 
 
 def buy(game, action, player: Player):
+    if game.curPlayer.id != player.id:
+        yield False, { "response": "notification", "value": "Cannot buy when it's not your turn" }
+        return
+
     property = game.board.spaces[action["spaceid"]]
     result = player.buy(property)
     yield True, result
