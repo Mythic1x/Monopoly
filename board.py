@@ -181,6 +181,7 @@ class Loan:
         self.amount = amount
         self.interest = interest
         self.interestType =interestType
+        self.status = status
 
         self.amountPerTurn = amountPerTurn
         self.deadline = deadline
@@ -214,6 +215,7 @@ class Loan:
         self.totalOwed -= amount
 
     def toJson(self):
+        print(self.id)
         return {
             "id": self.id,
             "interest": self.interest,
@@ -223,7 +225,8 @@ class Loan:
             "loanee": self.loanee.id,
             "amountPerTurn": self.amountPerTurn,
             "remaining-to-pay": self.totalOwed,
-            "deadline": self.deadline
+            "deadline": self.deadline,
+            "status": self.status,
         }
 
 
