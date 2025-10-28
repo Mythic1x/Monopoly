@@ -119,7 +119,8 @@
         background: linear-gradient(var(--bg), var(--bg));
         backdrop-filter: blur(20px);
         border-radius: 10px;
-        &:not(:empty){
+
+        &:not(:empty) {
             border: 2px solid;
         }
 
@@ -129,8 +130,9 @@
 
             max-width: 80%;
             text-wrap: wrap;
+
             &:not(:first-child) {
-                border-bottom: 1px solid ;
+                border-bottom: 1px solid;
             }
         }
     }
@@ -413,264 +415,264 @@
         display: flex;
         flex-direction: row;
     }
-}
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* --- Main Auction Menu Container --- */
-.auction-menu {
-    background-color: var(--main);
-
-    color: #e0e0e0;
-    width: 25%;
-
-    padding: 24px;
-    border-radius: 16px;
-    border: 1px solid var(--fucking-blue);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-
-    animation: fadeIn 0.5s ease-out;
-
-    position: absolute;
-    position-anchor: --board;
-    position-area: top;
-    top: 10%;
-
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-
-    .time-bar {
-        width: 100%;
-        height: 1ex;
-        background-color: var(--red);
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .time-bar::before {
-        display: block;
-        content: "";
-        height: 100%;
-        width: attr(data-timer-width type(<percentage>));
-        background: linear-gradient(90deg, var(--fucking-blue), hsl(from var(--fucking-blue) h s 80%));
-        border-radius: 10px;
-        /* This transition makes the timer shrink smoothly */
-        transition: width 0.2s linear;
-    }
-
-    .auction-status {
-        text-align: center;
-        font-size: 1.75rem;
-        font-weight: 700;
-
-        .bidder {
-            font-weight: 400;
-            color: #a0aec0;
-            margin-right: 8px;
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
         }
 
-        .bid {
-            color: #56cfe1;
+        to {
+            opacity: 1;
+            transform: scale(1);
         }
     }
 
-    .space-auctioned {
-        --space-color: attr(data-space-color type(<color>), var(--text-color));
+    /* --- Main Auction Menu Container --- */
+    .auction-menu {
+        background-color: var(--main);
 
-        padding: 16px;
-        border-radius: 10px;
-        border: 4px solid var(--space-color);
-
-        .space-name {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--space-color);
-            margin-bottom: 12px;
-            display: block;
-        }
-
-        .space-cost,
-        .house-cost {
-            display: block;
-            color: #a0aec0;
-            font-size: 0.9rem;
-            margin-top: 4px;
-        }
-    }
-
-    input[type="number"] {
-        width: 100%;
-
-        padding: 14px;
-        border-radius: 8px;
-        border: 1px solid #4a5568;
-        background-color: #1a1a2e;
         color: #e0e0e0;
+        width: 25%;
 
-        /* Prevents padding from affecting width */
-        box-sizing: border-box;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid var(--fucking-blue);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 
-        caret-color: var(--fucking-blue);
+        animation: fadeIn 0.5s ease-out;
 
-        &:focus {
-            outline: none;
-            border-color: var(--fucking-blue);
-            box-shadow: 0 0 0 3px rgb(from var(--fucking-blue) / 0.3);
-        }
+        position: absolute;
+        position-anchor: --board;
+        position-area: top;
+        top: 10%;
 
-        /*if the adjecent button is disabled that means the user has entered an invalid bid*/
-        &:not(:placeholder-shown):has(~ button[disabled]) {
-            color: red;
-            border-color: currentColor;
-        }
-    }
-
-    .send-bid {
-        width: 100%;
-        background-color: var(--fucking-blue);
-        color: #fff;
-        font-size: 1.1rem;
-        font-weight: 600;
-        transition: background-color 0.2s ease, transform 0.2s ease;
-
-        &[disabled] {
-            background-color: #4a5568;
-            color: #a0aec0;
-        }
-    }
-}
-
-/* Main container for the whole menu */
-.loan-menu-container {
-    padding: 1em;
-    background-color: var(--main);
-    color: var(--text-color);
-    border: 2px solid transparent;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-        Arial, sans-serif;
-
-    position-anchor: --board;
-    position: absolute;
-    left: anchor(center);
-    bottom: anchor(center);
-    translate: -50% 50%;
-    z-index: 30;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.2em;
-
-    .accept-button {
-        background: var(--monopoly-clr);
-        color: var(--main);
-    }
-
-    .decline-button {
-        background: var(--red);
-    }
-
-    .delete-button {
-        align-self: start;
-    }
-
-    .selected-player {
-        margin: 0 0 1ex 0;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--fucking-middle-blue);
-    }
-
-    .players {
         display: flex;
-        justify-content: center;
-        overflow-x: auto;
-        overflow-y: clip;
-        gap: 10px;
+        flex-direction: column;
+        gap: 20px;
 
-        width: 100%;
+        .time-bar {
+            width: 100%;
+            height: 1ex;
+            background-color: var(--red);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .time-bar::before {
+            display: block;
+            content: "";
+            height: 100%;
+            width: attr(data-timer-width type(<percentage>));
+            background: linear-gradient(90deg, var(--fucking-blue), hsl(from var(--fucking-blue) h s 80%));
+            border-radius: 10px;
+            /* This transition makes the timer shrink smoothly */
+            transition: width 0.2s linear;
+        }
+
+        .auction-status {
+            text-align: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+
+            .bidder {
+                font-weight: 400;
+                color: #a0aec0;
+                margin-right: 8px;
+            }
+
+            .bid {
+                color: #56cfe1;
+            }
+        }
+
+        .space-auctioned {
+            --space-color: attr(data-space-color type(<color>), var(--text-color));
+
+            padding: 16px;
+            border-radius: 10px;
+            border: 4px solid var(--space-color);
+
+            .space-name {
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: var(--space-color);
+                margin-bottom: 12px;
+                display: block;
+            }
+
+            .space-cost,
+            .house-cost {
+                display: block;
+                color: #a0aec0;
+                font-size: 0.9rem;
+                margin-top: 4px;
+            }
+        }
+
+        input[type="number"] {
+            width: 100%;
+
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid #4a5568;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+
+            /* Prevents padding from affecting width */
+            box-sizing: border-box;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+            caret-color: var(--fucking-blue);
+
+            &:focus {
+                outline: none;
+                border-color: var(--fucking-blue);
+                box-shadow: 0 0 0 3px rgb(from var(--fucking-blue) / 0.3);
+            }
+
+            /*if the adjecent button is disabled that means the user has entered an invalid bid*/
+            &:not(:placeholder-shown):has(~ button[disabled]) {
+                color: red;
+                border-color: currentColor;
+            }
+        }
+
+        .send-bid {
+            width: 100%;
+            background-color: var(--fucking-blue);
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+
+            &[disabled] {
+                background-color: #4a5568;
+                color: #a0aec0;
+            }
+        }
     }
 
-    .list-player {
-        background-color: var(--secondary);
-        border-radius: 8px;
-        transition: all 0.2s ease-in-out;
+    /* Main container for the whole menu */
+    .loan-menu-container {
+        padding: 1em;
+        background-color: var(--main);
+        color: var(--text-color);
+        border: 2px solid transparent;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+            Arial, sans-serif;
 
-        &.selected {
-            background-color: var(--fucking-middle-blue);
+        position-anchor: --board;
+        position: absolute;
+        left: anchor(center);
+        bottom: anchor(center);
+        translate: -50% 50%;
+        z-index: 30;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.2em;
+
+        .accept-button {
+            background: var(--monopoly-clr);
             color: var(--main);
+        }
+
+        .decline-button {
+            background: var(--red);
+        }
+
+        .delete-button {
+            align-self: start;
+        }
+
+        .selected-player {
+            margin: 0 0 1ex 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--fucking-middle-blue);
+        }
+
+        .players {
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+            overflow-y: clip;
+            gap: 10px;
+
+            width: 100%;
+        }
+
+        .list-player {
+            background-color: var(--secondary);
+            border-radius: 8px;
+            transition: all 0.2s ease-in-out;
+
+            &.selected {
+                background-color: var(--fucking-middle-blue);
+                color: var(--main);
+            }
+        }
+
+        .loan-options {
+            display: flex;
+            flex-direction: column;
+            gap: 2ex;
+        }
+
+        .loan-grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 0.2 empx;
+            text-align: center;
+        }
+
+        hr {
+            width: 100%;
         }
     }
 
     .loan-options {
+        .checkbox-group {
+            display: flex;
+            flex-direction: row;
+            gap: 0.2em;
+        }
+
+        input[type="text"],
+        .loantype {
+            width: 100%;
+            padding: 12px;
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+            border: 1px solid #555;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            /* Important for padding and width */
+            transition: border-color 0.2s ease;
+
+            &:focus {
+                outline: none;
+                border-color: var(--fucking-middle-blue);
+            }
+        }
+
+        input:where([type="radio"], [type="checkbox"]) {
+            cursor: pointer;
+            transform: scale(1.1);
+            margin-right: 2px;
+        }
+
+    }
+
+    .trades-column,
+    .loans-column {
         display: flex;
         flex-direction: column;
-        gap: 2ex;
+        gap: 10px;
     }
-
-    .loan-grid-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        gap: 0.2 empx;
-        text-align: center;
-    }
-
-    hr {
-        width: 100%;
-    }
-}
-
-.loan-options {
-    .checkbox-group {
-        display: flex;
-        flex-direction: row;
-        gap: 0.2em;
-    }
-
-    input[type="text"],
-    .loantype {
-        width: 100%;
-        padding: 12px;
-        background-color: #1e1e1e;
-        color: #f0f0f0;
-        border: 1px solid #555;
-        border-radius: 6px;
-        font-size: 1rem;
-        box-sizing: border-box;
-        /* Important for padding and width */
-        transition: border-color 0.2s ease;
-
-        &:focus {
-            outline: none;
-            border-color: var(--fucking-middle-blue);
-        }
-    }
-
-    input:where([type="radio"], [type="checkbox"]) {
-        cursor: pointer;
-        transform: scale(1.1);
-        margin-right: 2px;
-    }
-
-}
-
-.trades-column,
-.loans-column {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 }
