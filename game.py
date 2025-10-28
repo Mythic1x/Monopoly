@@ -101,6 +101,10 @@ class Game:
         await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
         await player.client.write({"response": "current-space", "value": player.space.toJson()})
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
+        if len(self.loans) > 0:
+            await self.broadcast({"response": "loan-list", "value": [loan.toJson() for loan in self.loans]})
+        if len(self.trades) > 0:
+            await self.broadcast({"response": "loan-list", "value": [trade.toJson() for trade in self.trades]})
         print("JOIN", self.activeAuction)
         if self.activeAuction is not None: 
              await self.broadcast({"response": "auction-status", "value": self.activeAuction})

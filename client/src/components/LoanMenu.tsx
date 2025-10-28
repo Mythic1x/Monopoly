@@ -36,9 +36,9 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
         e.preventDefault()
         loanMenuClose()
         const loan: Loan = {
-            loaner: bank ? null : currentPlayer.id,
+            loaner: bank ? null : selectedPlayer.id,
             amount: loanAmount,
-            loanee: bank ? currentPlayer : selectedPlayer.id,
+            loanee: currentPlayer.id,
             interest: interestRate,
             interestType: interestType,
             type: loanType,
@@ -55,6 +55,9 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
     }
 
     if (loan) {
+        console.log(loan.loanee)
+        console.log(loan.status)
+        console.log(currentPlayer.id)
         return (
             <div className="loan-menu-container">
                 <span className="player-name">{`${players.find(p => p.id === loan.loaner).name ?? "Null"} wants a loan from you`}</span>
@@ -70,10 +73,10 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
                     <span className="loan-type">{loan.type}</span>
                     <span className="condition">{loan.deadline ? `$${loan.deadline}` : `$${loan.amountPerTurn}`}</span>
                 </div>
-                {(loan.loaner === currentPlayer.id && loan.status === "proposed") && <div className="action-buttons">
+                {(loan.loanee === currentPlayer.id && loan.status === "proposed") && <div className="action-buttons">
                     <button className="accept-button" onClick={() => {
-                        loanMenuClose()
                         sendJsonMessage({ "action": "accept-loan", "loan": loan.id })
+                        loanMenuClose()
                     }}>Accept Loan</button>
                     <button className="decline-button" onClick={() => {
                         sendJsonMessage({ "action": "decline-loan", "loan": loan.id })
