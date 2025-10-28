@@ -288,7 +288,7 @@ def acceptLoan(game, action, player: Player):
     loan.status = "accepted"
     if loan.loaner:
         loaner: Player = game.players.get(loan.loaner.id)
-        loaner.loanPlayer(player, loan)
+        loaner.loanPlayer(loan.loanee, loan)
     yield True, {"response": "accepted-loan", "value": loan.toJson()}
     yield True, getUpdatedState(game)
 
