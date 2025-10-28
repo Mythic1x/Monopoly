@@ -169,6 +169,9 @@ class Player:
 
     def payLoan(self, loan: Loan, amount: int):
         loan.payAmount(amount)
+        if self.money < 0:
+            self.bankrupt = True
+            yield BANKRUPT(self.id)
 
     def trade(self, board: "Board", other: Self, trade: dict[str, Any]):
         for id in trade["give"].get("properties", []):
@@ -741,6 +744,7 @@ class Board:
         
         player.compoundLoans()
         for dueLoan in player.incLoanDeadline():
+            player.payLoan(dueLoan, dueLoan.totalOwed)
             yield DUE_LOAN(dueLoan.id, player.id)
 
         yield from self.runevent("onroll", player.space, player, amount, d1, d2)
