@@ -294,33 +294,33 @@ function Monopoly({ playerDetails }: any) {
                 ))}
             </div>
             <div className="trade-loan-grid">
-                <div className="trades-column">
+                <ul className="trades">
                     <h3>Trades</h3>
                     {trades?.map(trade => (
-                        <div className={`trade-list-item ${(trade.recipient === player.id && trade.status === "proposed") && "toyou"}`} onClick={() => {
+                        <li className={`trade ${(trade.recipient === player.id && trade.status === "proposed") && "toyou"}`} onClick={() => {
                             setCurrentTrade(trade)
                             tradeDialog?.current.showModal()
                         }}>
                             <span className="status">{tradeStatuses[trade.status]}</span>
                             <span className="sender">{`${playerById(trade.sender).name} -> `}</span>
                             <span className="recipient">{playerById(trade.recipient).name}</span>
-                        </div>
+                        </li>
                     ))}
-                </div>
+                </ul>
 
-                <div className="loans-column">
+                <ul className="loans">
                     <h3>Loans</h3>
                     {loans?.map(loan => (
-                        <div className={`loan-list-item ${(loan.loanee === player.id && loan.status === "proposed") && "toyou"}`} onClick={() => {
+                        <li className={`loan ${(loan.loanee === player.id && loan.status === "proposed") && "toyou"}`} onClick={() => {
                             setLoan(loan)
                             setShowLoanMenu(true)
                         }}>
                             <span className="status">{tradeStatuses[loan.status]}</span>
                             <span className="sender">{`${playerById(loan.loaner).name} -> `} </span>
                             <span className="recipient">{playerById(loan.loanee).name}</span>
-                        </div>
+                        </li>
                     ))}
-                </div>
+                </ul>
             </div>
         </div>
     </>

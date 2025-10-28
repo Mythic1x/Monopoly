@@ -142,12 +142,6 @@
         justify-content: center;
     }
 
-    .trade-loan-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-
     .board {
         anchor-name: --board;
         position: relative;
@@ -669,38 +663,47 @@
 
     }
 
-    .trades-column,
-    .loans-column {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-        text-align: center;
-    }
+    .trade-loan-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
 
-    .trades-column {
-        border-right: 2px solid var(--secondary);
-    }
-}
+        ul {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            text-align: center;
 
-.loan-list-item,
-.trade-list-item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--secondary);
-    width: 100px;
-    height: 50px;
-    cursor: pointer;
-    transition: transform 100ms;
-    border-radius: 5px;
+            list-style: none;
+            padding: 0;
 
-    &:hover {
-        transform: scale(1.1);
-    }
-    &.toyou {
-        border-style: solid;
-        border-width: 2px;
-        border-color: gold
+            li {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: var(--secondary);
+                width: 100px;
+                height: 50px;
+                cursor: pointer;
+                transition: transform 100ms;
+                border-radius: 5px;
+
+                &:hover {
+                    transform: scale(1.1);
+                }
+
+                &.toyou {
+                    border-style: solid;
+                    border-width: 2px;
+                    border-color: gold
+                }
+
+            }
+
+            &:not(:last-child) {
+                border-right: 2px solid var(--secondary);
+            }
+        }
     }
 }
