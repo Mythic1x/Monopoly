@@ -27,6 +27,8 @@ def import_from_path(module_name, file_path):
 
 
 class Game:
+    boards_path = "../boards"
+
     board: Board
     #id: Player
     players: dict[str, Player]
@@ -41,19 +43,19 @@ class Game:
     trades: list[Trade]
 
     def __init__(self, boardname: str, dSides: int = 6):
-        boardFile = f"./boards/{boardname}.json"
+        boardFile = f"{self.boards_path}/{boardname}.json"
         handlers: dict[str, ModuleType] = {}
-        generic_handlers = import_from_path("generic", "./boards/generic.py")
+        generic_handlers = import_from_path("generic", f"{self.boards_path}/generic.py")
         try:
-            handlers[boardname] = import_from_path(boardname, f"./boards/{boardname}.py")
+            handlers[boardname] = import_from_path(boardname, f"{self.boards_path}/{boardname}.py")
         except Exception as e:
             print(e)
         handlers["generic"] = generic_handlers
 
-        if os.path.isdir(f"./boards/{boardname}-chance.json"):
-            path = f"./boards/{boardname}-chance.json"
+        if os.path.isdir(f"{self.boards_path}/{boardname}-chance.json"):
+            path = f"{self.boards_path}/{boardname}-chance.json"
         else:
-            path = f"./boards/generic-chance.json"
+            path = f"{self.boards_path}/generic-chance.json"
         with open(path) as f:
             cards = [Chance(**v) for v in json.load(f)]
 
