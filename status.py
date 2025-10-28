@@ -82,7 +82,7 @@ class MONEY_GIVEN(status_t):
 @dataclass 
 class AUCTION_END(status_t):
     space: space_t
-    auction_dict: dict
+    auction_dict: dict[Any, Any]
     broadcast: bool = True
 
 @dataclass

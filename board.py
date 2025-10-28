@@ -70,6 +70,8 @@ class Loan:
 
         game = getgame(self.gameid)
 
+        assert game, f"game (id = {self.gameid}) is undefined"
+
         self.loaner = game.getplayer(loaner) if loaner else None
         self.loanee = game.getplayer(loanee)
 
@@ -123,7 +125,7 @@ class Player:
     piece: str
     lastRoll: int
     bankrupt: bool
-    inDebtTo: "Player"
+    inDebtTo: "Player | None"
     
     inJail: bool
     jailDoublesRemaining: int
@@ -159,18 +161,18 @@ class Player:
         propertyWorth = 0
         for space in self.ownedSpaces:
             if not space.mortgaged:
-                propertyWorth += space.cost / 2
+                propertyWorth += space.cost // 2
             
                 if space.houses != 0:
-                    propertyWorth += (space.house_cost * space.houses / 2)
+                    propertyWorth += int(space.house_cost * space.houses / 2)
                 
                 if space.hotel:
-                    propertyWorth += space.hotel_cost / 2
+                    propertyWorth += int(space.hotel_cost / 2)
                 
         
         return propertyWorth
 
-    def takeOwnership(self, space: "Space", cost = 0):
+    def takeOwnership(self, space: "Space", cost: int = 0):
         self.money -= cost
         self.ownedSpaces.append(space)
         space.owner = self
@@ -275,7 +277,7 @@ class Player:
                 
         self.money += amount
 
-    def pay(self, amount: int, other: Self):
+    def pay(self, amount: int, other: "Player"):
         self.money -= amount
         other.money += amount
 
@@ -333,7 +335,7 @@ class Player:
     def unmortgage(self, space: "Space"):
         if self is not space.owner or space.owner is None:
             return FAIL(self.id)
-        self.money -= space.cost * 0.10
+        self.money -= int(space.cost * 0.10)
         space.mortgaged = False
         return UNMORTGAGE_SUCCESS(self.id, space.id)
 
@@ -508,6 +510,7 @@ class Space:
         self.name = name
         self.next = None
         self.prev = None
+        self.mortgaged = False
         self.attrs = kwargs
         self.owner = None
         self.id = random.randint(1,10000)
@@ -696,6 +699,7 @@ class Board:
                     spaceName = spaceName.replace(match.group(0), "").strip()
                 elif spaceName == "_random":
                     pickedSpace = True
+                    n = 0
                     space = random.choice(list(self.spaces.values()))
                 else:
                     n = 1
