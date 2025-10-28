@@ -707,3 +707,52 @@
         }
     }
 }
+
+.loan-payment-menu {
+    display: flex;
+    flex-direction: column;
+    height: 200px;
+    width: 300px;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: var(--main);
+    position: absolute;
+    top: 40%;
+    left: 35%;
+    z-index: 50;
+    align-items: center;
+}
+
+.loan-info-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.loan-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.loans-list {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
+    top: 40%;
+    left: 35%;
+    background-color: var(--main);
+    min-height: 100px;
+    min-width: 200px;
+    height: fit-content;
+    width: fit-content;
+    overflow: auto;
+    z-index: 40;
+}
+
+.loan-card {
+    display: flex;
+    flex-direction: column;
+    height: 50px;
+    width: 75px;
+    background-color: var(--secondary);
+}

@@ -12,9 +12,7 @@ interface Props {
     loan?: Loan
 }
 
-function validateNumber(num: string) {
-    return !isNaN(Number(num))
-}
+
 
 
 
@@ -61,6 +59,9 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
         console.log(currentPlayer.id)
         return (
             <div className="loan-menu-container">
+                <button className="delete" onClick={() => {
+                    loanMenuClose()
+                }}>X</button>
                 <span className="player-name">{`${players.find(p => p.id === loan.loaner).name ?? "Null"} wants a loan from you`}</span>
                 <span className="amount">{`Amount: $${loan.amount}`}</span>
                 <div className="loan-grid-container">
@@ -128,10 +129,8 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
                             }
                         }} />
                         <label htmlFor="interest">Interest Rate%</label>
-                        <input type="text" placeholder="Interest Rate" id="interest" required value={interestRate} onChange={e => {
-                            if (validateNumber(e.target.value)) {
+                        <input type="number" placeholder="Interest Rate" id="interest" required value={interestRate} onChange={e => {
                                 setInterestRate(Number(e.target.value))
-                            }
                         }} />
                         <span className="interest-type">Interest Type</span>
                         <div className="checkbox-group">
@@ -160,11 +159,11 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
                             <option value="deadline">Deadline</option>
                         </select>
 
-                        {loanType === "per-turn" && <input type="text" value={amountPerTurn ?? ""} placeholder="Amount Per Turn" required onChange={e => {
-                            if (validateNumber(e.target.value)) setAmountPerTurn(Number(e.target.value))
+                        {loanType === "per-turn" && <input type="number" value={amountPerTurn ?? ""} placeholder="Amount Per Turn" required onChange={e => {
+                            setAmountPerTurn(Number(e.target.value))
                         }} />}
-                        {loanType === "deadline" && <input type="text" value={deadline ?? ""} placeholder="Deadline" required onChange={e => {
-                            if (validateNumber(e.target.value)) setDeadline(Number(e.target.value))
+                        {loanType === "deadline" && <input type="number" value={deadline ?? ""} placeholder="Deadline" required onChange={e => {
+                            setDeadline(Number(e.target.value))
                         }} />}
                         <button type="submit" disabled={isFormInvalid()} className="submit-button">Send Loan</button>
                     </div>

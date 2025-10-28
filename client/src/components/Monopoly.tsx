@@ -10,6 +10,8 @@ import MonopolyContext, { MonopolyProvider } from "../../src/Contexts/MonopolyCo
 import AuctionMenu from "./Auction"
 import ConnectionContext from "../../src/Contexts/ConnectionContext"
 import LoanMenu from "./LoanMenu"
+import LoanPaymentMenu from "./LoanPaymentMenu"
+import LoanList from "./LoanList"
 
 const tradeStatuses = {
     declined: "❌",
@@ -46,9 +48,11 @@ function Monopoly({ playerDetails }: any) {
     const [currentSpace, setCurrentSpace] = useState<Space | null>(null)
     const [goingPlayer, setGoingPlayer] = useState<Player | null>(null)
     const [showLoanMenu, setShowLoanMenu] = useState(false)
+    const [showLoanPaymentMenu, setShowLoanPaymentMenu] = useState(false)
+    const [showLoanListMenu, setShowLoanListMenu] = useState(false)
     const [trades, setTrades] = useState<Trade[]>([])
     const [loans, setLoans] = useState<Loan[]>([])
-    const [loan, setLoan] = useState(null)
+    const [loan, setLoan] = useState<Loan | null>(null)
 
     const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket(ip, {
         share: true
@@ -115,7 +119,8 @@ function Monopoly({ playerDetails }: any) {
     window["me"] = player
 
     function alert(text: string) {
-        setAQ(alertQ.concat([text]))
+        //stop mutating state
+        setAQ(currentQueue => [...currentQueue, text])
     }
 
     function loanMenuClose() {
@@ -123,10 +128,22 @@ function Monopoly({ playerDetails }: any) {
         if (loan) setLoan(null)
     }
 
+    function loanPMenuClose() {
+        setShowLoanPaymentMenu(false)
+        setLoan(null)
+        setShowLoanListMenu(true)
+    }
+
+    function loanPMenuOpen(loan: Loan) {
+        setShowLoanListMenu(false)
+        setLoan(loan)
+        setShowLoanPaymentMenu(true)
+    }
+
     useEffect(() => {
         const id = setInterval(() => {
             setAQ(q => q.length > 0 && q.slice(1) || [])
-        }, 2000)
+        }, 2500)
 
         return () => clearInterval(id)
     }, [])
@@ -245,6 +262,8 @@ function Monopoly({ playerDetails }: any) {
     return <>
         <TradeMenu currentPlayer={player} players={activePlayers} tradeDialog={tradeDialog} currentTrade={currentTrade} setCurrentTrade={setCurrentTrade}></TradeMenu>
         {showLoanMenu && <LoanMenu currentPlayer={player} players={players} loanMenuClose={loanMenuClose} loan={loan}></LoanMenu>}
+        {showLoanListMenu && <LoanList player={player} loanPMenuOpen={loanPMenuOpen} setShowLoanListMenu={setShowLoanListMenu}></LoanList>}
+        {showLoanPaymentMenu && <LoanPaymentMenu loan={loan} loanPMenuClose={loanPMenuClose} ></LoanPaymentMenu>}
         <div id="alert-container">
             {alertQ.map(v => <Alert alert={v} />)}
         </div>
@@ -264,7 +283,8 @@ function Monopoly({ playerDetails }: any) {
                             }}>Buy Property</button>
                             }
                             <button className="end-turn" disabled={goingPlayer?.id !== player.id || !rolled || (auction ? true : false) || player.bankrupt || player.money < 0} onClick={endTurn}>End Turn</button>
-                            <button onClick={() =>  { setLoan(null); setShowLoanMenu(!showLoanMenu) } } disabled={player.bankrupt} id="loan-button">Loan</button>
+                            <button onClick={() => { setLoan(null); setShowLoanMenu(!showLoanMenu) }} disabled={player.bankrupt} id="loan-button">Loan</button>
+                            <button onClick={() => setShowLoanListMenu(true)}>Show Loans</button>
                             <button onClick={() => tradeDialog.current.showModal()} disabled={player.bankrupt} >
                                 Trade
                             </button>
@@ -297,7 +317,7 @@ function Monopoly({ playerDetails }: any) {
                 <ul className="trades">
                     <h3>Trades</h3>
                     {trades?.map(trade => (
-                        <li className={`trade ${(trade.recipient === player.id && trade.status === "proposed") && "toyou"}`} onClick={() => {
+                        <li className={`trade ${(trade.recipient === player.id && trade.status === "proposed") && "toyou"}`} key={trade.id} onClick={() => {
                             setCurrentTrade(trade)
                             tradeDialog?.current.showModal()
                         }}>
@@ -311,7 +331,7 @@ function Monopoly({ playerDetails }: any) {
                 <ul className="loans">
                     <h3>Loans</h3>
                     {loans?.map(loan => (
-                        <li className={`loan ${(loan.loanee === player.id && loan.status === "proposed") && "toyou"}`} onClick={() => {
+                        <li className={`loan ${(loan.loanee === player.id && loan.status === "proposed") && "toyou"}`} key={loan.id} onClick={() => {
                             setLoan(loan)
                             setShowLoanMenu(true)
                         }}>

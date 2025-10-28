@@ -79,9 +79,10 @@ class Loan:
             "loaner": "BANK" if not self.loaner else self.loaner.id,
             "loanee": self.loanee.id,
             "amountPerTurn": self.amountPerTurn,
-            "remaining-to-pay": self.totalOwed,
+            "remainingToPay": self.totalOwed,
             "deadline": self.deadline,
             "status": self.status,
+            "turnsPassed": self.turnsPassed
         }
 
 
@@ -392,6 +393,13 @@ class Player:
             loan.turnsPassed += 1
             if loan.turnsPassed > loan.deadline:
                 yield loan
+                
+    def compoundLoans(self):
+        for loan in self.loans:
+            if loan.interestType != "compound":
+                continue
+            loan.compound()
+    
 
     def toJson(self):
         return {
@@ -730,6 +738,8 @@ class Board:
         amount = d1 + d2
 
         player.lastRoll = amount
+        
+        player.compoundLoans()
         for dueLoan in player.incLoanDeadline():
             yield DUE_LOAN(dueLoan.id, player.id)
 

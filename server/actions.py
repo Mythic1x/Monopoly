@@ -29,6 +29,7 @@ def endTurn(game, action, player: Player):
         }
         return
     prevPlayer = game.curPlayer
+    
     game.advanceTurn()
     yield True, [
         {"response": "turn-ended", "value": prevPlayer.toJson()},
@@ -296,3 +297,11 @@ def declineLoan(game, action, player: Player):
     loan = next(loan for loan in game.loans if loan.id == loanId)
     loan.status = "declined"
     yield True, getUpdatedState(game)
+    
+def payLoan(game, action, player: Player):
+    loanId = action["loan"]
+    amount = action["amount"]
+    loan: Loan = next(loan for loan in game.loans if loan.id == loanId)
+    player.payLoan(loan, amount)
+    if loan.totalOwed <= 0:
+        player.loans.remove(loan)

@@ -112,6 +112,8 @@ export interface Loan {
     loaner: str | null
     status: "declined" | "accepted" | "proposed"
     id?: string
+    turnsPassed?: number
+    remainingToPay?: number
 }
 
 
