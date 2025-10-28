@@ -58,7 +58,7 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
                 <button className="delete" onClick={() => {
                     loanMenuClose()
                 }}>X</button>
-                <span className="player-name">{`${players.find(p => p.id === loan.loaner).name ?? "Null"} wants a loan from you`}</span>
+                <span className="player-name">{`${players.find(p => p.id === loan.loanee).name ?? "Null"} wants a loan from you`}</span>
                 <span className="amount">{`Amount: $${loan.amount}`}</span>
                 <div className="loan-grid-container">
                     <span className="interest">Interest</span>

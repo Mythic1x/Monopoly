@@ -39,7 +39,7 @@ export default function TradeMenu({ currentPlayer, players, tradeDialog, current
 
     if (currentTrade) {
         return (
-            <dialog ref={tradeDialog} id="trade-dialog"><TradeProposal trade={currentTrade} proposingPlayer={players.find(p => p.id === currentTrade.recipient)} acceptTrade={acceptTrade} declineTrade={declineTrade}></TradeProposal></dialog>
+            <dialog ref={tradeDialog} id="trade-dialog"><TradeProposal trade={currentTrade} tradeDialog={tradeDialog} proposingPlayer={players.find(p => p.id === currentTrade.recipient)} acceptTrade={acceptTrade} declineTrade={declineTrade}></TradeProposal></dialog>
         )
     }
 
@@ -147,11 +147,13 @@ function TradeProposal({
     proposingPlayer,
     acceptTrade,
     declineTrade,
+    tradeDialog,
 }: {
     trade: Trade
     proposingPlayer: Player
     acceptTrade: (trade: Trade) => void;
     declineTrade: (trade: Trade) => void;
+    tradeDialog: React.RefObject<HTMLDialogElement>
 }) {
 
     const { board, player } = useContext(MonopolyContext)
@@ -172,6 +174,9 @@ function TradeProposal({
             <center><h2 className="trade-proposal-title">
                 Trade Proposal from {proposingPlayer.name}
             </h2>
+                <div className="delete" onClick={() => {
+                    tradeDialog.current?.close()
+                }}>X</div>
             </center>
             <div className="give-list">
                 <h3 className="trade-selection-text">You Give</h3>
@@ -200,7 +205,10 @@ function TradeProposal({
                 <button className="accept-trade" data-enable-shadow onClick={() => acceptTrade(trade)}>
                     Accept
                 </button>
-                <button className="decline-trade" data-enable-shadow onClick={() => declineTrade(trade)}>
+                <button className="decline-trade" data-enable-shadow onClick={() => {
+                    tradeDialog.current?.close()
+                    declineTrade(trade)
+                }}>
                     Decline
                 </button>
             </div>}
