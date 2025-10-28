@@ -119,10 +119,9 @@ function Monopoly({ playerDetails }: any) {
 
     useEffect(() => {
         const id = setInterval(() => {
-            if (alertQ.length > 0) {
-                setAQ(q => q.slice(1))
-            }
-        }, 2500)
+            setAQ(q => q.length > 0 && q.slice(1) || [])
+        }, 2000)
+
         return () => clearInterval(id)
     }, [])
 
@@ -290,29 +289,29 @@ function Monopoly({ playerDetails }: any) {
             </div>
             <div className="trade-loan-grid">
                 <div className="trades-column">
-                <h3>Trades</h3>
-                {trades?.map(trade => (
-                    <div className="trade-list-item" onClick={() => {
-                        setCurrentTrade(trade)
-                        tradeDialog?.current.showModal()
-                    }}>
-                        <span className="sender">{`${playerById(trade.sender).name} -> `}</span>
-                        <span className="recipient">{playerById(trade.recipient).name}</span>
-                    </div>
-                ))}
+                    <h3>Trades</h3>
+                    {trades?.map(trade => (
+                        <div className="trade-list-item" onClick={() => {
+                            setCurrentTrade(trade)
+                            tradeDialog?.current.showModal()
+                        }}>
+                            <span className="sender">{`${playerById(trade.sender).name} -> `}</span>
+                            <span className="recipient">{playerById(trade.recipient).name}</span>
+                        </div>
+                    ))}
                 </div>
 
                 <div className="loans-column">
-                <h3>Loans</h3>
-                {loans?.map(loan => (
-                    <div className="loan-list-item" onClick={() => {
-                        setLoan(loan)
-                        setShowLoanMenu(true)
-                    }}>
-                        <span className="sender">{`${playerById(loan.loaner).name} -> `} </span>
-                        <span className="recipient">{playerById(loan.loanee).name}</span>
-                    </div>
-                ))}
+                    <h3>Loans</h3>
+                    {loans?.map(loan => (
+                        <div className="loan-list-item" onClick={() => {
+                            setLoan(loan)
+                            setShowLoanMenu(true)
+                        }}>
+                            <span className="sender">{`${playerById(loan.loaner).name} -> `} </span>
+                            <span className="recipient">{playerById(loan.loanee).name}</span>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
