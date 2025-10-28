@@ -265,11 +265,11 @@ def loan(game, action, player: Player):
         yield True, getUpdatedState(game)
         return
 
-    loanee: Player = game.players.get(action["loan"]["loanee"])
+    loanee: Player = game.players.get(action["loan"]["loaner"])
     loan = Loan(
         player.gameid,
+        loaner.id,
         player.id,
-        loanee.id,
         loan["type"],
         loan["amount"],
         loan["interest"],
