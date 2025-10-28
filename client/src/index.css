@@ -687,6 +687,7 @@
 .trade-list-item {
     display: flex;
     justify-content: center;
+    align-items: center;
     background-color: var(--secondary);
     width: 100px;
     height: 50px;
