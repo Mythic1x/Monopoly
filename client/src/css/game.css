@@ -96,12 +96,12 @@
             display: block;
 
             aspect-ratio: 1;
-            max-width: 8vmin;
-
-            font-size: 1vmin;
+            max-width: 8rem;
 
             border: 1px solid black;
             text-align: center;
+
+            background-color: attr(data-owner-color type(<color>));
 
             .pieces {
                 bottom: 0;

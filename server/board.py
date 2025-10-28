@@ -98,6 +98,7 @@ class Player:
     lastRoll: int
     bankrupt: bool
     inDebtTo: "Player | None"
+    color: str
     
     inJail: bool
     jailDoublesRemaining: int
@@ -127,6 +128,7 @@ class Player:
         self.loans = []
         self.inDebtTo = None
         self.gameid = 0
+        self.color = f"#{random.randint(0, 255):x}{random.randint(0, 255):x}{random.randint(0, 255):x}"
 
     @property
     def propertyWorth(self):
@@ -411,7 +413,8 @@ class Player:
             "ownedSpaces": [space.toJsonForPlayer() for space in self.ownedSpaces],
             "bankrupt": self.bankrupt,
             "injail": self.inJail,
-            "loans": [loan.toJson() for loan in self.loans]
+            "loans": [loan.toJson() for loan in self.loans],
+            "color": self.color
         }
 
 type spacetype_t = int

@@ -36,6 +36,7 @@ import './css/auction.css';
 import './css/loans.css';
 import './css/loan-payments.css';
 import './css/loan-list.css';
+import './css/player-cards.css';
 
 
 console.log('RENDER INCLUDED ❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥 AI COMMENCING OH YEAH BABY');
