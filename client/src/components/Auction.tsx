@@ -26,7 +26,7 @@ export default function AuctionMenu({ space, time, auction, sendJsonMessage }: {
         }
         return true
     }
-  
+
     useEffect(() => {
         const id = setInterval(() => setTimerWidth(t => t - 1), ((time) / 100))
         return () => {
@@ -35,7 +35,7 @@ export default function AuctionMenu({ space, time, auction, sendJsonMessage }: {
         }
     }, [auction])
     return (
-        <div className="auction-menu">
+        <dialog className="auction-menu m-0">
             <div className="time-bar" data-timer-width={`${timerWidth > 0 ? timerWidth : 0}%`}></div>
             <div className="auction-status">
                 <span className="bidder">{bidder?.name ?? "No bidder"}: </span>
@@ -46,11 +46,14 @@ export default function AuctionMenu({ space, time, auction, sendJsonMessage }: {
                 <span className="space-cost">Cost: ${space.cost}</span>
                 <span className="house-cost">House Cost: ${space.attrs.house_cost}</span>
             </div>
-            <input type="number" placeholder="BID" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)} />
+            <input type="number" placeholder="BID" value={bidAmount || 0} onChange={(e) => {
+                console.log(e.target)
+                setBidAmount(e.target.value)
+            }} />
             <button className="send-bid" disabled={!checkValidBid()} onClick={() => {
                 sendBid(bidAmount)
                 setBidAmount("")
-                }}>Bid</button>
-        </div>
+            }}>Bid</button>
+        </dialog>
     )
 }
