@@ -337,7 +337,7 @@ function Monopoly({ playerDetails }: any) {
                             setShowLoanMenu(true)
                         }}>
                             <span className="status">{tradeStatuses[loan.status]}</span>
-                            <span className="sender">{`${playerById(loan.loaner).name} -> `} </span>
+                            <span className="sender">{`${playerById(loan.loaner)?.name ?? "Bank"} -> `} </span>
                             <span className="recipient">{playerById(loan.loanee).name}</span>
                         </li>
                     ))}
