@@ -9,13 +9,12 @@ import time
 import traceback
 from types import ModuleType
 from typing import Any, Callable
-from board import BANKRUPT, Board, Chance, Player, spacetype_t, status_t, Loan, Trade
+from board import BANKRUPT, Board, Chance, Player, player_t, spacetype_t, status_t, Loan, Trade
 from boardbuilder import buildFromFile
 from client import Client
 
 import actions as Actions
-
-type gameid_t = float
+from gameregistry import addgame, gameid_t
 
 def import_from_path(module_name, file_path):
     spec = importlib.util.spec_from_file_location(module_name, file_path)
@@ -60,7 +59,7 @@ class Game:
 
         self.id = random.random()
 
-        registry[self.id] = self
+        addgame(self.id, self)
 
         self.board = Board(self.id, boardname, handlers, buildFromFile(self.id, boardFile), cards)
         self.players = {}
@@ -77,6 +76,9 @@ class Game:
     def curPlayer(self) -> Player:
         values = list(self.activePlayers)
         return values[self.curTurn]
+
+    def getplayer(self, id: player_t) -> Player:
+        return self.players.get(id)
 
     async def join(self, player: Player, onjoin: Callable[[], Any] | None = None):
         self.players[player.id] = player
@@ -176,8 +178,3 @@ class Game:
             await asyncio.sleep(1)
 
         await self.endAuction()
-
-registry: dict[gameid_t, Game] = {}
-
-def getgame(id: gameid_t):
-    return registry.get(id)

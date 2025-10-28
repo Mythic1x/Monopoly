@@ -43,7 +43,6 @@ function Monopoly({ playerDetails }: any) {
     const [trades, setTrades] = useState<Trade[]>([])
     const [loans, setLoans] = useState<Loan[]>([])
     const [loan, setLoan] = useState(null)
-    
 
     const { sendJsonMessage, lastJsonMessage, readyState, } = useWebSocket(ip, {
         share: true

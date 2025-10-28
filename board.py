@@ -6,6 +6,8 @@ from types import ModuleType
 from typing import Any, Callable, Self
 import random
 
+from gameregistry import gameid_t, getgame
+
 
 type player_t = str
 type space_t = int
@@ -164,13 +166,16 @@ class Loan:
     interestType: str #simple | compound
     status: str #declined | accepted | proposed
     turnsPassed: int
+    gameid: gameid_t
 
     totalOwed: int
-    loaner: "Player | None" #None means bank
+    loaner: "Player | None"
     loanee: "Player"
 
-    def __init__(self, loaner, loanee, type: str, amount: int, interest: int, interestType: str, status: str, amountPerTurn: int = 0, deadline: int = 0, ) -> None:
+    def __init__(self, gameid: gameid_t, loaner: player_t | None, loanee: player_t, type: str, amount: int, interest: int, interestType: str, status: str, amountPerTurn: int = 0, deadline: int = 0, ) -> None:
         self.id = random.random()
+        print("GAME ID", gameid)
+        self.gameid = gameid
         self.type = type
         self.amount = amount
         self.interest = interest
@@ -181,8 +186,10 @@ class Loan:
 
         self.turnsPassed = 0
 
-        self.loaner = loaner
-        self.loanee = loanee
+        game = getgame(self.gameid)
+
+        self.loaner = game.getplayer(loaner) if loaner else None
+        self.loanee = game.getplayer(loanee)
 
         self.totalOwed = amount
         if self.type == 'simple':
