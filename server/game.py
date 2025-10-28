@@ -157,6 +157,7 @@ class Game:
             if (fn := getattr(Actions, actionFnName)) and callable(fn):
                 try:
                     i = fn(self, action, player)
+                    assert i, f"{actionFnName} did not return any statuses"
                     for broadcast, value in i:
                         if isinstance(value, status_t):
                             name = value.__class__.__name__
