@@ -532,6 +532,8 @@ class Player:
 
     def incrementTurnsPassedOnLoans(self):
         for loan in self.loans:
+            if not loan.deadline:
+                continue
             loan.turnsPassed += 1
             if loan.turnsPassed > loan.deadline:
                 yield loan
