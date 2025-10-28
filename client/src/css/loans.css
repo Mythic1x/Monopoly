@@ -81,31 +81,5 @@
             flex-direction: row;
             gap: 0.2em;
         }
-
-        input[type="text"],
-        .loantype {
-            width: 100%;
-            padding: 12px;
-            background-color: #1e1e1e;
-            color: #f0f0f0;
-            border: 1px solid #555;
-            border-radius: 6px;
-            font-size: 1rem;
-            box-sizing: border-box;
-            /* Important for padding and width */
-            transition: border-color 0.2s ease;
-
-            &:focus {
-                outline: none;
-                border-color: var(--fucking-middle-blue);
-            }
-        }
-
-        input:where([type="radio"], [type="checkbox"]) {
-            cursor: pointer;
-            transform: scale(1.1);
-            margin-right: 2px;
-        }
-
     }
 }

@@ -79,10 +79,18 @@
     input {
         font: inherit;
         background-color: var(--main);
+        border-style: solid;
+        border-color: currentColor;
+        padding: 0.5em;
         border-radius: 15px;
         text-align: center;
         color: var(--text-color);
     }
+
+    input:where([type="radio"], [type="checkbox"]) {
+        cursor: pointer;
+    }
+
 
     [type="submit"] {
         background: var(--fucking-darker-blue);
