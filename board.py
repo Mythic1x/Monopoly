@@ -361,15 +361,21 @@ class Player:
         returns Player.JAIL_DOUBLES_FAIL if the double fails
         returns Player.JAIL_DOUBLES_FORCE_LEAVE if the player must leave jail
         """
+        #if the jail is owned, rolling should work differently
         if jailOwned:
+            #the person in jail only needs to roll >= 9 to make it easier to get out
+            #also there are unlimited tries
             if roll1 + roll2 >= 9:
                 return Player.JAIL_ESCAPE
             else:
                 return Player.JAIL_FAIL
 
+        #otherwise the player needs to roll doubles
         if roll1 == roll2:
             return Player.JAIL_ESCAPE
+
         self.jailDoublesRemaining -= 1
+        #if they run out of tries, they are forced to leave and pay bail
         if self.jailDoublesRemaining == 0:
             return Player.JAIL_FORCE_LEAVE
         return Player.JAIL_FAIL
