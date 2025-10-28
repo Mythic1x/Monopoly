@@ -141,14 +141,6 @@ function Monopoly({ playerDetails }: any) {
     }
 
     useEffect(() => {
-        const id = setInterval(() => {
-            setAQ(q => q.length > 0 && q.slice(1) || [])
-        }, 2500)
-
-        return () => clearInterval(id)
-    }, [])
-
-    useEffect(() => {
         if (readyState === ReadyState.OPEN) {
             sendJsonMessage({ "action": "set-details", "details": playerDetails })
         }
@@ -264,7 +256,7 @@ function Monopoly({ playerDetails }: any) {
         {showLoanMenu && <LoanMenu currentPlayer={player} players={players} loanMenuClose={loanMenuClose} loan={loan}></LoanMenu>}
         {showLoanPaymentMenu && <LoanPaymentMenu loan={loan} loanPMenuClose={loanPMenuClose} ></LoanPaymentMenu>}
         <div id="alert-container">
-            {alertQ.map(v => <Alert alert={v} />)}
+            {alertQ.map((_, i) => <Alert alert={alertQ[alertQ.length - i]} />)}
         </div>
         <div id="game">
             <div className="board-container">
