@@ -7,6 +7,7 @@ import random
 from gameregistry import gameid_t, getgame
 from monopolytypes import *
 from status import *
+from trade import Trade
 
 type statusreturn_t = status_t
 
@@ -173,8 +174,8 @@ class Player:
         if self.money < 0:
             self.inDebtTo = loan.loaner
 
-    def trade(self, board: "Board", other: Self, trade: dict[str, Any]):
-        for id in trade["give"].get("properties", []):
+    def trade(self, board: "Board", other: Self, trade: Trade):
+        for id in trade.give.get("properties", []):
             space = board.getSpaceById(id)
             if not space or space in other.ownedSpaces:
                 continue
@@ -182,11 +183,11 @@ class Player:
             self.ownedSpaces.remove(space)
             space.owner = other
 
-        if a := trade["give"].get("money"):
+        if a := trade.give.get("money"):
             other.gain(a)
             self.money -= a
 
-        for id in trade["want"].get("properties", []):
+        for id in trade.want.get("properties", []):
             space = board.getSpaceById(id)
             if not space or space in self.ownedSpaces:
                 continue
@@ -194,7 +195,7 @@ class Player:
             self.ownedSpaces.append(space)
             space.owner = self
 
-        if a := trade["want"].get("money"):
+        if a := trade.want.get("money"):
             other.money -= a
             self.gain(a)
 

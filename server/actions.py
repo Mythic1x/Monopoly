@@ -204,11 +204,7 @@ def proposeTrade(game, action, player: Player):
         yield p.client, (
             {
                 "response": "trade-proposal",
-                "value": {
-                    "trade": trade.toJson(),
-                    "recipient": trade.recipient,
-                    "sender": trade.sender,
-                },
+                "value": trade.toJson(),
             }
         )
         yield True, getUpdatedState(game)
@@ -224,7 +220,7 @@ def acceptTrade(game, action, player: Player):
     yield True, getUpdatedState(game)
 
 
-def declineTrade(game, action):
+def declineTrade(game, action, player: Player):
     trade = next(trade for trade in game.trades if trade.id == action["id"])
     trade.status = "declined"
     yield True, getUpdatedState(game)
