@@ -159,6 +159,7 @@ class Game:
                     i = fn(self, action, player)
                     if i:
                         for broadcast, value in i:
+                            print(f"MESSAGE {actionFnName=} {broadcast=} {value=}")
                             if isinstance(value, status_t):
                                 name = value.__class__.__name__
                                 value = dataclasses.asdict(value)
