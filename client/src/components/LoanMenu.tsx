@@ -114,7 +114,7 @@ function LoanMenu({ currentPlayer, players, loanMenuClose, loan }: Props) {
                             }} />
                             <label htmlFor="bank">Get Loan From Bank</label>
                         </div>
-                        <label htmlFor="amount">{bank ? `Loan Amount (max amount $${maxAmount}) based on credit score` : "Loan amount"}</label>
+                        <label htmlFor="amount">{bank ? `Loan Amount (max amount $${maxAmount} based on credit score)` : "Loan amount"}</label>
                         <input type="number" placeholder="Loan Amount" id="amount" required value={loanAmount} onChange={e => {
                             const num = Number(e.target.value)
                             if (!isNaN(num) && num <= maxAmount) {
