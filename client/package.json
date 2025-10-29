@@ -1,6 +1,6 @@
 {
   "name": "monopoly",
-  "productName": "monopoly",
+  "productName": "Monopoly",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": ".webpack/main",
@@ -50,7 +50,7 @@
     "node-loader": "^2.1.0",
     "style-loader": "^3.3.4",
     "ts-loader": "^9.5.2",
-    "typescript": "~4.5.4"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
