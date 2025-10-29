@@ -1,4 +1,3 @@
-from typing import Any
 import json
 
 import board
@@ -23,6 +22,7 @@ def buildFromFile(gameid: float, path: str) -> board.Space:
                 else:
                     firstSpace.getLast().setNext(spaces[name].copy())
 
+        assert firstSpace, "The board has no spaces"
         firstSpace.getLast().setNext(firstSpace)
 
         return firstSpace

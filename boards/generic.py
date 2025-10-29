@@ -1,5 +1,6 @@
 import random
-from board import DRAW_CHANCE, MONEY_GIVEN, NONE, PASS_GO, PAY_JAIL, PAY_OTHER, PAY_TAX, PROMPT_TO_BUY, ST_RAILROAD, ST_UTILITY, Board, Space, Player
+from board import DRAW_CHANCE, NONE, PASS_GO, PAY_JAIL, PAY_OTHER, PAY_TAX, PROMPT_TO_BUY, ST_RAILROAD, ST_UTILITY, Board, Space
+from player import Player
 
 def onroll(board: Board, space: Space, player: Player, amount: int, d1: int, d2: int):
     yield from board.move(player, amount)

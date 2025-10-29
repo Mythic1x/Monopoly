@@ -1,460 +1,16 @@
 from collections.abc import Generator
-import math
 import re
 from types import ModuleType
-from typing import Any, Callable, Self
+from typing import Any, Callable, Self, TYPE_CHECKING
 import random
 
-from gameregistry import gameid_t, getgame
 from monopolytypes import *
 from status import *
-from trade import Trade
+
+if TYPE_CHECKING:
+    from player import Player
 
 type statusreturn_t = status_t
-
-
-class Loan:
-    id: float
-    type: str  # deadline | per-turn
-    amountPerTurn: int
-    deadline: int
-    amount: int
-    interest: int
-    interestType: str  # simple | compound
-    status: str  # declined | accepted | proposed
-    turnsPassed: int
-    gameid: gameid_t
-
-    totalOwed: int
-    loaner: "Player | None"
-    loanee: "Player"
-
-    def __init__(
-        self,
-        gameid: gameid_t,
-        loaner: player_t | None,
-        loanee: player_t,
-        type: str,
-        amount: int,
-        interest: int,
-        interestType: str,
-        status: str,
-        amountPerTurn: int = 0,
-        deadline: int = 0,
-    ) -> None:
-        self.id = random.random()
-        self.gameid = gameid
-        self.type = type
-        self.amount = amount
-        self.interest = interest
-        self.interestType = interestType
-        self.status = status
-
-        self.amountPerTurn = amountPerTurn
-        self.deadline = deadline
-
-        self.turnsPassed = 0
-
-        game = getgame(self.gameid)
-
-        assert game, f"game (id = {self.gameid}) is undefined"
-
-        self.loaner = game.getplayer(loaner) if loaner else None
-        self.loanee = game.getplayer(loanee)
-
-        self.totalOwed = amount
-        if self.type == "simple":
-            self.totalOwed = round(self.totalOwed * (1 + (interest / 100)))
-
-    def compound(self):
-        if self.interestType == "simple":
-            return
-        self.totalOwed = round(self.totalOwed * (1 + (self.interest / 100)))
-
-    def payTurnAmount(self):
-        self.totalOwed -= self.amountPerTurn
-        if self.loaner:
-            self.loaner.money += self.amountPerTurn
-        self.loanee.money -= self.amountPerTurn
-        return self.amountPerTurn
-
-    def payAmount(self, amount: int):
-        if self.loaner:
-            self.loaner.money += amount
-        self.loanee.money -= amount
-        self.totalOwed -= amount
-
-    def toJson(self):
-        return {
-            "id": self.id,
-            "interest": self.interest,
-            "interestType": self.interestType,
-            "amount": self.amount,
-            "loaner": "BANK" if not self.loaner else self.loaner.id,
-            "loanee": self.loanee.id,
-            "amountPerTurn": self.amountPerTurn,
-            "remainingToPay": self.totalOwed,
-            "deadline": self.deadline,
-            "status": self.status,
-            "turnsPassed": self.turnsPassed,
-        }
-
-
-class Player:
-    money: int
-    id: str
-    playerNumber: int
-    ownedSpaces: list["Space"]
-    # a list of sets by color
-    sets: list[str]
-    name: str
-    space: "Space"
-    piece: str
-    lastRoll: int
-    bankrupt: bool
-    inDebtTo: "Player | None"
-    creditScore: int
-    color: str
-
-    inJail: bool
-    jailDoublesRemaining: int
-
-    loans: list[Loan]
-
-    gameid: float
-
-    JAIL_FAIL = 0
-    JAIL_ESCAPE = 1
-    JAIL_FORCE_LEAVE = -1
-
-    def __init__(self, id: str, playerNumber: int, client, money: int = 1500):
-        self.money = money
-        self.id = id
-        self.playerNumber = playerNumber
-        self.ownedSpaces = []
-        self.name = "Timmy 3 (You were the third Timmy!)"
-        # this is PIECE
-        self.piece = "PIECE"
-        self.client = client
-        self.bankrupt = False
-        self.sets = []
-        self.lastRoll = 0
-        self.inJail = False
-        self.jailDoublesRemaining = 3
-        self.loans = []
-        self.inDebtTo = None
-        self.gameid = 0
-        self.color = f"#{random.randint(180, 255):x}{random.randint(180, 255):x}{random.randint(180, 255):x}"
-        self.creditScore = 300
-
-    @property
-    def propertyWorth(self):
-        propertyWorth = 0
-        for space in self.ownedSpaces:
-            if not space.mortgaged:
-                propertyWorth += space.cost // 2
-
-                if space.houses != 0:
-                    propertyWorth += int(space.house_cost * space.houses / 2)
-
-                if space.hotel:
-                    propertyWorth += int(space.hotel_cost / 2)
-
-        return propertyWorth
-
-    def takeOwnership(self, space: "Space", cost: int = 0):
-        assert (
-            cost >= self.money
-        ), f"Cannot buy {space.name} because Player@{self.name} only has ${self.money}"
-        self.money -= cost
-        self.ownedSpaces.append(space)
-        space.owner = self
-
-    def loanPlayer(self, other: Self, loan: Loan):
-        assert (
-            self.money >= loan.amount
-        ), f"Cannot loan {loan.amount} because Player@{self.name} only has ${self.money}"
-        other.loans.append(loan)
-        self.money -= loan.amount
-        other.money += loan.amount
-
-    def payTurnLoans(self):
-        for loan in self.loans:
-            if loan.type == "per-turn":
-                loan.payTurnAmount()
-                # FIXME: lets say the player has 3 loans, if the player goes bankrupt
-                # while paying the first one, the other 2 will not get paid this turn.
-                if self.money < 0:
-                    self.inDebtTo = loan.loaner
-                    self.creditScore -= 100
-                    break
-                if loan.totalOwed <= 0:
-                    self.loans.remove(loan)
-                    self.increaseCreditScore(loan.amount)
-
-    def payLoan(self, loan: Loan, amount: int):
-        loan.payAmount(amount)
-        if self.money < 0:
-            self.inDebtTo = loan.loaner
-
-    def increaseCreditScore(self, amount: int):
-        if self.creditScore >= 800:
-            return
-        amountToIncrease = amount / 4
-        if self.creditScore + amountToIncrease > 800:
-            self.creditScore = 800
-        else:
-            self.creditScore += math.floor(amountToIncrease)
-
-    def trade(self, board: "Board", other: Self, trade: Trade):
-        for id in trade.give.get("properties", []):
-            space = board.getSpaceById(id)
-            if not space or space in other.ownedSpaces:
-                continue
-            other.ownedSpaces.append(space)
-            self.ownedSpaces.remove(space)
-            space.owner = other
-
-        if a := trade.give.get("money"):
-            other.gain(a)
-            self.money -= a
-
-        for id in trade.want.get("properties", []):
-            space = board.getSpaceById(id)
-            if not space or space in self.ownedSpaces:
-                continue
-            other.ownedSpaces.remove(space)
-            self.ownedSpaces.append(space)
-            space.owner = self
-
-        if a := trade.want.get("money"):
-            other.money -= a
-            self.gain(a)
-
-    def gotoJail(self, jail: "Space"):
-        self.jailDoublesRemaining = 3
-        self.inJail = True
-        self.space = jail
-
-    def leaveJail(self):
-        self.inJail = False
-
-    def payBail(self, jail: "Space"):
-        if jail.owner:
-            self.pay(jail.attrs["bailcost"], jail.owner)
-        else:
-            self.money -= jail.attrs["bailcost"]
-        self.leaveJail()
-
-    def tryLeaveJailWithDice(self, jailOwned: bool, roll1: int, roll2: int):
-        """
-        returns Player.JAIL_DOUBLES_SUCCESS if the double succeeds
-        returns Player.JAIL_DOUBLES_FAIL if the double fails
-        returns Player.JAIL_DOUBLES_FORCE_LEAVE if the player must leave jail
-        """
-        # if the jail is owned, rolling should work differently
-        if jailOwned:
-            # the person in jail only needs to roll >= 9 to make it easier to get out
-            # also there are unlimited tries
-            if roll1 + roll2 >= 9:
-                return Player.JAIL_ESCAPE
-            else:
-                return Player.JAIL_FAIL
-
-        # otherwise the player needs to roll doubles
-        if roll1 == roll2:
-            return Player.JAIL_ESCAPE
-
-        self.jailDoublesRemaining -= 1
-        # if they run out of tries, they are forced to leave and pay bail
-        if self.jailDoublesRemaining == 0:
-            return Player.JAIL_FORCE_LEAVE
-        return Player.JAIL_FAIL
-
-    def owns(self, space: "Space"):
-        return False if not space.owner else space.owner.id == self.id
-
-    def gain(self, amount):
-
-        if self.inDebtTo != None:
-            if self.money + amount > 0:
-                self.inDebtTo.money += amount - abs(self.money)
-            else:
-                self.inDebtTo.money += amount
-            if self.money >= 0:
-                self.inDebtTo = None
-
-        self.money += amount
-
-    def pay(self, amount: int, other: "Player"):
-        self.money -= amount
-        other.money += amount
-
-    def payRent(self, other: Self, space: "Space") -> statusreturn_t:
-        amount = space.calculatePropertyRent(self.hasSet(space.color, space.set_size))
-        self.pay(amount, other)
-        if self.money < 0:
-            self.inDebtTo = space.owner
-        return PAY_OTHER(amount, self.id, other.id)
-
-    def goBankrupt(self):
-        self.bankrupt = True
-        if self.inDebtTo != None:
-            self.inDebtTo.money += self.propertyWorth
-
-        for property in self.ownedSpaces:
-            property.owner = None
-
-    def getUtilities(self):
-        return [space for space in self.ownedSpaces if space.spaceType == ST_UTILITY]
-
-    def hasSet(self, color: str, necessaryForSet: int):
-        if color in self.sets:
-            return True
-
-        count = 0
-        for space in self.ownedSpaces:
-            if space.color == color:
-                count += 1
-                if count == necessaryForSet:
-                    return True
-        return False
-
-    def buy(self, space: "Space"):
-        if space.cost > self.money or not space.purchaseable or space.owner:
-            return BUY_FAIL(space.id)
-
-        self.money -= space.cost
-        space.owner = self
-        self.ownedSpaces.append(space)
-
-        if (
-            space.color not in self.sets
-            and space.set_size
-            and self.hasSet(space.color, space.set_size)
-        ):
-            self.sets.append(space.color)
-            return BUY_NEW_SET(space.id)
-        return BUY_SUCCESS(space.id)
-
-    def mortgage(self, space: "Space"):
-        if self is not space.owner or space.owner is None:
-            return FAIL(self.id)
-        self.gain(space.cost * 0.50)
-        space.mortgaged = True
-        return MORTGAGE_SUCCESS(self.id, space.id)
-
-    def unmortgage(self, space: "Space"):
-        if self is not space.owner or space.owner is None:
-            return FAIL(self.id)
-        self.money -= int(space.cost * 0.10)
-        space.mortgaged = False
-        return UNMORTGAGE_SUCCESS(self.id, space.id)
-
-    def buyHouse(self, space: "Space"):
-        if not self.canBuyHouse(space):
-            return BUY_HOUSE_FAIL(space.id)
-
-        self.money -= space.house_cost
-        space.houses += 1
-        return BUY_HOUSE_SUCCESS(space.id)
-
-    def buyHotel(self, space: "Space"):
-        if not self.canBuyHotel(space):
-            return BUY_HOTEL_FAIL(space.id)
-
-        self.money -= space.house_cost
-        space.hotel = True
-        return BUY_HOTEL_SUCCESS(space.id)
-
-    def canBuyHouse(self, space: "Space"):
-        if space.color not in self.sets:
-            return False
-
-        if self.money < space.house_cost:
-            return False
-
-        if space.houses == 4:
-            return False
-
-        set_spaces = [s for s in self.ownedSpaces if s.color == space.color]
-        for player_space in set_spaces:
-            if space.houses > player_space.houses:
-                return False
-
-        return True
-
-    def sellHouse(self, space: "Space"):
-        canSellHouse = True
-        set_spaces = [s for s in self.ownedSpaces if s.color == space.color]
-        for player_space in set_spaces:
-            if space.houses < player_space.houses or (
-                space.hotel and not player_space.hotel
-            ):
-                canSellHouse = False
-
-        if not canSellHouse:
-            return False
-
-        if space.hotel:
-            space.hotel = False
-            self.gain(space.hotel_cost / 2)
-        else:
-            space.houses -= 1
-            self.gain(space.house_cost / 2)
-
-    def canBuyHotel(self, space: "Space"):
-        if self.money < space.house_cost:
-            return False
-
-        if space.houses < 4:
-            return False
-
-        set_spaces = [s for s in self.ownedSpaces if s.color == space.color]
-        for player_space in set_spaces:
-            if player_space.houses < 4:
-                return False
-
-        return True
-
-    def getOwnedRailroads(self):
-        number = 0
-        for space in self.ownedSpaces:
-            if space.spaceType == ST_RAILROAD:
-                number += 1
-        return number
-
-    def incLoanDeadline(self):
-        for loan in self.loans:
-            if not loan.deadline:
-                continue
-            loan.turnsPassed += 1
-            if loan.turnsPassed > loan.deadline:
-                yield loan
-
-    def compoundLoans(self):
-        for loan in self.loans:
-            if loan.interestType != "compound":
-                continue
-            loan.compound()
-
-    def toJson(self):
-        return {
-            "money": self.money,
-            "id": self.id,
-            "playerNumber": self.playerNumber,
-            "piece": self.piece,
-            "space": self.space.id,
-            "sets": self.sets,
-            "name": self.name,
-            "ownedSpaces": [space.toJsonForPlayer() for space in self.ownedSpaces],
-            "bankrupt": self.bankrupt,
-            "injail": self.inJail,
-            "loans": [loan.toJson() for loan in self.loans],
-            "color": self.color,
-            "creditScore": self.creditScore,
-        }
-
 
 type spacetype_t = int
 
@@ -509,21 +65,21 @@ class SpaceAttr:
 
 class Space:
     spaceType: spacetype_t
-    next: "Space"
-    prev: "Space"
-    players: list[Player]
+    next: "Space | None"
+    prev: "Space | None"
+    players: list["Player"]
     cost: int
     name: str
-    owner: Player | None
+    owner: "Player | None"
     attrs: dict[str, Any]
     id: int
-    house_cost = SpaceAttr(int)
-    hotel_cost = SpaceAttr(int)
+    house_cost: SpaceAttr = SpaceAttr(int)
+    hotel_cost: SpaceAttr = SpaceAttr(int)
     purchaseable: bool
     houses: int
     hotel: bool
-    color = SpaceAttr(str)
-    set_size = SpaceAttr(int)
+    color: SpaceAttr = SpaceAttr(str)
+    set_size: SpaceAttr = SpaceAttr(int)
     mortgaged: bool
 
     gameId: float
@@ -576,7 +132,7 @@ class Space:
                     return self.attrs[f"house{n}"]
         return self.attrs["hotel"]
 
-    def print(self, stopat=None):
+    def print(self, stopat: "Space | None"=None):
         if self.next is stopat or not self.next:
             return
         self.next.print(self)
@@ -600,7 +156,7 @@ class Space:
             return True
         return False
 
-    def copy(self, withId=False):
+    def copy(self, withId: space_t | bool=False):
         space = Space(
             self.gameId,
             self.spaceType,
@@ -617,20 +173,29 @@ class Space:
         self.next = space
         space.prev = self
 
-    def put(self, player: Player):
+    def trynext(self):
+        assert self.next, "The board is not circular"
+        return self.next
+
+    def tryprev(self):
+        assert self.prev, "The board is not circular"
+        return self.prev
+
+
+    def put(self, player: "Player"):
         self.players.append(player)
         player.space = self
 
-    def onland(self, player: Player) -> Generator[statusreturn_t]:
+    def onland(self, player: "Player") -> Generator[statusreturn_t]:
         self.players.append(player)
         player.space = self
         yield NONE()
 
-    def onleave(self, player: Player):
+    def onleave(self, player: "Player"):
         self.players.remove(player)
         yield NONE()
 
-    def onpass(self, player: Player) -> Generator[statusreturn_t]:
+    def onpass(self, player: "Player") -> Generator[statusreturn_t]:
         yield NONE()
 
     def iterSpaces(self):
@@ -646,7 +211,7 @@ class Space:
         dict["attrs"] = self.attrs
         for key in self.__dict__:
             if not callable(self.__dict__[key]) and not key.startswith("_"):
-                if type(self.__dict__[key]) is Player:
+                if self.__dict__[key].__class__.__name__ == "Player":
                     dict[key] = self.__dict__[key].id
                     continue
                 if type(self.__dict__[key]) is Space:
@@ -662,7 +227,7 @@ class Space:
         dict["attrs"] = self.attrs
         for key in self.__dict__:
             if not callable(self.__dict__[key]) and not key.startswith("_"):
-                if type(self.__dict__[key]) is Player:
+                if self.__dict__[key].__class__.__name__ == "Player":
                     dict[key] = self.__dict__[key].id
                     continue
                 if type(self.__dict__[key]) is Space:
@@ -679,7 +244,7 @@ class Board:
 
     startSpace: Space
     playerSpaces: dict[player_t, Space]
-    players: dict[player_t, Player]
+    players: dict[player_t, "Player"]
     spaces: dict[int, Space]
 
     eventHandlers: dict[str, ModuleType]
@@ -711,12 +276,12 @@ class Board:
 
         self.chanceCards = chanceCards
 
-    def drawChance(self, player: Player):
+    def drawChance(self, player: "Player"):
         if self.chanceCards:
             return random.choice(self.chanceCards)
         return Chance("None", "gain", 0)
 
-    def executeChanceCard(self, player: Player, card: Chance):
+    def executeChanceCard(self, player: "Player", card: Chance):
         match card.type:
             case "move":
                 amount = int(card.data)
@@ -756,7 +321,10 @@ class Board:
                 yield from self.moveTo(player, space)
             case "teleport-next-type":
                 ty = str2spacetype(card.data)
-                for space in player.space.next.iterSpaces():
+
+                assert player.space, "Player is not on a space?"
+
+                for space in player.space.trynext().iterSpaces():
                     if space.spaceType == ty:
                         yield from self.moveTo(player, space)
                         break
@@ -766,7 +334,7 @@ class Board:
             if space.name.lower() == name.lower():
                 return True
 
-    def addPlayer(self, player: Player):
+    def addPlayer(self, player: "Player"):
         self.startSpace.put(player)
         self.players[player.id] = player
         self.playerSpaces[player.id] = self.startSpace
@@ -793,13 +361,13 @@ class Board:
                 return space
         return None
 
-    def moveTo(self, player: Player, space: Space):
+    def moveTo(self, player: "Player", space: Space):
         yield from self.runevent("onleave", self.playerSpaces[player.id], player)
         self.playerSpaces[player.id] = space
         yield from self.runevent("onland", space, player)
 
     # rolls the dice for a player
-    def rollPlayer(self, player: Player, dSides: int) -> Generator[statusreturn_t]:
+    def rollPlayer(self, player: "Player", dSides: int) -> Generator[statusreturn_t]:
         d1 = random.randint(1, dSides)
         d2 = random.randint(1, dSides)
         amount = d1 + d2
@@ -812,6 +380,7 @@ class Board:
             player.creditScore -= 100
             yield DUE_LOAN(dueLoan.id, player.id)
 
+        assert player.space, "Player is not on a space"
         yield from self.runevent("onroll", player.space, player, amount, d1, d2)
 
     # call order  using an example event: onland
@@ -820,7 +389,7 @@ class Board:
     # <generic>.onland_<spae-name>()
     # <board-name>.onland()
     # <generic>.onland()
-    def runevent(self, name: str, space: Space, player: Player, *args: Any):
+    def runevent(self, name: str, space: Space, player: "Player", *args: Any):
         if hasattr(space, name):
             yield from getattr(space, name)(player, *args)
 
@@ -837,15 +406,15 @@ class Board:
                 return
 
     # moves the player DOES NOT ROLL DICE
-    def move(self, player: Player, amount: int) -> Generator[statusreturn_t]:
+    def move(self, player: "Player", amount: int) -> Generator[statusreturn_t]:
         curSpace = self.playerSpaces[player.id]
 
         yield from self.runevent("onleave", curSpace, player)
         for i in range(amount):
             if amount > 0:
-                curSpace = curSpace.next
+                curSpace = curSpace.trynext()
             else:
-                curSpace = curSpace.prev
+                curSpace = curSpace.tryprev()
             yield from self.runevent("onpass", curSpace, player)
 
         self.playerSpaces[player.id] = curSpace

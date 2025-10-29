@@ -7,3 +7,4 @@ reportUnknownParameterType=false
 reportUnusedCallResult=false
 reportUnknownMemberType=false
 reportImplicitRelativeImport=false
+reportImportCycles = false

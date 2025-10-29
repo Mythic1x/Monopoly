@@ -1,13 +1,15 @@
+from typing import TYPE_CHECKING
 import asyncio
-import json
-import random
-from board import Player, Loan
 from status import BANKRUPT
 from trade import Trade
 
+from loan import Loan
 
+if TYPE_CHECKING:
+    from game import Game
+    from player import Player
 
-def getUpdatedState(game):
+def getUpdatedState(game: "Game"):
     return [
         {"response": "next-turn", "value": game.curPlayer.toJson()},
         {"response": "board", "value": game.board.toJson()},
@@ -20,7 +22,7 @@ def getUpdatedState(game):
     ]
 
 
-def endTurn(game, action, player: Player):
+def endTurn(game: "Game", action, player: "Player"):
     if game.activeAuction:
         return
     if game.curPlayer.bankrupt:
@@ -38,20 +40,21 @@ def endTurn(game, action, player: Player):
     ]
 
 
-def sendPlayerInfo(game, action, player: Player):
+def sendPlayerInfo(game: "Game", action, player: "Player"):
     yield False, {"response": "player-info", "value": player.toJson()}
 
 
-def payBail(game, action, player: Player):
+def payBail(game: "Game", action, player: "Player"):
     if not player.inJail:
         return
 
+    assert player.space, f"{player} is not on a space"
     player.payBail(player.space)
     yield True, {"response": "notification", "value": f"{player.name} paid bail"}
     yield True, getUpdatedState(game)
 
 
-def setBail(game, action, player: Player):
+def setBail(game: "Game", action, player: "Player"):
     spaceid = action["spaceid"]
     amount = action["amount"]
     space = game.board.getSpaceById(spaceid)
@@ -67,7 +70,8 @@ def setBail(game, action, player: Player):
         yield True, getUpdatedState(game)
 
 
-def connect(game, action, player: Player):
+def connect(game: "Game", action, player: "Player"):
+    assert player.space, f"{player} is not on a space"
     yield False, {"response": "assignment", "value": player.id}
     yield True, [
         {"response": "board", "value": game.board.toJson()},
@@ -82,7 +86,7 @@ def connect(game, action, player: Player):
         yield True, ({"response": "auction-status", "value": game.activeAuction})
 
 
-def teleport(game, action, player: Player):
+def teleport(game, action, player: "Player"):
     spaceId = action["spaceid"]
     playerId = action["playerid"]
 
@@ -96,7 +100,7 @@ def teleport(game, action, player: Player):
         yield True, getUpdatedState(game)
 
 
-def roll(game, action, player: Player):
+def roll(game: "Game", action, player: "Player"):
     if game.activeAuction:
         return
     for status in game.board.rollPlayer(player, game.dSides):
@@ -105,17 +109,18 @@ def roll(game, action, player: Player):
     yield True, getUpdatedState(game)
 
 
-def setDetails(game, action, player: Player):
+def setDetails(game: "Game", action, player: "Player"):
     details = action["details"]
     player.name = details["name"]
     player.piece = details["piece"]
 
 
-def requestSpace(game, action, player: Player):
+def requestSpace(game: "Game", action, player: "Player"):
+    assert player.space, f"{player} is not on a space"
     yield False, {"response": "current-space", "value": player.space.toJson()}
 
 
-def bankrupt(game, action, player: Player):
+def bankrupt(game: "Game", action, player: "Player"):
     yield True, BANKRUPT(player.id)
     player.goBankrupt()
 
@@ -131,11 +136,11 @@ def bankrupt(game, action, player: Player):
     yield True, getUpdatedState(game)
 
 
-def setMoney(game, action, player: Player):
+def setMoney(game: "Game", action, player: "Player"):
     player.money = int(action["money"])
 
 
-def buy(game, action, player: Player):
+def buy(game: "Game", action, player: "Player"):
     if game.curPlayer.id != player.id:
         yield False, { "response": "notification", "value": "Cannot buy when it's not your turn" }
         return
@@ -146,7 +151,7 @@ def buy(game, action, player: Player):
     yield True, getUpdatedState(game)
 
 
-def startAuction(game, action, player: Player):
+def startAuction(game: "Game", action, player: "Player"):
     space = game.board.spaces[action["spaceid"]]
 
     game.createAuction(space.id, end_time=10000)
@@ -155,7 +160,7 @@ def startAuction(game, action, player: Player):
     asyncio.create_task(game.auctionTimer())
 
 
-def bid(game, action, player: Player):
+def bid(game: "Game", action, player: "Player"):
     bid = int(action["bid"])
     if (
         not game.activeAuction
@@ -171,21 +176,21 @@ def bid(game, action, player: Player):
         yield True, {"response": "auction-status", "value": game.activeAuction}
 
 
-def buyHouse(game, action, player: Player):
+def buyHouse(game: "Game", action, player: "Player"):
     property = game.board.spaces[action["spaceid"]]
     result = player.buyHouse(property)
     yield True, result
     yield True, getUpdatedState(game)
 
 
-def buyHotel(game, action, player: Player):
+def buyHotel(game: "Game", action, player: "Player"):
     property = game.board.spaces[action["spaceid"]]
     result = player.buyHotel(property)
     yield True, result
     yield True, getUpdatedState(game)
 
 
-def sellHouse(game, action, player: Player):
+def sellHouse(game: "Game", action, player: "Player"):
     property = game.board.spaces[action["spaceid"]]
     result = player.sellHouse(property)
     yield True, result
@@ -194,7 +199,7 @@ def sellHouse(game, action, player: Player):
 
 # trade obj should look like
 # {"want": {"properties": ["id 1", "id2", "id3"], "money": 432483}, "give": {"money": 3432}}
-def proposeTrade(game, action, player: Player):
+def proposeTrade(game: "Game", action, player: "Player"):
     trade = Trade(action["trade"], player.id, action["playerid"], "proposed")
     p = game.players.get(trade.recipient)
     game.trades.append(trade)
@@ -210,7 +215,7 @@ def proposeTrade(game, action, player: Player):
         yield True, getUpdatedState(game)
 
 
-def acceptTrade(game, action, player: Player):
+def acceptTrade(game: "Game", action, player: "Player"):
     trade = next(trade for trade in game.trades if trade.id == action["id"])
     trade.status = "accepted"
     otherPlayer = game.players.get(trade.sender)
@@ -220,26 +225,28 @@ def acceptTrade(game, action, player: Player):
     yield True, getUpdatedState(game)
 
 
-def declineTrade(game, action, player: Player):
+def declineTrade(game: "Game", action, player: "Player"):
     trade = next(trade for trade in game.trades if trade.id == action["id"])
     trade.status = "declined"
     yield True, getUpdatedState(game)
    
 
 
-def mortgage(game, action, player: Player):
+def mortgage(game: "Game", action, player: "Player"):
     space = game.board.getSpaceById(action["spaceid"])
+    assert space, f"Space@:{action["spaceid"]} does not exist"
     yield True, player.mortgage(space)
     yield True, getUpdatedState(game)
 
 
-def unmortgage(game, action, player: Player):
+def unmortgage(game: "Game", action, player: "Player"):
     space = game.board.getSpaceById(action["spaceid"])
+    assert space, f"Space@:{action["spaceid"]} does not exist"
     yield True, player.unmortgage(space)
     yield True, getUpdatedState(game)
 
 
-def loan(game, action, player: Player):
+def loan(game: "Game", action, player: "Player"):
     loaner = action["loan"]["loaner"]
     loan = action["loan"]
     if loaner is None: #bank loan
@@ -251,6 +258,9 @@ def loan(game, action, player: Player):
                 deadline = 5
             else:
                 deadline = 3
+        else:
+            yield False, {"response": "notification", "value": "Failed to get bank loan with per-turn payback"}
+            return
         loan = Loan(
             player.gameid,
             "Bank",
@@ -270,7 +280,8 @@ def loan(game, action, player: Player):
         yield True, getUpdatedState(game)
         return
 
-    loanee: Player = game.players.get(action["loan"]["loaner"])
+    loanee = game.players.get(action["loan"]["loaner"])
+    assert loanee, f"Player@:{action["loan"]["loaner"]} does not exist"
     loan = Loan(
         player.gameid,
         loaner,
@@ -290,24 +301,25 @@ def loan(game, action, player: Player):
     yield True, getUpdatedState(game)
 
 
-def acceptLoan(game, action, player: Player):
+def acceptLoan(game: "Game", action, player: "Player"):
     loanId = action["loan"]
     loan: Loan = next(loan for loan in game.loans if loan.id == loanId)
     loan.status = "accepted"
     if loan.loaner:
-        loaner: Player = game.players.get(loan.loaner.id)
+        loaner = game.players.get(loan.loaner.id)
+        assert loaner, f"Player@:{action["loan"]["loaner"]} does not exist"
         loaner.loanPlayer(loan.loanee, loan)
     yield True, {"response": "accepted-loan", "value": loan.toJson()}
     yield True, getUpdatedState(game)
 
 
-def declineLoan(game, action, player: Player):
+def declineLoan(game: "Game", action, player: "Player"):
     loanId = action["loan"]
     loan = next(loan for loan in game.loans if loan.id == loanId)
     loan.status = "declined"
     yield True, getUpdatedState(game)
     
-def payLoan(game, action, player: Player):
+def payLoan(game: "Game", action, player: "Player"):
     loanId = action["loan"]
     amount = action["amount"]
     loan: Loan = next(loan for loan in game.loans if loan.id == loanId)

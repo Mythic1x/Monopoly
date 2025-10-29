@@ -9,7 +9,9 @@ import time
 import traceback
 from types import ModuleType
 from typing import Any, Callable
-from board import BANKRUPT, Board, Chance, Player, player_t, spacetype_t, status_t, Loan
+from board import Board, Chance, player_t, spacetype_t, status_t
+from loan import Loan
+from player import Player
 from trade import Trade
 from boardbuilder import buildFromFile
 from client import Client
@@ -17,18 +19,19 @@ from client import Client
 import actions as Actions
 from gameregistry import addgame, gameid_t
 
-def import_from_path(module_name, file_path):
+def import_from_path(module_name: str, file_path: str):
     spec = importlib.util.spec_from_file_location(module_name, file_path)
     if not spec:
         raise ImportError()
     module = importlib.util.module_from_spec(spec)
     sys.modules[module_name] = module
+    assert spec.loader, "spec.loader does not exist, cannot load board and associated data (like chance cards)"
     spec.loader.exec_module(module)
     return module
 
 
 class Game:
-    boards_path = "./boards"
+    boards_path: str = "./boards"
 
     board: Board
     #id: Player
@@ -81,7 +84,9 @@ class Game:
         return values[self.curTurn]
 
     def getplayer(self, id: player_t) -> Player:
-        return self.players.get(id)
+        p = self.players.get(id)
+        assert p, f"Player@:{id} does not exist"
+        return p
 
     async def join(self, player: Player, onjoin: Callable[[], Any] | None = None):
         self.players[player.id] = player
@@ -98,6 +103,7 @@ class Game:
         self.clients.remove(client)
 
     async def rejoin(self, player: Player):
+        assert player.space, f"{player} is not on a space"
         self.clients.append(player.client)
         await player.client.write({"response": "assignment", "value": player.id})
         await self.broadcast({"response": "board", "value": self.board.toJson()})
@@ -117,7 +123,7 @@ class Game:
         self.playerTurn = (self.playerTurn % len(self.activePlayers)) + 1
         self.curTurn = self.playerTurn - 1
 
-    def createAuction(self, forSpace: spacetype_t, end_time=10000, starting_bid=0):
+    def createAuction(self, forSpace: spacetype_t, end_time: int=10000, starting_bid: int=0):
         self.activeAuction = {
             "current_bid": starting_bid,
             "bidder": None,
@@ -136,6 +142,7 @@ class Game:
         if not self.activeAuction: return
         if self.activeAuction["bidder"]:
             space = self.board.getSpaceById(self.activeAuction["space"])
+            assert space, f"Space@:{self.activeAuction["space"]} does not exist"
             self.players[self.activeAuction["bidder"]].takeOwnership(space, self.activeAuction["current_bid"])
             await self.broadcast([{"response": "auction-end"}, {"response": "board", "value": self.board.toJson()}])
         else:

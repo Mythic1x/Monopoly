@@ -1,4 +1,3 @@
-
 import asyncio
 import json
 import sys
@@ -7,7 +6,7 @@ from typing import Any, Callable
 from websockets.asyncio.server import ServerConnection, serve
 
 
-from board import Player
+from player import Player
 from client import WSClient, TermClient
 from game import Game
 ipConnections: dict[Any, Player] = {}
