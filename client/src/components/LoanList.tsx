@@ -20,7 +20,7 @@ function LoanList({ player, loanPMenuOpen, setShowLoanListMenu }: Props) {
                 <button className="loan-card" onClick={() => {
                     loanPMenuOpen(loan)
                 }}>
-                    <span className="loaner">{`From: ${players.find(p => p.id === loan.loaner)?.name}`}</span>
+                    <span className="loaner">{`From: ${players.find(p => p.id === loan.loaner)?.name ?? "Bank"}`}</span>
                     <span className="amount">${loan.amount}</span>
                 </button>
             ))}

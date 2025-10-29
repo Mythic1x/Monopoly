@@ -243,9 +243,17 @@ def loan(game, action, player: Player):
     loaner = action["loan"]["loaner"]
     loan = action["loan"]
     if loaner is None: #bank loan
+        max_amount = player.creditScore * 2.5
+        if loan["amount"] > max_amount:
+            yield False, {"response": "notification", "value": "Your credit score is not high enough for this loan"}
+        if loan["type"] == "deadline":
+            if player.creditScore >= 800 and player.creditScore <= 500:
+                deadline = 5
+            else:
+                deadline = 3
         loan = Loan(
             player.gameid,
-            None,
+            "Bank",
             player.id,
             loan["type"],
             loan["amount"],
@@ -253,7 +261,7 @@ def loan(game, action, player: Player):
             loan["interestType"],
             "accepted",
             loan["amountPerTurn"],
-            loan["deadline"],
+            deadline,
         )
         game.loans.append(loan)
         player.loans.append(loan)
@@ -306,3 +314,4 @@ def payLoan(game, action, player: Player):
     player.payLoan(loan, amount)
     if loan.totalOwed <= 0:
         player.loans.remove(loan)
+        player.creditScore += 100

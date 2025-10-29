@@ -99,6 +99,7 @@ class Player:
     lastRoll: int
     bankrupt: bool
     inDebtTo: "Player | None"
+    creditScore: int
     color: str
 
     inJail: bool
@@ -130,6 +131,7 @@ class Player:
         self.inDebtTo = None
         self.gameid = 0
         self.color = f"#{random.randint(180, 255):x}{random.randint(180, 255):x}{random.randint(180, 255):x}"
+        self.creditScore = 300
 
     @property
     def propertyWorth(self):
@@ -167,8 +169,11 @@ class Player:
                 #while paying the first one, the other 2 will not get paid this turn.
                 if self.money < 0:
                     self.inDebtTo = loan.loaner
+                    self.creditScore -= 100
                     break
-
+                if loan.totalOwed <= 0:
+                    self.loans.remove(loan)
+                    self.creditScore += 100
     def payLoan(self, loan: Loan, amount: int):
         loan.payAmount(amount)
         if self.money < 0:
@@ -418,7 +423,8 @@ class Player:
             "bankrupt": self.bankrupt,
             "injail": self.inJail,
             "loans": [loan.toJson() for loan in self.loans],
-            "color": self.color
+            "color": self.color,
+            "creditScore": self.creditScore
         }
 
 type spacetype_t = int
@@ -746,6 +752,7 @@ class Board:
         player.compoundLoans()
         for dueLoan in player.incLoanDeadline():
             player.payLoan(dueLoan, dueLoan.totalOwed)
+            player.creditScore -= 100
             yield DUE_LOAN(dueLoan.id, player.id)
 
         yield from self.runevent("onroll", player.space, player, amount, d1, d2)

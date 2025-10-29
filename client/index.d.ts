@@ -89,6 +89,7 @@ export interface Player {
     injail: boolean
     loans: Loan[]
     color: string
+    creditScore: number
 }
 
 export type Color =

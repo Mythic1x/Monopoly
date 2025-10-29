@@ -9,6 +9,7 @@ export default function PlayerCard({ player }: Props) {
             <div className="player-card" data-color={player.color}>
                 <div className="player-name">{player.name}</div>
                 <div className="player-money">{player.bankrupt ? "bankrupt" : `$${player.money}`}</div>
+                <div className="player-credit-score">{player.bankrupt ? "bankrupt": `Credit Score: ${player.creditScore}`}</div>
                 <div className="owned-spaces-count">{player.bankrupt ? "bankrupt" : `Owned Spaces: ${player.ownedSpaces?.length ?? 0}`}</div>
             </div>
         </>
