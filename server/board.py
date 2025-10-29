@@ -1,4 +1,5 @@
 from collections.abc import Generator
+import math
 import re
 from types import ModuleType
 from typing import Any, Callable, Self
@@ -173,11 +174,20 @@ class Player:
                     break
                 if loan.totalOwed <= 0:
                     self.loans.remove(loan)
-                    self.creditScore += 100
+                    self.increaseCreditScore(loan.amount)
     def payLoan(self, loan: Loan, amount: int):
         loan.payAmount(amount)
         if self.money < 0:
             self.inDebtTo = loan.loaner
+    
+    def increaseCreditScore(self, amount: int):
+        if(self.creditScore >= 800):
+            return
+        if(self.creditScore + amount > 800):
+            self.creditScore = 800
+        else:
+            self.creditScore += math.floor(amount / 4)
+        
 
     def trade(self, board: "Board", other: Self, trade: Trade):
         for id in trade.give.get("properties", []):

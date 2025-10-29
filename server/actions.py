@@ -314,4 +314,4 @@ def payLoan(game, action, player: Player):
     player.payLoan(loan, amount)
     if loan.totalOwed <= 0:
         player.loans.remove(loan)
-        player.creditScore += 100
+        player.increaseCreditScore(loan.amount)
