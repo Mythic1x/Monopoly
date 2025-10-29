@@ -201,10 +201,10 @@ class Player:
         if self.creditScore >= 800:
             return
         amountToIncrease = amount / 4
-        if self.creditScore + amount > 800:
+        if self.creditScore + amountToIncrease > 800:
             self.creditScore = 800
         else:
-            self.creditScore += math.floor(amount)
+            self.creditScore += math.floor(amountToIncrease)
 
     def trade(self, board: "Board", other: Self, trade: Trade):
         for id in trade.give.get("properties", []):
