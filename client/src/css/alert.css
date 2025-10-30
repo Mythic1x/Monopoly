@@ -6,9 +6,10 @@
         gap: 3ex;
 
         isolation: isolate;
+        position-anchor: --board;
         position: absolute;
-        bottom: 0;
-        right: 0;
+        bottom: anchor(bottom);
+        left: anchor(right);
         z-index: 50;
 
         width: fit-content;
