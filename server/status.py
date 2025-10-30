@@ -3,6 +3,7 @@ from typing import Any
 from monopolytypes import *
 
 class status_t:
+    level: int = 3
     broadcast: bool = False
 
 @dataclass
@@ -48,6 +49,8 @@ class BUY_HOTEL_FAIL(status_t):
 @dataclass
 class BUY_SUCCESS(status_t):
     space: space_t
+    level: int = 1
+
 
 @dataclass
 class BUY_HOUSE_SUCCESS(status_t):

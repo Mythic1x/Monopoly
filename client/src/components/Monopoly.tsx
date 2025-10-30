@@ -21,6 +21,7 @@ const tradeStatuses = {
 
 function Monopoly({ playerDetails }: any) {
     const [alertQ, setAQ] = useState<string[]>([])
+    const [logLevel, setLogLevel] = useState(1)
 
     const rollBtn = useRef<HTMLButtonElement>(null)
     const buyBtn = useRef<HTMLButtonElement>(null)
@@ -118,7 +119,8 @@ function Monopoly({ playerDetails }: any) {
     }
     window["me"] = player
 
-    function alert(text: string) {
+    function alert(text: string, level = 3) {
+        if(level > logLevel) return
         //stop mutating state
         setAQ(currentQueue => [...currentQueue, text])
     }
@@ -215,7 +217,7 @@ function Monopoly({ playerDetails }: any) {
                 }
                 case "notification":
                     let m = handleStatus(message.value)
-                    if (m) alert(m)
+                    if (m) alert(m, message.value.level)
                     break
                 case "join-game":
                     sendJsonMessage({ 'action': "connect" })
