@@ -82,7 +82,7 @@ class Player:
 
     def takeOwnership(self, space: Space, cost: int = 0):
         assert (
-            cost >= self.money
+            cost <= self.money
         ), f"Cannot buy {space.name} for ${cost} because {self} only has ${self.money}"
         self.money -= cost
         self.ownedSpaces.append(space)
