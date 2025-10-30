@@ -122,7 +122,7 @@ function Monopoly({ playerDetails }: any) {
     function alert(text: string, level = 3) {
         if(level > logLevel) return
         //stop mutating state
-        setAQ(currentQueue => [...currentQueue, text])
+        setAQ(currentQueue => currentQueue.concat([text]))
     }
 
     function loanMenuClose() {
@@ -217,7 +217,8 @@ function Monopoly({ playerDetails }: any) {
                 }
                 case "notification":
                     let m = handleStatus(message.value)
-                    if (m) alert(m, message.value.level)
+                    if (m) alert(m, message.value.level || 3)
+
                     break
                 case "join-game":
                     sendJsonMessage({ 'action': "connect" })
@@ -258,7 +259,9 @@ function Monopoly({ playerDetails }: any) {
         {showLoanMenu && <LoanMenu currentPlayer={player} players={players} loanMenuClose={loanMenuClose} loan={loan}></LoanMenu>}
         {showLoanPaymentMenu && <LoanPaymentMenu loan={loan} loanPMenuClose={loanPMenuClose} ></LoanPaymentMenu>}
         <div id="alert-container">
-            {alertQ.map((_, i) => <Alert alert={alertQ[alertQ.length - i]} />)}
+            {alertQ.map((_, i) => {
+                return <Alert alert={alertQ[alertQ.length - i - 1]} />
+            })}
         </div>
         <div id="game">
             <div className="board-container">

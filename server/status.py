@@ -10,10 +10,12 @@ class status_t:
 class DUE_LOAN(status_t):
     loan: loan_t
     player: player_t
+    level: int = 1
 
 @dataclass
 class BANKRUPT(status_t):
     player: player_t
+    level: int = 1
 
 @dataclass
 class DRAW_CHANCE(status_t):
@@ -28,11 +30,13 @@ class FAIL(status_t):
 class MORTGAGE_SUCCESS(status_t):
     player: player_t
     space: space_t
+    level: int = 1
     
 @dataclass 
 class UNMORTGAGE_SUCCESS(status_t):
     player: player_t
     space: space_t
+    level: int = 1
 
 @dataclass
 class BUY_FAIL(status_t):
@@ -76,11 +80,13 @@ class MONEY_LOST(status_t):
     #FIXME this needs a player so that the ui can say which player lost money lmfao
     amount: int
     broadcast: bool = True
+    level: int = 1
 
 @dataclass
 class MONEY_GIVEN(status_t):
     amount: int
     broadcast: bool = True
+    level: int = 1
     
 @dataclass 
 class AUCTION_END(status_t):
@@ -98,22 +104,26 @@ class PAY_OTHER(status_t):
     payer: player_t
     other: player_t
     broadcast: bool = True
+    level: int = 1
 
 @dataclass
 class PAY_TAX(status_t):
     amount: int
     taxname: str
     broadcast: bool = True
+    level: int = 1
 
 @dataclass
 class PASS_GO(status_t):
     earned: int
     broadcast: bool = True
+    level: int = 1
 
 @dataclass
 class PAY_JAIL(status_t):
     cost: int
     broadcast: bool = True
+    level: int = 1
 
 
 @dataclass
@@ -121,3 +131,4 @@ class Chance:
     event: str
     type: str
     data: Any
+    level: int = 1
