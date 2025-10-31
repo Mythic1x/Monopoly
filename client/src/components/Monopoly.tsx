@@ -22,6 +22,7 @@ const tradeStatuses = {
 function Monopoly({ playerDetails }: any) {
     const [alertQ, setAQ] = useState<string[]>([])
     const [logLevel, setLogLevel] = useState(1)
+    const [spaceCoordinates, setSpaceCoordinates] = useState<{ [key: spaceid_t]: { x: number, y: number } }>({})
 
     const rollBtn = useRef<HTMLButtonElement>(null)
     const buyBtn = useRef<HTMLButtonElement>(null)
@@ -43,6 +44,7 @@ function Monopoly({ playerDetails }: any) {
     function spaceById(id: spaceid_t) {
         return board.spaces.find(v => v.id === id)
     }
+
 
     const [rolled, setRolled] = useState<boolean>(false)
     const [loading, setLoading] = useState(true)
@@ -120,7 +122,7 @@ function Monopoly({ playerDetails }: any) {
     window["me"] = player
 
     function alert(text: string, level = 3) {
-        if(level > logLevel) return
+        if (level > logLevel) return
         //stop mutating state
         setAQ(currentQueue => currentQueue.concat([text]))
     }
@@ -265,7 +267,7 @@ function Monopoly({ playerDetails }: any) {
         </div>
         <div id="game">
             <div className="board-container">
-                <GameBoard board={board} player={player}>
+                <GameBoard board={board} player={player} setSpaceCoordinates={setSpaceCoordinates}>
                     {auction &&
                         <AuctionMenu space={board.spaces.find(s => s.id === auction.space)} time={auction.end_time} auction={auction} sendJsonMessage={sendJsonMessage}></AuctionMenu>
                     }
@@ -308,7 +310,7 @@ function Monopoly({ playerDetails }: any) {
             <div className="player-list">
                 <h3>Players</h3>
                 {players?.map((player) => (
-                    <PlayerCard player={player} key={player.id}></PlayerCard>
+                    <PlayerCard player={player} key={player.id} goingPlayer={goingPlayer}></PlayerCard>
                 ))}
             </div>
             <div className="trade-loan-grid">

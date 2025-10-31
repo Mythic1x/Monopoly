@@ -25,7 +25,7 @@ const createWindow = (): void => {
     },
   });
   
-  Menu.setApplicationMenu(null)
+  //Menu.setApplicationMenu(null)
 
 session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
   callback({

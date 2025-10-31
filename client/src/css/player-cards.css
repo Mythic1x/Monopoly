@@ -1,13 +1,34 @@
 @layer components {
+    .player-card-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .turn-indicator {
+        font-size: 30px;
+    }
+
     .player-card {
         background: attr(data-color type(<color>));
+        width: 200px;
         padding: 1em;
         border-radius: 5px;
 
         text-align: center;
 
-        > div {
+        >div {
             background: #0008;
         }
+    }
+
+    .flash-red {
+        color: red;
+        transition: color 0.2s ease-in;
+    }
+
+    .flash-green {
+        color: limegreen;
+        transition: color 0.2s ease-in;
     }
 }
