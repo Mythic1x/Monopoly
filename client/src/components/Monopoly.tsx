@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef, useContext } from "react"
-import { Board, Space, Player, ServerResponse, Trade, Auction, playerid_t, spaceid_t, Loan } from "../../index"
+import {  Space, Player, ServerResponse, Trade, Auction, playerid_t, spaceid_t, Loan } from "../../index"
 import PlayerCard from "./PlayerCard"
 import useWebSocket, { ReadyState } from "react-use-websocket/dist"
-import usePlayer from "../hooks/useplayer"
 import GameBoard from "./board"
 import Alert from "./alert"
 import TradeMenu from "./TradeMenu"
-import MonopolyContext, { MonopolyProvider } from "../../src/Contexts/MonopolyContext"
+import MonopolyContext from "../../src/Contexts/MonopolyContext"
 import AuctionMenu from "./Auction"
 import ConnectionContext from "../../src/Contexts/ConnectionContext"
 import LoanMenu from "./LoanMenu"
@@ -22,7 +21,6 @@ const tradeStatuses = {
 function Monopoly({ playerDetails }: any) {
     const [alertQ, setAQ] = useState<string[]>([])
     const [logLevel, setLogLevel] = useState(1)
-    const [spaceCoordinates, setSpaceCoordinates] = useState<{ [key: spaceid_t]: { x: number, y: number } }>({})
 
     const rollBtn = useRef<HTMLButtonElement>(null)
     const buyBtn = useRef<HTMLButtonElement>(null)
@@ -267,7 +265,7 @@ function Monopoly({ playerDetails }: any) {
         </div>
         <div id="game">
             <div className="board-container">
-                <GameBoard board={board} player={player} setSpaceCoordinates={setSpaceCoordinates}>
+                <GameBoard board={board} players={players} player={player}>
                     {auction &&
                         <AuctionMenu space={board.spaces.find(s => s.id === auction.space)} time={auction.end_time} auction={auction} sendJsonMessage={sendJsonMessage}></AuctionMenu>
                     }
