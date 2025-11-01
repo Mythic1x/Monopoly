@@ -19,6 +19,7 @@ def getUpdatedState(game: "Game"):
         },
         {"response": "trade-list", "value": [trade.toJson() for trade in game.trades]},
         {"response": "loan-list", "value": [loan.toJson() for loan in game.loans]},
+        {"response": "lobby-state", "value": game.toJson()}
     ]
 
 
@@ -84,6 +85,14 @@ def connect(game: "Game", action, player: "Player"):
     }
     if game.activeAuction is not None:
         yield True, ({"response": "auction-status", "value": game.activeAuction})
+        
+def startGame(game: "Game", action, player: "Player"):
+
+    if len(game.activePlayers) > 1:
+        game.started = True
+        player.host = True
+        yield True, ({"response": "lobby-state", "value": game.toJson()})
+  
 
 
 def teleport(game, action, player: "Player"):

@@ -28,6 +28,7 @@ class Player:
     inDebtTo: "Player | None"
     creditScore: int
     color: str
+    host: bool
 
     inJail: bool
     jailDoublesRemaining: int
@@ -60,6 +61,7 @@ class Player:
         self.gameid = 0
         self.color = f"#{random.randint(180, 255):x}{random.randint(180, 255):x}{random.randint(180, 255):x}"
         self.creditScore = 300
+        self.host = False
 
     @override
     def __str__(self):

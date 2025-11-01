@@ -45,6 +45,13 @@ class Game:
     id: gameid_t
     loans: list[Loan]
     trades: list[Trade]
+    started: bool
+    
+    def toJson(self):
+        return {
+            "started": self.started,
+            "host": self.host,
+        }
 
     def __init__(self, boardname: str, dSides: int = 6):
         boardFile = f"{self.boards_path}/{boardname}.json"
@@ -77,11 +84,20 @@ class Game:
         self.activePlayers = []
         self.loans = []
         self.trades = []
+        self.started = False
 
     @property
     def curPlayer(self) -> Player:
         values = list(self.activePlayers)
         return values[self.curTurn]
+    
+    @property
+    def host(self):
+        if not self.started and len(self.activePlayers) > 0:
+            return self.activePlayers[0].id
+        elif self.started:
+            return next(player.id for player in self.activePlayers if player.host)
+        return None
 
     def getplayer(self, id: player_t) -> Player:
         p = self.players.get(id)
@@ -97,10 +113,14 @@ class Game:
             onjoin()
         await player.client.write({"response": "assignment", "value": player.id})
         await self.broadcast({"response": "board", "value": self.board.toJson()})
+        await self.broadcast({"response": "lobby-state", "value": self.toJson()})
+        await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
         await self.run(player)
 
     def disconnectClient(self, client: Client):
         self.clients.remove(client)
+        if not self.started:
+            client
 
     async def rejoin(self, player: Player):
         assert player.space, f"{player} is not on a space"
@@ -110,6 +130,7 @@ class Game:
         await self.broadcast({"response": "next-turn", "value": self.curPlayer.toJson()})
         await player.client.write({"response": "current-space", "value": player.space.toJson()})
         await self.broadcast({"response": "player-list", "value": [player.toJson() for player in self.players.values()]})
+        await self.broadcast({"response": "lobby-state", "value": self.toJson()})
         if len(self.loans) > 0:
             await self.broadcast({"response": "loan-list", "value": [loan.toJson() for loan in self.loans]})
         if len(self.trades) > 0:

@@ -22,6 +22,7 @@ type _responses = {
     "bankrupt": string
     "game-end": Player
     "loan-proposal": Loan
+    "lobby-state": LobbyState
 }
 type ServerResponse = { response: infer A extends keyof _responses, value: _responses[A] } | { response: infer A extends keyof _responses, value: _responses[A] }[]
 
@@ -48,6 +49,11 @@ export interface Auction {
     bidder: playerid_t
     end_time: number
     space: spaceid_t
+}
+
+export interface LobbyState {
+    host: playerid_t
+    started: boolean
 }
 
 export interface Board {

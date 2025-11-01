@@ -1,5 +1,5 @@
 import usePlayer from "../../src/hooks/useplayer";
-import { Board, Player } from "../../index";
+import { Board, LobbyState, Player } from "../../index";
 import { createContext, ReactNode, useState } from "react";
 
 interface MonopolyContext {
@@ -10,6 +10,8 @@ interface MonopolyContext {
     setPlayers: React.Dispatch<React.SetStateAction<Player[] | []>>
     playerLoaded: boolean
     setPlayer: React.Dispatch<React.SetStateAction<Player>>
+    lobbyState: LobbyState
+    setLobbyState: React.Dispatch<React.SetStateAction<LobbyState>>
 }
 
 const MonopolyContext = createContext<MonopolyContext>(undefined)
@@ -17,6 +19,7 @@ const MonopolyContext = createContext<MonopolyContext>(undefined)
 export function MonopolyProvider({ children }: { children: ReactNode }) {
     const [board, setBoard] = useState<Board | null>(null)
     const [players, setPlayers] = useState<Player[] | []>([])
+    const [lobbyState, setLobbyState] = useState<LobbyState | null>(null)
     const { player, playerLoaded, setPlayer } = usePlayer()
 
     const contextValue = {
@@ -26,7 +29,9 @@ export function MonopolyProvider({ children }: { children: ReactNode }) {
         setBoard,
         setPlayers,
         playerLoaded,
-        setPlayer
+        setPlayer,
+        lobbyState,
+        setLobbyState
     };
 
     return (

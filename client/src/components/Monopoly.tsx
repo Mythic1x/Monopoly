@@ -11,6 +11,7 @@ import ConnectionContext from "../../src/Contexts/ConnectionContext"
 import LoanMenu from "./LoanMenu"
 import LoanPaymentMenu from "./LoanPaymentMenu"
 import LoanList from "./LoanList"
+import Lobby from "./Lobby"
 
 const tradeStatuses = {
     declined: "❌",
@@ -32,7 +33,7 @@ function Monopoly({ playerDetails }: any) {
     const [auction, setAuction] = useState<Auction | null>(null)
 
     const { ip } = useContext(ConnectionContext)
-    const { board, player, players, setBoard, setPlayers, playerLoaded, setPlayer } = useContext(MonopolyContext)
+    const { board, player, players, setBoard, setPlayers, playerLoaded, setPlayer, lobbyState, setLobbyState } = useContext(MonopolyContext)
     const activePlayers = players.filter(p => !p.bankrupt)
 
     function playerById(id: playerid_t) {
@@ -193,6 +194,9 @@ function Monopoly({ playerDetails }: any) {
                     setBoard(message.value)
                     setLoading(false)
                     break
+                case "lobby-state":
+                    setLobbyState(message.value)
+                    break
                 case "trade-list":
                     setTrades(message.value)
                     break
@@ -254,7 +258,9 @@ function Monopoly({ playerDetails }: any) {
     }
 
     let jail = board.spaces.find(v => v.name === "Jail")
+    console.log(lobbyState)
     return <>
+    {!lobbyState.started ? <Lobby></Lobby> : (<>
         <TradeMenu currentPlayer={player} players={activePlayers} tradeDialog={tradeDialog} currentTrade={currentTrade} setCurrentTrade={setCurrentTrade}></TradeMenu>
         {showLoanMenu && <LoanMenu currentPlayer={player} players={players} loanMenuClose={loanMenuClose} loan={loan}></LoanMenu>}
         {showLoanPaymentMenu && <LoanPaymentMenu loan={loan} loanPMenuClose={loanPMenuClose} ></LoanPaymentMenu>}
@@ -340,7 +346,8 @@ function Monopoly({ playerDetails }: any) {
                     ))}
                 </ul>
             </div>
-        </div>
+    </div> 
+</>)}
     </>
 }
 
