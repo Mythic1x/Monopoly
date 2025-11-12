@@ -101,7 +101,7 @@ class NONE(status_t):
 @dataclass
 class PAY_OTHER(status_t):
     amount: int
-    payer: player_t
+    player: player_t
     other: player_t
     broadcast: bool = True
     level: int = 1
