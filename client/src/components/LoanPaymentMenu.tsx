@@ -54,7 +54,7 @@ function LoanPaymentMenu({ loan, loanPMenuClose }: Props) {
                         const num = Number(e.target.value)
                         if (num <= loan.remainingToPay) setAmount(num)
                     }} />
-                    <button className="pay-loan" onClick={payLoan}>Pay Amount</button>
+                    <button className="pay-loan" disabled={loan.turnsPassed === 0} onClick={payLoan}>Pay Amount</button>
                 </>
             )}
         </dialog>

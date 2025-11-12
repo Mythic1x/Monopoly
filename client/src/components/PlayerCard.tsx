@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react"
 import { Player } from "../../index"
 interface Props {
     player: Player
-    goingPlayer: Player
+    goingPlayer?: Player
 }
 
 export default function PlayerCard({ player, goingPlayer }: Props) {

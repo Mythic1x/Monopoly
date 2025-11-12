@@ -56,7 +56,7 @@ export default function TradeMenu({ currentPlayer, players, tradeDialog, current
                             setSelectedPlayer(player)
                         }
                     }} style={{ cursor: "pointer" }}>
-                        <PlayerCard player={player}></PlayerCard>
+                        <PlayerCard player={player} goingPlayer={undefined}></PlayerCard>
                     </button>
                 ))}</div>
             {selectedPlayer && <TradeSelection player={currentPlayer} otherPlayer={selectedPlayer} sendJsonMessage={sendJsonMessage} setSelectedPlayer={setSelectedPlayer}></TradeSelection>}
