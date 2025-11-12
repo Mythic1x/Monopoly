@@ -131,6 +131,11 @@ function Monopoly({ playerDetails }: any) {
         if (loan) setLoan(null)
     }
 
+    function tradeMenuClose() {
+        tradeDialog.current?.close()
+        if(currentTrade) setCurrentTrade(null)
+    }
+
     function loanPMenuClose() {
         setShowLoanPaymentMenu(false)
         setLoan(null)
@@ -261,7 +266,7 @@ function Monopoly({ playerDetails }: any) {
     console.log(lobbyState)
     return <>
     {!lobbyState.started ? <Lobby></Lobby> : (<>
-        <TradeMenu currentPlayer={player} players={activePlayers} tradeDialog={tradeDialog} currentTrade={currentTrade} setCurrentTrade={setCurrentTrade}></TradeMenu>
+        <TradeMenu currentPlayer={player} players={activePlayers} tradeDialog={tradeDialog} currentTrade={currentTrade} setCurrentTrade={setCurrentTrade} tradeMenuClose={tradeMenuClose}></TradeMenu>
         {showLoanMenu && <LoanMenu currentPlayer={player} players={players} loanMenuClose={loanMenuClose} loan={loan}></LoanMenu>}
         {showLoanPaymentMenu && <LoanPaymentMenu loan={loan} loanPMenuClose={loanPMenuClose} ></LoanPaymentMenu>}
         <div id="alert-container">

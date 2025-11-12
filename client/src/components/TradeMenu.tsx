@@ -12,9 +12,10 @@ interface Props {
     tradeDialog: React.RefObject<HTMLDialogElement>
     currentTrade: Trade
     setCurrentTrade: React.Dispatch<React.SetStateAction<Trade>>
+    tradeMenuClose: () => void
 }
 
-export default function TradeMenu({ currentPlayer, players, tradeDialog, currentTrade, setCurrentTrade }: Props) {
+export default function TradeMenu({ currentPlayer, players, tradeDialog, currentTrade, setCurrentTrade, tradeMenuClose }: Props) {
     const [selectedPlayer, setSelectedPlayer] = useState<Player>(null)
     const { ip } = useContext(ConnectionContext)
     const { sendJsonMessage } = useWebSocket(ip, {
@@ -39,13 +40,13 @@ export default function TradeMenu({ currentPlayer, players, tradeDialog, current
 
     if (currentTrade) {
         return (
-            <dialog ref={tradeDialog} id="trade-dialog"><TradeProposal trade={currentTrade} tradeDialog={tradeDialog} proposingPlayer={players.find(p => p.id === currentTrade.recipient)} acceptTrade={acceptTrade} declineTrade={declineTrade}></TradeProposal></dialog>
+            <dialog ref={tradeDialog} id="trade-dialog"><TradeProposal trade={currentTrade} tradeMenuClose={tradeMenuClose} proposingPlayer={players.find(p => p.id === currentTrade.recipient)} acceptTrade={acceptTrade} declineTrade={declineTrade}></TradeProposal></dialog>
         )
     }
 
     return (
         <dialog ref={tradeDialog} id="trade-dialog">
-            <button className="close" onClick={() => tradeDialog.current.close()}>X</button>
+            <button className="close" onClick={() => tradeMenuClose()}>X</button>
             <div className="players">
                 <center><h3 className="trade-header">Trade</h3></center>
                 {players.map((player) => (
@@ -147,13 +148,13 @@ function TradeProposal({
     proposingPlayer,
     acceptTrade,
     declineTrade,
-    tradeDialog,
+    tradeMenuClose
 }: {
     trade: Trade
     proposingPlayer: Player
     acceptTrade: (trade: Trade) => void;
     declineTrade: (trade: Trade) => void;
-    tradeDialog: React.RefObject<HTMLDialogElement>
+    tradeMenuClose: () => void;
 }) {
 
     const { board, player } = useContext(MonopolyContext)
@@ -169,49 +170,48 @@ function TradeProposal({
     const moneyToGive = trade.trade.want.money;
 
     return (
-        <div className="trade-proposal-menu">
+        <><div className="delete" onClick={() => {
+            tradeMenuClose();
+        }}>X</div><div className="trade-proposal-menu">
 
-            <center><h2 className="trade-proposal-title">
-                Trade Proposal from {proposingPlayer.name}
-            </h2>
-                <div className="delete" onClick={() => {
-                    tradeDialog.current?.close()
-                }}>X</div>
-            </center>
-            <div className="give-list">
-                <h3 className="trade-selection-text">You Give</h3>
+                <center><h2 className="trade-proposal-title">
+                    Trade Proposal from {proposingPlayer.name}
+                </h2>
+                </center>
+                <div className="give-list">
+                    <h3 className="trade-selection-text">You Give</h3>
 
-                <div className="money-display">${moneyToGive}</div>
+                    <div className="money-display">${moneyToGive}</div>
 
-                {propertiesToGive.map((property) => (
-                    <div key={property.id} className="space-display space-give">
-                        {property.name}
-                    </div>
-                ))}
-            </div>
+                    {propertiesToGive.map((property) => (
+                        <div key={property.id} className="space-display space-give">
+                            {property.name}
+                        </div>
+                    ))}
+                </div>
 
-            <div className="receive-list">
-                <h3 className="trade-selection-text">You Get</h3>
-                <div className="money-display">${moneyToReceive}</div>
+                <div className="receive-list">
+                    <h3 className="trade-selection-text">You Get</h3>
+                    <div className="money-display">${moneyToReceive}</div>
 
-                {propertiesToReceive.map((property) => (
-                    <div key={property.id} className="space-display space-receive">
-                        {property.name}
-                    </div>
-                ))}
-            </div>
+                    {propertiesToReceive.map((property) => (
+                        <div key={property.id} className="space-display space-receive">
+                            {property.name}
+                        </div>
+                    ))}
+                </div>
 
-            {(player.id === trade.recipient && trade.status === "proposed") && <div className="trade-proposal-actions">
-                <button className="accept-trade" data-enable-shadow onClick={() => acceptTrade(trade)}>
-                    Accept
-                </button>
-                <button className="decline-trade" data-enable-shadow onClick={() => {
-                    tradeDialog.current?.close()
-                    declineTrade(trade)
-                }}>
-                    Decline
-                </button>
-            </div>}
-        </div>
+                {(player.id === trade.recipient && trade.status === "proposed") && <div className="trade-proposal-actions">
+                    <button className="accept-trade" data-enable-shadow onClick={() => acceptTrade(trade)}>
+                        Accept
+                    </button>
+                    <button className="decline-trade" data-enable-shadow onClick={() => {
+                        tradeMenuClose();
+                        declineTrade(trade);
+                    }}>
+                        Decline
+                    </button>
+                </div>}
+            </div></>
     );
 }
