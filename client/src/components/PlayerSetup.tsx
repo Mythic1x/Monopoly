@@ -10,10 +10,10 @@ function PlayerSetup({ onSetupComplete }: any) {
     const ipIn = useRef<HTMLInputElement>(null)
 
     const handleSubmit = (e: FormEvent) => {
-        let val = ipIn.current.value || "0.0.0.0"
+        let val = ipIn.current.value.trim() || "0.0.0.0"
 
         setIp(`http://${val}:8765`)
-        localStorage.setItem('cachedIp', `http://${val.trim()}:8765`);
+        localStorage.setItem('cachedIp', `http://${val}:8765`);
         onSetupComplete({ name, piece });
     };
 
