@@ -39,7 +39,7 @@
 
             position-anchor: attr(data-current-space type(<custom-ident>));
             position: absolute;
-            left: anchor(center);
+            left: anchor(left);
             bottom: anchor(bottom);
 
             transition:
