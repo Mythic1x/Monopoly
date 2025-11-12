@@ -13,7 +13,7 @@ function PlayerSetup({ onSetupComplete }: any) {
         let val = ipIn.current.value || "0.0.0.0"
 
         setIp(`http://${val}:8765`)
-        localStorage.setItem('cachedIp', `http://${val}:8765`);
+        localStorage.setItem('cachedIp', `http://${val.trim()}:8765`);
         onSetupComplete({ name, piece });
     };
 
