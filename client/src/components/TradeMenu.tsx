@@ -155,7 +155,7 @@ function TradeProposal({
     tradeMenuClose: () => void;
 }) {
 
-    const { board, player } = useContext(MonopolyContext)
+    const { board, player, players } = useContext(MonopolyContext)
 
     const propertiesToReceive = board.spaces.filter(space =>
         trade.trade.give.properties?.includes(Number(space.id))
@@ -173,7 +173,7 @@ function TradeProposal({
         }}>X</button><div className="trade-proposal-menu">
 
                 <center><h2 className="trade-proposal-title">
-                    Trade Proposal from {trade.sender}
+                    {`Trade Proposal from ${players.find(p => p.id === trade.sender)}`}
                 </h2>
                 </center>
                 <div className="give-list">
