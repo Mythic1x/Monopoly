@@ -173,7 +173,7 @@ function TradeProposal({
         }}>X</button><div className="trade-proposal-menu">
 
                 <center><h2 className="trade-proposal-title">
-                    {`Trade Proposal from ${players.find(p => p.id === trade.sender)}`}
+                    {`Trade Proposal from ${players.find(p => p.id === trade.sender).name}`}
                 </h2>
                 </center>
                 <div className="give-list">
