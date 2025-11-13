@@ -40,7 +40,7 @@ export default function TradeMenu({ currentPlayer, players, tradeDialog, current
 
     if (currentTrade) {
         return (
-            <dialog ref={tradeDialog} id="trade-dialog"><TradeProposal trade={currentTrade} tradeMenuClose={tradeMenuClose} proposingPlayer={players.find(p => p.id === currentTrade.recipient)} acceptTrade={acceptTrade} declineTrade={declineTrade}></TradeProposal></dialog>
+            <dialog ref={tradeDialog} id="trade-dialog"><TradeProposal trade={currentTrade} tradeMenuClose={tradeMenuClose} acceptTrade={acceptTrade} declineTrade={declineTrade}></TradeProposal></dialog>
         )
     }
 
@@ -145,13 +145,11 @@ function TradeSelection({ player, otherPlayer, sendJsonMessage, setSelectedPlaye
 
 function TradeProposal({
     trade,
-    proposingPlayer,
     acceptTrade,
     declineTrade,
     tradeMenuClose
 }: {
     trade: Trade
-    proposingPlayer: Player
     acceptTrade: (trade: Trade) => void;
     declineTrade: (trade: Trade) => void;
     tradeMenuClose: () => void;
@@ -170,12 +168,12 @@ function TradeProposal({
     const moneyToGive = trade.trade.want.money;
 
     return (
-        <><div className="delete" onClick={() => {
+        <><button className="delete" onClick={() => {
             tradeMenuClose();
-        }}>X</div><div className="trade-proposal-menu">
+        }}>X</button><div className="trade-proposal-menu">
 
                 <center><h2 className="trade-proposal-title">
-                    Trade Proposal from {proposingPlayer.name}
+                    Trade Proposal from {trade.sender}
                 </h2>
                 </center>
                 <div className="give-list">
